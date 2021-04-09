@@ -8,6 +8,7 @@ use App\Models\Seccion;
 use App\Models\Docente;
 use App\Models\Asignatura;
 use App\Models\CargaNota;
+use App\Models\DesAsignatura;
 use App\Models\DesAsignaturaDocenteSeccion;
 use App\Models\HistoricoNota;
 use Barryvdh\DomPDF\Facade as PDF;
@@ -18,6 +19,15 @@ use Illuminate\Support\Facades\DB as DB;
 
 class SeccionesController extends Controller
 {
+	public function ver_seccion(Seccion $seccion)
+	{
+		return view('panel.admin.secciones.show', ['seccion' => $seccion]);
+	}
+	public function lista_esudiantes(Seccion $seccion, DesAsignatura $desasignatura)
+	{
+		$relacion = DesAsignaturaDocenteSeccion::with('inscritos')->where('des_asignatura_id', $desasignatura->id)->where('seccion_id',$seccion->id)->first();
+		return view('panel.admin.secciones.lista_estudiantes_uc', ['seccion' => $seccion,'desasignatura' => $desasignatura, 'relacion' => $relacion]);
+	}
 	public function configurar($id)
 	{
 		$seccion  = Seccion::find($id);

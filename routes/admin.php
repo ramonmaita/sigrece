@@ -52,7 +52,6 @@ Route::prefix('panel')->name('panel.')->group(function () {
     Route::view('/trayectos','panel.admin.trayectos.index')->name('trayectos.index')->middleware(['role_or_permission:trayectos.index']);
     Route::view('/pnfs','panel.admin.pnfs.index')->name('pnfs.index')->middleware(['role_or_permission:pnfs.index']);
     Route::view('/nucleos','panel.admin.nucleos.index')->name('nucleos.index')->middleware(['role_or_permission:nucleos.index']);
-    Route::view('/secciones','panel.admin.secciones.index')->name('secciones.index')->middleware(['role_or_permission:secciones.index']);
     Route::view('/docentes','panel.admin.docentes.index')->name('docentes.index')->middleware(['role_or_permission:docentes.index']);
 
     // Route::view('/secciones/configurar/{}','panel.admin.secciones.index')->name('secciones.config')->middleware(['role:Admin']);
@@ -76,6 +75,10 @@ Route::prefix('panel')->name('panel.')->group(function () {
 	});
 
 	Route::prefix('secciones')->name('secciones.')->group(function () {
+		Route::view('/','panel.admin.secciones.index')->name('index')->middleware(['role_or_permission:secciones.index']);
+		Route::get('{seccion}/ver',[SeccionesController::class,'ver_seccion'])->name('show')->middleware(['role_or_permission:secciones.index']);
+		Route::get('listado_de_estudiantes/{seccion}/{desasignatura}',[SeccionesController::class,'lista_esudiantes'])->name('lista_estudiantes')->middleware(['role_or_permission:secciones.index']);
+
 
 		Route::get('configurar/{id}', [SeccionesController::class,'configurar'])->name('config')->middleware(['role_or_permission:secciones.configurar']);
 		Route::get('lista', [SeccionesController::class,'secciones_activas'])->name('lista')->middleware(['role_or_permission:secciones.lista']);

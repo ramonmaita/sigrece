@@ -70,6 +70,8 @@
                      <a href="{{ ($seccion->DesAsignaturas->count() > 0)  ? route('panel.secciones.editar_config',['id' => $seccion->id]) : route('panel.secciones.config',['id' => $seccion->id]) }}" class="btn btn-{{($seccion->DesAsignaturas->count() > 0)  ? 'warning' : 'info'}} btn-sm" ><i class="fa fa-cogs">
                         </i> </a>
                      @endcan
+					 <a href="{{ route('panel.secciones.show',['seccion' => $seccion])  }}" class="btn btn-info btn-sm" ><i class="fa fa-eye">
+					</i> </a>
                   </td>
                </tr>
                @empty
@@ -152,9 +154,9 @@
                            @endforelse
                         </select>
                          @error('nucleo_id')
-                        <smal class="text-danger">
+                        <small class="text-danger">
                            {{ $message }}
-                        </smal>
+                        </small>
                         @enderror
                      </div>
                   </div>
@@ -181,9 +183,9 @@
 	                           @endif
                         </select>
                          @error('pnf_id')
-                        <smal class="text-danger">
+                        <small class="text-danger">
                            {{ $message }}
-                        </smal>
+                        </small>
                         @enderror
                      </div>
                   </div>
@@ -206,9 +208,9 @@
                            @endforelse
                         </select>
                         @error('trayecto_id')
-                        <smal class="text-danger">
+                        <small class="text-danger">
                            {{ $message }}
-                        </smal>
+                        </small>
                         @enderror
                      </div>
                   </div>
@@ -234,9 +236,9 @@
 	                           @endif
                         </select>
                         @error('plan_id')
-                        <smal class="text-danger">
+                        <small class="text-danger">
                            {{ $message }}
-                        </smal>
+                        </small>
                         @enderror
                      </div>
                   </div>
@@ -249,9 +251,9 @@
                         </label>
                         <input class="text-uppercase form-control @error('nombre') is-invalid @enderror" maxlength="40" minlength="2" type="text" wire:model="nombre"/>
                         @error('nombre')
-                        <smal class="text-danger">
+                        <small class="text-danger">
                            {{ $message }}
-                        </smal>
+                        </small>
                         @enderror
                      </div>
                   </div>
@@ -282,9 +284,9 @@
                         </label>
                         <input class="form-control @error('cupos') is-invalid @enderror SoloNumeros" maxlength="3" minlength="1" type="text" wire:model="cupos"/>
                         @error('cupos')
-                        <smal class="text-danger">
+                        <small class="text-danger">
                            {{ $message }}
-                        </smal>
+                        </small>
                         @enderror
                      </div>
                   </div>
@@ -295,9 +297,9 @@
                         </label>
                         <input class="form-control @error('observacion') is-invalid @enderror SoloLetras" maxlength="40" minlength="2" type="text" wire:model="observacion"/>
                         @error('observacion')
-                        <smal class="text-danger">
+                        <small class="text-danger">
                            {{ $message }}
-                        </smal>
+                        </small>
                         @enderror
                      </div>
                   </div>
@@ -315,9 +317,9 @@
                            </option>
                         </select>
                         @error('estatus')
-                        <smal class="text-danger">
+                        <small class="text-danger">
                            {{ $message }}
-                        </smal>
+                        </small>
                         @enderror
                      </div>
                   </div>
@@ -330,9 +332,9 @@
                      </label>
                      <input class="form-control @error('codigo') is-invalid @enderror SoloNumeros" maxlength="4" minlength="2" type="text" wire:model="codigo"/>
                      @error('codigo')
-                     <smal class="text-danger">
+                     <small class="text-danger">
                         {{ $message }}
-                     </smal>
+                     </small>
                      @enderror
                   </div>
                   <div class="form-group">
@@ -341,9 +343,9 @@
                      </label>
                      <input class="form-control @error('nombre') is-invalid @enderror SoloLetras" maxlength="20" minlength="6" type="text" wire:model="nombre"/>
                      @error('nombre')
-                     <smal class="text-danger">
+                     <small class="text-danger">
                         {{ $message }}
-                     </smal>
+                     </small>
                      @enderror
                   </div>
                   <div class="form-group">
@@ -352,9 +354,9 @@
                      </label>
                      <input class="form-control @error('acronimo') is-invalid @enderror SoloLetras" maxlength="20" minlength="6" type="text" wire:model="acronimo"/>
                      @error('acronimo')
-                     <smal class="text-danger">
+                     <small class="text-danger">
                         {{ $message }}
-                     </smal>
+                     </small>
                      @enderror
                   </div>
                   <div class="form-group">
@@ -363,9 +365,9 @@
                      </label>
                      <input class="form-control @error('observacion') is-invalid @enderror SoloLetras" maxlength="150" type="text" wire:model="observacion"/>
                      @error('observacion')
-                     <smal class="text-danger">
+                     <small class="text-danger">
                         {{ $message }}
-                     </smal>
+                     </small>
                      @enderror
                   </div>
                </div>

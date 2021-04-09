@@ -17,4 +17,9 @@ class Inscripcion extends Model implements Auditable
 	{
 		return $this->hasOne(DesAsignaturaDocenteSeccion::class,'id','desasignatura_docente_seccion_id');
 	}
+
+	public function Alumno()
+	{
+		return $this->belongsTo(Alumno::class);
+	}
 }

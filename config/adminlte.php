@@ -444,21 +444,96 @@ return [
         'Datatables' => [
             'active' => true,
             'files' => [
-                [
-                    'type' => 'js',
-                    'asset' => true,
-                    'location' => 'js/jquery.dataTables.min.js',
-                ],
-                [
-                    'type' => 'js',
-                    'asset' => true,
-                    'location' => 'js/dataTables.bootstrap4.min.js',
-                ],
-                [
-                    'type' => 'css',
-                    'asset' => true,
-                    'location' => 'css/dataTables.bootstrap4.min.css',
-                ],
+				[
+					'type' => 'js',
+					'asset' => true,
+					'location' => 'js/datatables/jquery.dataTables.min.js',
+				],
+				[
+					'type' => 'js',
+					'asset' => true,
+					'location' => 'js/datatables/dataTables.bootstrap4.min.js',
+				],
+				[
+					'type' => 'js',
+					'asset' => true,
+					'location' => 'js/datatables/dataTables.responsive.min.js',
+				],
+				[
+					'type' => 'js',
+					'asset' => true,
+					'location' => 'js/datatables/responsive.bootstrap4.min.js',
+				],
+				[
+					'type' => 'js',
+					'asset' => true,
+					'location' => 'js/datatables/dataTables.buttons.min.js',
+				],
+				[
+					'type' => 'js',
+					'asset' => true,
+					'location' => 'js/datatables/buttons.bootstrap4.min.js',
+				],
+				[
+					'type' => 'js',
+					'asset' => true,
+					'location' => 'js/datatables/jszip.min.js',
+				],
+				[
+					'type' => 'js',
+					'asset' => true,
+					'location' => 'js/datatables/pdfmake.min.js',
+				],
+				[
+					'type' => 'js',
+					'asset' => true,
+					'location' => 'js/datatables/vfs_fonts.js',
+				],
+				[
+					'type' => 'js',
+					'asset' => true,
+					'location' => 'js/datatables/buttons.html5.min.js',
+				],
+				[
+					'type' => 'js',
+					'asset' => true,
+					'location' => 'js/datatables/buttons.print.min.js',
+				],
+				[
+					'type' => 'js',
+					'asset' => true,
+					'location' => 'js/datatables/buttons.colVis.min.js',
+				],
+				[
+				    'type' => 'css',
+				    'asset' => true,
+				    'location' => 'css/datatables/dataTables.bootstrap4.min.css',
+				],
+				[
+				    'type' => 'css',
+				    'asset' => true,
+				    'location' => 'css/datatables/responsive.bootstrap4.min.css',
+				],
+				[
+				    'type' => 'css',
+				    'asset' => true,
+				    'location' => 'css/datatables/buttons.bootstrap4.min.css',
+				],
+				// [
+				// 	'type' => 'js',
+				// 	'asset' => true,
+				// 	'location' => 'js/jquery.dataTables.min.js',
+				// ],
+                // [
+                //     'type' => 'js',
+                //     'asset' => true,
+                //     'location' => 'js/dataTables.bootstrap4.min.js',
+                // ],
+                // [
+                //     'type' => 'css',
+                //     'asset' => true,
+                //     'location' => 'css/dataTables.bootstrap4.min.css',
+                // ],
             ],
         ],
         'Select2' => [

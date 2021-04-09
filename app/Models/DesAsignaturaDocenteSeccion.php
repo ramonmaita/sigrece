@@ -23,4 +23,19 @@ class DesAsignaturaDocenteSeccion extends Model implements Auditable
 	{
 		return $this->belongsTo(DesAsignatura::class,'des_asignatura_id','id');
 	}
+
+	public function Inscritos()
+	{
+		// return $this->hasOneThrough(Inscripcion::class, Inscrito::class,
+		// 'inscripcion_id', // Foreign key on the owners table...
+		// 	'desasignatura_docente_seccion_id', // Foreign key on the cars table...
+		// 	'id', // Local key on the mechanics table...
+		// 	'id' // Local key on the cars table...
+		// );
+		return $this->hasMany(Inscripcion::class,'desasignatura_docente_seccion_id','id');
+	}
+	public function Docente()
+	{
+		return $this->belongsTo(Docente::class);
+	}
 }

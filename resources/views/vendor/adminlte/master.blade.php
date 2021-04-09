@@ -113,9 +113,9 @@
 
 	 <!--Datatables -->
 	 <script src="{{ asset('js/app.js') }}"></script>
-	 <script src="{{ asset('datatables/js/jquery.dataTables.min.js') }}"></script>
+	 {{-- <script src="{{ asset('datatables/js/jquery.dataTables.min.js') }}"></script>
 	 <script src="{{ asset('datatables/js/dataTables.bootstrap4.min.js') }}"></script>
-	 <script src="{{ asset('datatables/js/dataTables.responsive.min.js') }}"></script>
+	 <script src="{{ asset('datatables/js/dataTables.responsive.min.js') }}"></script> --}}
 	 <script>
 		 $(document).ready(function() {
 
