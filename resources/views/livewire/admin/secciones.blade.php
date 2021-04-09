@@ -218,7 +218,7 @@
                            Plan
                         </label>
                         <select class="form-control @error('plan_id') is-invalid @enderror" id="" name="" wire:model="plan_id">
-                        	<option disabled="" selected="">
+                        	<option selected="">
                               seleccione
                            </option>
                            @if (!is_null($pnfs))

@@ -277,13 +277,22 @@ return [
             'icon' => 'fas fa-fw fa-chalkboard-teacher',
             'can'  => 'docentes.index',
         ],
-        [
-            'text' => 'Secciones',
-            'route'  => 'panel.secciones.lista',
-            // 'route'  => 'panel.secciones.index',
-            'icon' => 'fas fa-fw fa-chalkboard-teacher',
-            // 'can'  => 'secciones.index',
-            'can'  => 'secciones.lista',
+		[
+            'text'    => 'Secciones',
+            'icon'    => 'fas fa-fw fa-chalkboard-teacher',
+			'can' => 'secciones.index',
+            'submenu' => [
+                [
+                    'text' => '2021',
+                    'route'  => 'panel.secciones.index',
+					'can' => 'secciones.index',
+                ],
+                [
+                    'text' => '2020',
+					'route'  => 'panel.secciones.lista',
+                    'can' => 'secciones.lista',
+                ],
+            ],
         ],
         [
             'text' => 'Estudiantes',
@@ -321,11 +330,22 @@ return [
             'icon' => 'fas fa-fw fa-users-cog',
             'can' => 'roles-permisos.index',
         ],
-        [
-            'text' => 'Control de Carga',
-            'route'  => 'panel.estadisticas.carga-de-notas.index',
-            'icon' => 'fas fa-chart-bar fa-fw',
-            'can' => 'estadisticas.index',
+		[
+            'text'    => 'Estadisticas',
+            'icon'    => 'fas fa-chart-bar fa-fw',
+			'can' => 'estadisticas.index',
+            'submenu' => [
+                [
+                    'text' => 'Control de Carga',
+                    'route'  => 'panel.estadisticas.carga-de-notas.index',
+					'can' => 'estadisticas.carga-de-nota.index',
+                ],
+                [
+                    'text' => 'Actualiación e Inscripción',
+					'route'  => 'panel.estadisticas.actualizacion-de-datos.index',
+                    'can' => 'estadisticas.actualizacion-de-datos.index',
+                ],
+            ],
         ],
         [
             'text' => 'Lista de Comandos',
@@ -457,12 +477,22 @@ return [
             ],
         ],
         'Chartjs' => [
-            'active' => false,
+            'active' => true,
             'files' => [
                 [
                     'type' => 'js',
                     'asset' => true,
                     'location' => 'js/Chart.bundle.min.js',
+                ],
+            ],
+        ],
+		'AdminLTE' => [
+            'active' => true,
+            'files' => [
+                [
+                    'type' => 'css',
+                    'asset' => true,
+                    'location' => 'css/adminlte.min.css',
                 ],
             ],
         ],
@@ -472,7 +502,7 @@ return [
                 [
                     'type' => 'js',
                     'asset' => true,
-                    'location' => 'js/sweetalert2@8',
+                    'location' => 'js/sweetalert2@8.js',
                 ],
             ],
         ],

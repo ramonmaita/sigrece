@@ -2,14 +2,15 @@
 
 namespace App\Http\Livewire\Admin;
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 use Livewire\WithPagination; //paginacion
 
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use DB;
-use Auth;
+
 class RolesComponet extends Component
 {
     use WithPagination; //paginacion
@@ -24,7 +25,7 @@ class RolesComponet extends Component
     ];
 
     protected $rules = [
-        'nombre' => 'required|string|min:4|max:25',
+        'nombre' => 'required|string|min:4|max:100',
     ];
 
     public $nombre,$rol_id,$permiso_id;
@@ -101,7 +102,7 @@ class RolesComponet extends Component
                 DB::commit();
                 session()->flash('mensaje', 'Permiso creado correctamente.');
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             DB::rollBack();
             session()->flash('error',$e->getMessage());
         }
@@ -166,7 +167,7 @@ class RolesComponet extends Component
                 DB::commit();
                 session()->flash('mensaje', 'Permiso actualizado correctamente.');
             }
-         } catch (Exception $e) {
+         } catch (\Exception $e) {
             DB::rollBack();
             session()->flash('error',$e->getMessage());
         }

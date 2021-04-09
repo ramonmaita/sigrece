@@ -9,8 +9,7 @@ use App\Models\Pnf;
 use App\Models\Nucleo;
 use App\Models\Trayecto;
 use App\Models\Periodo;
-
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class Secciones extends Component
 {
@@ -27,6 +26,7 @@ class Secciones extends Component
     protected $rules = [
     	'nucleo_id' => 'required',
     	'pnf_id' => 'required',
+    	'plan_id' => 'required',
     	'periodo_id' => 'required',
     	'trayecto_id' => 'required',
         'nombre' => 'required|string|min:8|max:40',
@@ -126,7 +126,7 @@ class Secciones extends Component
         $this->modo = $modo;
         if($modo == 'crear'){
 
-            // $this->resetInputs();
+            $this->resetInputs();
     		$this->turno = 'MAÑANA';
     		$this->estatus = 'ACTIVA';
     		$this->trayecto_id = Trayecto::first()->id;
@@ -154,7 +154,7 @@ class Secciones extends Component
     		$this->resetInputs();
     		$this->emit('cerrar_modal'); // Close model to using to jquery
     		session()->flash('mensaje', 'Seccion creada correctamente.');
-    	} catch (Exception $e) {
+    	} catch (\Exception $e) {
     		DB::rollBack();
     		 session()->flash('error',$e->getMessage());
     	}
@@ -174,7 +174,7 @@ class Secciones extends Component
         $this->cupos = $seccion->cupos;
     	$this->turno = $seccion->turno;
     	$this->observacion = $seccion->observacion;
-    	
+
     }
 
     public function update()
@@ -182,7 +182,7 @@ class Secciones extends Component
     	$this->validate();
     	try {
     		DB::beginTransaction();
-    		
+
     		Seccion::find($this->seccion_id)->update([
     			'nucleo_id' => $this->nucleo_id ,
     			'pnf_id' => $this->pnf_id ,
@@ -199,7 +199,7 @@ class Secciones extends Component
             $this->resetInputs();
     		$this->emit('cerrar_modal'); // Close model to using to jquery
     		session()->flash('mensaje', 'Seccion actualizada correctamente.');
-    	} catch (Exception $e) {
+    	} catch (\Exception $e) {
     		DB::rollBack();
     		session()->flash('error',$e->getMessage());
     	}

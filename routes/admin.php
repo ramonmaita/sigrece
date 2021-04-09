@@ -97,6 +97,11 @@ Route::prefix('panel')->name('panel.')->group(function () {
 			Route::get('/', [EstadisticasController::class, 'index_carga_notas'])->middleware(['role_or_permission:estadisticas.index'])->name('index');
 			Route::get('ver-seccion/{seccion}/{periodo}', [EstadisticasController::class, 'show_secciones'])->name('show')->middleware(['role_or_permission:estadisticas.index']);
 		});
+		Route::prefix('actualizacion-e-inscripcion')->name('actualizacion-de-datos.')->group(function () {
+			Route::get('/', [EstadisticasController::class, 'index_actualizacion_datos'])->middleware(['role_or_permission:estadisticas.index'])->name('index');
+			Route::get('ver-seccion/{seccion}/{periodo}', [EstadisticasController::class, 'show_secciones'])->name('show')->middleware(['role_or_permission:estadisticas.index']);
+			Route::get('/data', [EstadisticasController::class, 'data'])->middleware(['role_or_permission:estadisticas.index'])->name('data');
+		});
     });
 
 	Route::prefix('solicitudes')->name('solicitudes.')->group(function () {

@@ -53,11 +53,11 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-					@if (Auth::user()->hasRole('Admin'))
+					{{-- @if (Auth::user()->hasRole('Admin'))
 						<x-jet-nav-link href="{{ route('panel.index') }}" :active="request()->routeIs('panel.index')">
                             <span  class="p-2 text-white bg-blue-600 rounded-full" >Panel Admin</span>
 						</x-jet-nav-link>
-					@endif
+					@endif --}}
                     @forelse ($menu as $item)
                         <x-jet-nav-link href="{{ $item['route'] }}" :active="$item['active']">
                             {{ $item['nombre'] }}
@@ -86,34 +86,16 @@
 									</button>
 								</span>
 							</x-slot>
-
 							<x-slot name="content">
 								<div class="w-60">
-									{{-- <!-- Team Management -->
-									<div class="block px-4 py-2 text-xs text-gray-400">
-										{{ __('Manage Team') }}
-									</div>
-
-									<!-- Team Settings -->
-									<x-jet-dropdown-link href="#}">
-										{{ __('Team Settings') }}
-									</x-jet-dropdown-link>
-
-									<div class="border-t border-gray-100"></div> --}}
-
-									<!-- Team Switcher -->
 									<div class="block px-4 py-2 text-xs text-gray-400">
 										{{ __('Cambiar Rol de Usuario') }}
 									</div>
-									{{-- @dump(Auth::user()->roles() ) --}}
 									@foreach (Auth::user()->getRoleNames()  as $item)
 									<x-jet-dropdown-link href="{{ route('cambiar-rol',['rol' => $item]) }}">
 										{{ $item }}
 									</x-jet-dropdown-link>
 									@endforeach
-									{{-- @foreach (Auth::user()->allTeams() as $team)
-										<x-jet-switchable-team :team="$team" />
-									@endforeach --}}
 								</div>
 							</x-slot>
 						</x-jet-dropdown>
@@ -239,11 +221,11 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-			@if (Auth::user()->hasRole('Admin'))
+			{{-- @if (Auth::user()->hasRole('Admin'))
 				<x-jet-responsive-nav-link href="{{ route('panel.index') }}" :active="request()->routeIs('panel.index')">
 					Panel Admin
 				</x-jet-responsive-nav-link>
-			@endif
+			@endif --}}
             @forelse ($menu as $item)
                 <x-jet-responsive-nav-link href="{{ $item['route'] }}" :active="$item['active']">
                     {{ $item['nombre'] }}
@@ -292,6 +274,39 @@
                         {{ __('Logout') }}
                     </x-jet-responsive-nav-link>
                 </form>
+
+				<!-- ROLES -->
+                @if (Auth::user()->getRoleNames()->count() >= 2)
+                    <div class="border-t border-gray-200"></div>
+
+                    <div class="block px-4 py-2 text-xs text-center text-gray-600">
+                        Roles
+                    </div>
+
+                    {{-- <!-- Team Settings -->
+                    <x-jet-responsive-nav-link href="{{ route('teams.show', Auth::user()->currentTeam->id) }}" :active="request()->routeIs('teams.show')">
+                        {{ __('Team Settings') }}
+                    </x-jet-responsive-nav-link>
+
+                    @can('create', Laravel\Jetstream\Jetstream::newTeamModel())
+                        <x-jet-responsive-nav-link href="{{ route('teams.create') }}" :active="request()->routeIs('teams.create')">
+                            {{ __('Create New Team') }}
+                        </x-jet-responsive-nav-link>
+                    @endcan --}}
+
+                    <div class="border-t border-gray-200"></div>
+
+                    <!-- Team Switcher -->
+                    <div class="block px-4 py-2 text-xs text-center text-gray-600 ">
+                        {{ __('Cambiar Rol de Usuario') }}
+                    </div>
+
+					@foreach (Auth::user()->getRoleNames()  as $item)
+						<x-jet-responsive-nav-link href="{{ route('cambiar-rol',['rol' => $item]) }}">
+							{{ $item }}
+						</x-jet-responsive-nav-link>
+					@endforeach
+                @endif
 
                 <!-- Team Management -->
                 @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())

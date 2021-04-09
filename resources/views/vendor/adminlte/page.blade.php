@@ -12,7 +12,6 @@
     @stack('css')
     @yield('css')
 @stop
-
 @section('classes_body', $layoutHelper->makeBodyClasses())
 
 @section('body_data', $layoutHelper->makeBodyData())
@@ -26,6 +25,14 @@
 @endsection
 @section('body')
 <div class="wrapper">
+	  <!-- Preloader -->
+	  <div class="preloader flex-column justify-content-center align-items-center">
+		<img class="animation__shake" src="{{ asset('img/logo.png') }}" alt="AdminLTELogo" height="100" width="100">
+		<br>
+		<h2 class="animation__shake">
+			@yield('title', config('adminlte.title', 'AdminLTE 3'))
+		</h2>
+	  </div>
    {{-- Top Navbar --}}
         @if($layoutHelper->isLayoutTopnavEnabled())
             @include('adminlte::partials.navbar.navbar-layout-topnav')
@@ -71,6 +78,9 @@
     @yield('js')
 <script>
    $(function() {
+	   setTimeout(() => {
+	   	$('.preloader').fadeOut("swing");
+	   }, 2000);
             $(document).on('keypress', '.SoloLetras', function(e) {
        key = e.keyCode || e.which;
        tecla = String.fromCharCode(key).toLowerCase();
@@ -89,7 +99,7 @@
             return false;
         }
      });
-    
+
      $(document).on('keypress', '.SoloNumeros', function(e) {
        key = e.keyCode || e.which;
        tecla = String.fromCharCode(key).toLowerCase();

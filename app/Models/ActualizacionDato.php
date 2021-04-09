@@ -10,4 +10,9 @@ class ActualizacionDato extends Model
     use HasFactory;
 
 	protected $fillable = ['alumno_id','estatus'];
+
+	public function Alumno()
+	{
+		return $this->belongsTo(Alumno::class);
+	}
 }

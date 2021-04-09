@@ -17,4 +17,9 @@ class Inscrito extends Model implements Auditable
 	{
 		return $this->hasMany(Inscripcion::class);
 	}
+
+	public function Alumno()
+	{
+		return $this->belongsTo(Alumno::class);
+	}
 }

@@ -1124,19 +1124,21 @@ class InscripcionesController extends Controller
 					['fecha' => Carbon::now()]
 				);
 				foreach ($request->seccion as $key => $seccion) {
-					$asignaturas = Asignatura::whereIn('id',$request->uc_a_inscribir[$key])->get();
-					$seccion_db = Seccion::find($seccion);
-					$seccion_db->update(['cupos' => ($seccion_db->cupos - 1) ]);
-					foreach ($asignaturas as $key => $asignatura) {
-						$uc_cohortes = DesAsignaturaDocenteSeccion::where('seccion_id',$seccion)
-												->whereIn('des_asignatura_id', $asignatura->DesAsignaturas->pluck('id'))
-												->where('estatus','ACTIVO')->get();
-						foreach ($uc_cohortes as $key => $uc_cohorte) {
-							Inscripcion::create([
-								'desasignatura_docente_seccion_id' => $uc_cohorte->id,
-								'inscrito_id' => $inscrito->id,
-								'alumno_id' => $alumno->id
-							]);
+					if (array_key_exists($key,$request->uc_a_inscribir)) {
+						$asignaturas = Asignatura::whereIn('id',$request->uc_a_inscribir[$key])->get();
+						$seccion_db = Seccion::find($seccion);
+						$seccion_db->update(['cupos' => ($seccion_db->cupos - 1) ]);
+						foreach ($asignaturas as $key => $asignatura) {
+							$uc_cohortes = DesAsignaturaDocenteSeccion::where('seccion_id',$seccion)
+													->whereIn('des_asignatura_id', $asignatura->DesAsignaturas->pluck('id'))
+													->where('estatus','ACTIVO')->get();
+							foreach ($uc_cohortes as $key => $uc_cohorte) {
+								Inscripcion::create([
+									'desasignatura_docente_seccion_id' => $uc_cohorte->id,
+									'inscrito_id' => $inscrito->id,
+									'alumno_id' => $alumno->id
+								]);
+							}
 						}
 					}
 				}

@@ -12,13 +12,13 @@
         @endif
 
         {{-- Navbar toggler button --}}
-        <button class="navbar-toggler order-1" type="button" data-toggle="collapse" data-target="#navbarCollapse"
+        <button class="order-1 navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
                 aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         {{-- Navbar collapsible menu --}}
-        <div class="collapse navbar-collapse order-3" id="navbarCollapse">
+        <div class="order-3 collapse navbar-collapse" id="navbarCollapse">
             {{-- Navbar left links --}}
             <ul class="nav navbar-nav">
                 {{-- Configured left links --}}
@@ -30,7 +30,7 @@
         </div>
 
         {{-- Navbar right links --}}
-        <ul class="navbar-nav ml-auto order-1 order-md-3 navbar-no-expand">
+        <ul class="order-1 ml-auto navbar-nav order-md-3 navbar-no-expand">
             {{-- Custom right links --}}
             @yield('content_top_nav_right')
 

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActualizacionDato;
 use App\Models\Alumno;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -47,6 +48,10 @@ class WebController extends Controller
 			'cedula' => 'required|numeric|digits_between:6,9'
 		]);
 		$alumno  = Alumno::where('cedula',$request->cedula)->where('nacionalidad',$request->nacionalidad)->first();
+		$actulaizo_datos = ActualizacionDato::where('alumno_id',$alumno->id)->first();
+		if($actulaizo_datos){
+			return back()->with('jet_error','Ya realizó la actualización de datos. Inicie sesión para mas opciones.');
+		}
 		if($alumno){
 
 			switch ($alumno->Pnf->codigo) {

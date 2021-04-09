@@ -2,13 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ActualizacionDato;
 use App\Models\CargaNota;
 use App\Models\HistoricoNota;
+use App\Models\Inscrito;
 use App\Models\Pnf;
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class EstadisticasController extends Controller
 {
+	// TODO: CARGA DE NOTAS 2020
     public function index_carga_notas()
 	{
 		$total_secciones_pnf = array();
@@ -58,4 +64,68 @@ class EstadisticasController extends Controller
 		$seccion = HistoricoNota::where('seccion', $seccion)->where('periodo', $periodo)->groupBy('cod_desasignatura')->get();
 		return view('panel.admin.estadisticas.carga_notas.show',['seccion' => $seccion]);
 	}
+
+	// TODO: INSCRIPCIONES
+	public function index_actualizacion_datos()
+	{
+		return view('panel.admin.estadisticas.actualizacion_datos.index',[]);
+	}
+
+	public function data()
+	{
+		$inicio = Carbon::create(2021,4,8); //TODO: CAMBIAR POR LA FECHA 2021-04-08
+		$fin = Carbon::create(2021,4,23);
+
+		$dia = Carbon::parse('2021-04-08'); //TODO: CAMBIAR POR LA FECHA 2021-04-08
+		$datos = [];
+		$label = [];
+		$cantidad = 0;
+		$dias = $inicio->diffInDays($fin);
+
+		for ($i=0; $i <= $dias; $i++) {
+			$dia_buscar = $dia;
+			$dia_buscar = $dia_buscar->format('Y-m-d');
+			$cantidad = ActualizacionDato::whereDate('updated_at','LIKE',"%$dia_buscar%")->count();
+			array_push($label,Carbon::parse($dia)->format('d-m-Y'));
+			$dia->addDay();
+			array_push($datos, $cantidad);
+		}
+
+		$dia = Carbon::parse('2021-04-08'); //TODO: CAMBIAR POR LA FECHA 2021-04-08
+		$datos_inscritos = [];
+		$label_inscritos = [];
+		$cantidad = 0;
+		for ($i=0; $i <= $dias; $i++) {
+			$dia_buscar = $dia;
+			$dia_buscar = $dia_buscar->format('Y-m-d');
+			$cantidad = Inscrito::whereDate('created_at','LIKE',"%$dia_buscar%")->count();
+			array_push($label_inscritos,Carbon::parse($dia)->format('d-m-Y'));
+			$dia->addDay();
+			array_push($datos_inscritos, $cantidad);
+		}
+
+		// TODO: PARA GRAFICA DE INSCRITOS POR PNF
+		$data = [];
+		$pnfs = Pnf::whereIn('id',[1,2,3,4,5,6,7,12,13])->get();
+		foreach ($pnfs as $key => $pnf) {
+			$data[$pnf->codigo] = [
+				'pnf' => $pnf->acronimo,
+				'cantidad' => 0
+			];
+		}
+		$inscritos = Inscrito::with('alumno')->get();
+		foreach ($inscritos as $key => $inscrito_pnf) {
+			$data[$inscrito_pnf->Alumno->Pnf->codigo]['cantidad'] = $data[$inscrito_pnf->Alumno->Pnf->codigo]['cantidad'] + 1;
+		}
+
+		return response()->json([
+			'datos' => $datos,
+			'label' => $label,
+			'datos_inscritos' => $datos_inscritos,
+			'label_inscritos' => $label_inscritos,
+			'data_inscritos_pnf' => $data,
+			'dias' => $dias
+		]);
+	}
+
 }

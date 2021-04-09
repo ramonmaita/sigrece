@@ -22,6 +22,7 @@
                         <x-select class="block w-full mt-1" name="nacionalidad" id="nacionalidad">
                             <option value="V">Venezolano</option>
                             <option value="E">Extranjero</option>
+                            <option value="P">Pasaporte</option>
                         </x-select>
                     </div>
                     <div class="px-3 mb-6 md:w-1/2 md:mb-0">
