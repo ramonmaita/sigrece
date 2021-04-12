@@ -46,11 +46,16 @@ class Solicitudes extends Component
 
     public function render()
     {
-		$solicitudes = Solicitud::where('fecha','like', "%$this->search%")
-					    	->orWhere('estatus','like', "%$this->search%")
-					    	->orWhere('tipo','like', "%$this->search%")
-					    	->orWhere('seccion','like', "%$this->search%")
-					    	->paginate($this->perPage);
+		$solicitudes = Solicitud::where('tipo','!=','RETIRO DE UC')
+							->where(function ($query)
+							{
+								$query->where('observacion','!=','CALIFICACION SUSTITUTIVA')
+								->orWhere('fecha','like', "%$this->search%")
+								->orWhere('estatus','like', "%$this->search%")
+								->orWhere('tipo','like', "%$this->search%")
+								->orWhere('seccion','like', "%$this->search%");
+							})
+							->paginate($this->perPage);
         return view('livewire.admin.solicitudes',['solicitudes' => $solicitudes]);
     }
 
@@ -218,7 +223,7 @@ class Solicitudes extends Component
 								'cedula_estudiante' => $alumno->cedula,
 								'cod_desasignatura' => $solicitud->DesAsignatura->codigo,
 								'cod_asignatura' => $solicitud->DesAsignatura->Asignatura->codigo,
-								'nombre_asignatura' => $solicitud->DesAsignatura->codigo,
+								'nombre_asignatura' => $solicitud->DesAsignatura->nombre,
 								'nota' => 0,
 								'observacion' => 'POR CERRAR',
 								'seccion' => $solicitud->seccion,

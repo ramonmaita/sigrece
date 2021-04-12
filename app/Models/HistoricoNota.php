@@ -7,11 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 use OwenIt\Auditing\Contracts\Auditable;
 use App\Models\DesAsignatura;
 use App\Models\Asignatura;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class HistoricoNota extends Model implements Auditable
 {
     use HasFactory;
     use \OwenIt\Auditing\Auditable;
+	use SoftDeletes;
 
     protected $fillable = [
        	'periodo',
@@ -29,6 +31,7 @@ class HistoricoNota extends Model implements Auditable
         'tipo',
        	'estatus',
     ];
+	protected $dates = ['deleted_at']; //Registramos la nueva columna
 
     public function DesAsignatura()
     {

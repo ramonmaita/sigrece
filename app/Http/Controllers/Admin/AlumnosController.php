@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Alumno;
 use App\Models\Trayecto;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AlumnosController extends Controller
 {
@@ -48,11 +49,78 @@ class AlumnosController extends Controller
      */
     public function show(Alumno $alumno)
     {
+		// echo array_keys($alumno->Plan->Asignaturas->groupBy('trayecto_id'));
+		// echo dd(array_unique($alumno->Plan->Asignaturas->get('trayecto_id'),SORT_NUMERIC));
+		// echo array_unique($alumno->Plan->Asignaturas->pluck('trayecto_id'),SORT_NUMERIC);
 		// echo $alumno->Historico;
 		// echo "</br>";
 		$trayectos_a = [];
 		// echo '<table width="100%" border="1">';
-		$trayectos = Trayecto::orderBy('index')->get();
+
+		$titulo = DB::table('graduandos')->where('cedula',$alumno->cedula)->where('pnf',$alumno->Pnf->codigo)->max('titulo');
+		if ($titulo == 2) {
+			# TITULO DE INGENIERO
+			if ($alumno->Pnf->codigo == 40 || $alumno->Pnf->codigo == 60) {
+				$trayectos_aprobados = [8,1,2,3,4,5];
+				foreach ($alumno->Plan->Asignaturas->whereIn('trayecto_id',$trayectos_aprobados)->groupBy('trayecto_id') as $key => $a) {
+					$trayecto = Trayecto::find($key);
+					$uc_t = count($trayecto->Asignaturas->where('plan_id',$alumno->plan_id));
+					$trayectos_a[] = [
+						'nombre' => $trayecto->observacion,
+						'uc_totales' => $uc_t,
+						'uc_aprobadas' => $uc_t,
+						'uc_pendientes' => 0,
+						'porcentaje' => round(($uc_t/$uc_t)*100,2)
+					];
+				}
+			}else{
+				$trayectos_aprobados = [8,1,2,3,4];
+				foreach ($alumno->Plan->Asignaturas->whereIn('trayecto_id',$trayectos_aprobados)->groupBy('trayecto_id') as $key => $a) {
+					$trayecto = Trayecto::find($key);
+					$uc_t = count($trayecto->Asignaturas->where('plan_id',$alumno->plan_id));
+					$trayectos_a[] = [
+						'nombre' => $trayecto->observacion,
+						'uc_totales' => $uc_t,
+						'uc_aprobadas' => $uc_t,
+						'uc_pendientes' => 0,
+						'porcentaje' => round(($uc_t/$uc_t)*100,2)
+					];
+				}
+			}
+		}elseif($titulo == 1){
+			# TITULO DE TSU
+			if ($alumno->Pnf->codigo == 40 || $alumno->Pnf->codigo == 60) {
+				$trayectos_aprobados = [8,1,2,3];
+				foreach ($alumno->Plan->Asignaturas->whereIn('trayecto_id',$trayectos_aprobados)->groupBy('trayecto_id') as $key => $a) {
+					$trayecto = Trayecto::find($key);
+					$uc_t = count($trayecto->Asignaturas->where('plan_id',$alumno->plan_id));
+					$trayectos_a[] = [
+						'nombre' => $trayecto->observacion,
+						'uc_totales' => $uc_t,
+						'uc_aprobadas' => $uc_t,
+						'uc_pendientes' => 0,
+						'porcentaje' => round(($uc_t/$uc_t)*100,2)
+					];
+				}
+			}else{
+				$trayectos_aprobados = [8,1,2];
+				foreach ($alumno->Plan->Asignaturas->whereIn('trayecto_id',$trayectos_aprobados)->groupBy('trayecto_id') as $key => $a) {
+					$trayecto = Trayecto::find($key);
+					$uc_t = count($trayecto->Asignaturas->where('plan_id',$alumno->plan_id));
+					$trayectos_a[] = [
+						'nombre' => $trayecto->observacion,
+						'uc_totales' => $uc_t,
+						'uc_aprobadas' => $uc_t,
+						'uc_pendientes' => 0,
+						'porcentaje' => round(($uc_t/$uc_t)*100,2)
+					];
+				}
+			}
+		}else{
+			$trayectos_aprobados = [];
+		}
+		// return '';
+		$trayectos = Trayecto::orderBy('index')->whereNotIn('id',$trayectos_aprobados)->get();
 		foreach ($trayectos as $key => $trayecto) {
 			$aprobadas = 0;
 			$reprobadas = 0;
@@ -96,9 +164,19 @@ class AlumnosController extends Controller
 
 		// print_r($trayectos_a);
 		// return '';
-        return view('panel.admin.estudiantes.show',['alumno' => $alumno,'trayectos' => $trayectos_a]);
+		$titulos = DB::table('graduandos')->where('cedula',$alumno->cedula)
+						->join('pnfs' ,'graduandos.pnf','=','pnfs.codigo')
+						->select('graduandos.*','pnfs.*')
+						->orderBy('graduandos.pnf')
+						->orderBy('graduandos.titulo')
+						->get();
+        return view('panel.admin.estudiantes.show',['alumno' => $alumno,'trayectos' => $trayectos_a,'titulos' => $titulos]);
     }
 
+	public function periodos(Alumno $alumno)
+	{
+		return view('panel.admin.estudiantes.periodos.corregir',['alumno' => $alumno]);
+	}
     /**
      * Show the form for editing the specified resource.
      *

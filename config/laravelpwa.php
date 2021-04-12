@@ -8,8 +8,11 @@ return [
         'start_url' => '/',
         'background_color' => '#ffffff',
         'theme_color' => '#000000',
+        // 'background_color' => '#ffffff',
+        // 'theme_color' => '#000000',
         'display' => 'standalone',
-        'orientation'=> 'any',
+        'orientation'=> 'portrait',
+        // 'orientation'=> 'any',
         'status_bar'=> 'black',
         'icons' => [
             '72x72' => [
@@ -68,9 +71,9 @@ return [
                 ]
             ],
             [
-                'name' => 'Shortcut Link 2',
-                'description' => 'Shortcut Link 2 Description',
-                'url' => '/shortcutlink2'
+                'name' => 'Portal UPTBolívar',
+                'description' => 'Portal UPTBolívar',
+                'url' => 'https://uptbolivar.com/'
             ]
         ],
         'custom' => []

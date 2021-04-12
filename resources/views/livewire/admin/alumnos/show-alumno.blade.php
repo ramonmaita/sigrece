@@ -2,175 +2,31 @@
     <section class="content">
         <div class="container-fluid">
             <div class="row">
-				@foreach ($trayectos as $key => $trayecto)
-					<div class="col-md-4 col-sm-6 col-xs-12">
-						<div class="info-box bg-{{ ($trayecto['porcentaje'] == 100) ? 'green' : 'red' }} ">
-							<span class="info-box-icon"><i class="fa fa-book"></i></span>
+                @foreach ($trayectos as $key => $trayecto)
+                    <div class="col-md-4 col-sm-6 col-xs-12">
+                        <div class="info-box bg-{{ $trayecto['porcentaje'] == 100 ? 'green' : 'red' }} ">
+                            <span class="info-box-icon"><i class="fa fa-book"></i></span>
 
-							<div class="info-box-content">
-								<span class="info-box-text">{{ $trayecto['nombre'] }}</span>
-								<span class="info-box-number">Unidades Curriculares: {{ $trayecto['uc_totales'] }}</span>
+                            <div class="info-box-content">
+                                <span class="info-box-text">{{ $trayecto['nombre'] }}</span>
+                                <span class="info-box-number">Unidades Curriculares:
+                                    {{ $trayecto['uc_totales'] }}</span>
 
-								<div class="progress">
-									<div class="progress-bar" style="width: {{ $trayecto['porcentaje'] }}%"></div>
-								</div>
-								<span class="progress-description">
-									{{ $trayecto['porcentaje'] }}%
-									<b>Aprobadas: {{ $trayecto['uc_aprobadas'] }} - Pendientes: {{ $trayecto['uc_pendientes'] }} </b>
-								</span>
-							</div>
-							<!-- /.info-box-content -->
-						</div>
-						<!-- /.info-box -->
-					</div>
-				@endforeach
-
-                {{-- <div class="col-md-4 col-sm-6 col-xs-12">
-                    <div class="info-box bg-green ">
-                        <span class="info-box-icon"><i class="fa fa-book"></i></span>
-
-                        <div class="info-box-content">
-                            <span class="info-box-text">Trayecto Inicial</span>
-                            <span class="info-box-number">Unidades Curriculares: 3</span>
-
-                            <div class="progress">
-                                <div class="progress-bar" style="width: 100%"></div>
+                                <div class="progress">
+                                    <div class="progress-bar" style="width: {{ $trayecto['porcentaje'] }}%"></div>
+                                </div>
+                                <span class="progress-description">
+                                    {{ $trayecto['porcentaje'] }}%
+                                    <b>Aprobadas: {{ $trayecto['uc_aprobadas'] }} - Pendientes:
+                                        {{ $trayecto['uc_pendientes'] }} </b>
+                                </span>
                             </div>
-                            <span class="progress-description">
-                                100%
-                                <b>Aprobadas: 3 - Pendientes: 0 </b>
-                            </span>
+                            <!-- /.info-box-content -->
                         </div>
-                        <!-- /.info-box-content -->
+                        <!-- /.info-box -->
                     </div>
-                    <!-- /.info-box -->
-                </div> --}}
+                @endforeach
 
-                {{-- <div class="col-md-4 col-sm-6 col-xs-12">
-                    <div class="info-box bg-green ">
-                        <span class="info-box-icon"><i class="fa fa-book"></i></span>
-
-                        <div class="info-box-content">
-                            <span class="info-box-text">Trayecto I</span>
-                            <span class="info-box-number">Unidades Curriculares: 8</span>
-
-                            <div class="progress">
-                                <div class="progress-bar" style="width: 100%"></div>
-                            </div>
-                            <span class="progress-description">
-                                100%
-                                <b>Aprobadas: 8 - Pendientes: 0 </b>
-                            </span>
-                        </div>
-                        <!-- /.info-box-content -->
-                    </div>
-                    <!-- /.info-box -->
-                </div>
-
-                <div class="col-md-4 col-sm-6 col-xs-12">
-                    <div class="info-box bg-green">
-                        <span class="info-box-icon"><i class="fa fa-book"></i></span>
-
-                        <div class="info-box-content">
-                            <span class="info-box-text">Trayecto II</span>
-                            <span class="info-box-number">Unidades Curriculares: 9</span>
-
-                            <div class="progress">
-                                <div class="progress-bar" style="width: 100%"></div>
-                            </div>
-                            <span class="progress-description">
-                                100%
-                                <b>Aprobadas: 9 - Pendientes: 0 </b>
-                            </span>
-                        </div>
-                        <!-- /.info-box-content -->
-                    </div>
-                    <!-- /.info-box -->
-                </div>
-
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="info-box bg-green ">
-                        <span class="info-box-icon"><i class="fa fa-book"></i></span>
-
-                        <div class="info-box-content">
-                            <span class="info-box-text">Trayecto III</span>
-                            <span class="info-box-number">Unidades Curriculares: 9</span>
-
-                            <div class="progress">
-                                <div class="progress-bar" style="width: 100%"></div>
-                            </div>
-                            <span class="progress-description">
-                                100%
-                                <b>Aprobadas: 9 - Pendientes: 0 </b>
-                            </span>
-                        </div>
-                        <!-- /.info-box-content -->
-                    </div>
-                    <!-- /.info-box -->
-                </div>
-
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="info-box bg-green ">
-                        <span class="info-box-icon"><i class="fa fa-book"></i></span>
-
-                        <div class="info-box-content">
-                            <span class="info-box-text">Trayecto IV</span>
-                            <span class="info-box-number">Unidades Curriculares: 10</span>
-
-                            <div class="progress">
-                                <div class="progress-bar" style="width: 100%"></div>
-                            </div>
-                            <span class="progress-description">
-                                100%
-                                <b>Aprobadas: 10 - Pendientes: 0 </b>
-                            </span>
-                        </div>
-                        <!-- /.info-box-content -->
-                    </div>
-                    <!-- /.info-box -->
-                </div>
-
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="info-box bg-red ">
-                        <span class="info-box-icon"><i class="fa fa-book"></i></span>
-
-                        <div class="info-box-content">
-                            <span class="info-box-text">Trayecto V</span>
-                            <span class="info-box-number">Unidades Curriculares: 0</span>
-
-                            <div class="progress">
-                                <div class="progress-bar" style="width:  0% "></div>
-                            </div>
-                            <span class="progress-description">
-                                0%
-                                <b>Aprobadas: 0 - Pendientes: 0 </b>
-                            </span>
-                        </div>
-                        <!-- /.info-box-content -->
-                    </div>
-                    <!-- /.info-box -->
-                </div>
-
-
-                <div class="col-md-3 col-sm-6 col-xs-12">
-                    <div class="info-box bg-red ">
-                        <span class="info-box-icon"><i class="fa fa-book"></i></span>
-
-                        <div class="info-box-content">
-                            <span class="info-box-text">Trayecto Nivelación</span>
-                            <span class="info-box-number">Unidades Curriculares: 0</span>
-
-                            <div class="progress">
-                                <div class="progress-bar" style="width:  0% "></div>
-                            </div>
-                            <span class="progress-description">
-                                0% <b>Aprobadas: 0 - Pendientes: 0 </b>
-                            </span>
-                        </div>
-                        <!-- /.info-box-content -->
-                    </div>
-                    <!-- /.info-box -->
-                </div> --}}
             </div>
             <div class="row">
                 <div class="col-md-3">
@@ -185,13 +41,18 @@
                             </div>
 
                             <h3 class="text-center profile-username">{{ $alumno->nombres }}
-                                <br>{{ $alumno->apellidos }}</h3>
+                                <br>{{ $alumno->apellidos }}
+                            </h3>
 
                             <p class="text-center text-muted">
                                 {{ $alumno->nacionalidad }}-{{ number_format($alumno->cedula, 0, ',', '.') }}</p>
                             {{-- <br> --}}
                             <center>
-                                <span class="text-center badge badge-pill badge-dark">ESTATUS</span>
+                                @if ($alumno->InscritoActual())
+                                    <span class="text-center badge badge-pill badge-success">ACTIVO</span>
+                                @else
+                                    <span class="text-center badge badge-pill badge-danger">INACTIVO</span>
+                                @endif
                             </center>
                             {{-- <ul class="mb-3 list-group list-group-unbordered">
                                 <li class="list-group-item">
@@ -218,41 +79,41 @@
                         </div>
                         <!-- /.card-header -->
                         <div class="card-body" style="font-size: 11pt;">
-                          <div class="row">
-                            <div class="col-md-12">
-                              <strong><i class="mr-1 fas fa-book"></i> PNF</strong>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <strong><i class="mr-1 fas fa-book"></i> PNF</strong>
 
-                              <p class="text-muted">
-                                {{ $alumno->Pnf->nombre }}
-                              </p>
+                                    <p class="text-muted">
+                                        {{ $alumno->Pnf->nombre }}
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong><i class="mr-1 fas fa-book"></i> PLAN</strong>
+
+                                    <p class="text-muted">
+                                        {{ $alumno->Plan->codigo }}
+                                    </p>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong><i class="mr-1 fas fa-book"></i> APRUEBA</strong>
+
+                                    <p class="text-muted">
+                                        {{ $alumno->tipo }}
+                                    </p>
+                                </div>
                             </div>
-                            <div class="col-md-6">
-								<strong><i class="mr-1 fas fa-book"></i> PLAN</strong>
-
-								<p class="text-muted">
-								  {{ $alumno->Plan->codigo }}
-								</p>
-							</div>
-                            <div class="col-md-6">
-								<strong><i class="mr-1 fas fa-book"></i> APRUEBA</strong>
-
-								<p class="text-muted">
-								  {{ $alumno->tipo }}
-								</p>
-							</div>
-                          </div>
-						  <hr>
+                            <hr>
                             <strong><i class="mr-1 fas fa-venus-mars"></i> Sexo</strong>
 
                             <p class="text-muted">
-								@if ($alumno->sexo == 'M' || $alumno->sexo == 'MASCULINO')
-									MASCULINO
-								@elseif($alumno->sexo == 'F' || $alumno->sexo == 'FEMENINO')
-									FEMENINO
-								@else
-									{{ $alumno->sexo }}
-								@endif
-							</p>
+                                @if ($alumno->sexo == 'M' || $alumno->sexo == 'MASCULINO')
+                                    MASCULINO
+                                @elseif($alumno->sexo == 'F' || $alumno->sexo == 'FEMENINO')
+                                    FEMENINO
+                                @else
+                                    {{ $alumno->sexo }}
+                                @endif
+                            </p>
                             <hr>
 
                             <strong><i class="mr-1 fas fa-map-marker-alt"></i> Lugar de Nacimiento</strong>
@@ -267,16 +128,28 @@
 
                             <hr>
 
-							<strong><i class="mr-1 fas fa-graduation-cap"></i> Título</strong>
+                            <strong><i class="mr-1 fas fa-graduation-cap"></i> Título</strong>
 
-							<ul class="my-3 list-group list-group-unbordered">
-                                <li class="list-group-item">
-                                    <b>Sin Título</b>
-                                </li>
+                            <ul class="my-3 list-group list-group-unbordered">
+                                @forelse ($titulos as $titulo)
+                                    <li class="list-group-item">
+                                        <b>
+                                            @if ($titulo->titulo == 1 || $titulo->titulo == 3)
+                                                TSU
+                                            @else
+                                                ING
+                                            @endif
+                                            {{ $titulo->acronimo }}
+                                        </b>
+                                        <a
+                                            class="float-right">{{ \Carbon\Carbon::parse($titulo->egreso)->format('d/m/Y') }}</a>
+                                    </li>
+                                @empty
+                                    <li class="list-group-item">
+                                        <b>Sin Título</b>
+                                    </li>
+                                @endforelse
                                 {{-- <li class="list-group-item">
-                                    <b>Following</b> <a class="float-right">543</a>
-                                </li>
-                                <li class="list-group-item">
                                     <b>Friends</b> <a class="float-right">13,287</a>
                                 </li> --}}
                             </ul>
@@ -297,141 +170,165 @@
                                 </li>
                                 <li class="nav-item"><a class="nav-link" href="#datos" data-toggle="tab">Datos</a>
                                 </li>
+                                @if ($alumno->InscritoActual())
+                                    <li class="nav-item"><a class="nav-link" href="#retiro" data-toggle="tab">Retiro</a>
+                                    </li>
+                                @endif
                             </ul>
                         </div><!-- /.card-header -->
                         <div class="card-body">
                             <div class="tab-content">
                                 <div class="active tab-pane" id="documentos">
-									<div class="row">
-										<div class="col-md-6">
-											<div class="card card-primary card-outline">
-												@php
-													// $inscrito = (@$alumno->InscritoActual()->count() > 0) ? true : false;
-													$inscrito = ($alumno->InscritoActual()) ? true : false;
-													// TODO: CAMBIAR LA VALARAIABLE INSCRITO == FALSE
-												@endphp
-												<div class="card-header">
-													<h4 class="card-title">COMPROBANTE DE INSCRIPCIÓN</h4>
-													@if ($inscrito == true)
-													<a href="{{ route('panel.documentos.comprobante.pdf', [$alumno]) }}" target="_blank" class="float-right"><i class="fa fa-print" aria-hidden="true"></i></a>
-													@endif
-												</div>
-												<div class="card-body">
-													@if ($inscrito == false)
-														<div class="callout callout-danger">
-															<h5>
-																El estudiante no se encuentra activo en el periodo academico actual.
-															</h5>
-														</div>
-													@else
-														<iframe src="{{ route('panel.documentos.comprobante.pdf', [$alumno]) }}" frameborder="0" width="100%" height="500px"></iframe>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="card card-primary card-outline">
+                                                @php
+                                                    // $inscrito = (@$alumno->InscritoActual()->count() > 0) ? true : false;
+                                                    $inscrito = $alumno->InscritoActual() ? true : false;
+                                                    // TODO: CAMBIAR LA VALARAIABLE INSCRITO == FALSE
+                                                @endphp
+                                                <div class="card-header">
+                                                    <h4 class="card-title">COMPROBANTE DE INSCRIPCIÓN</h4>
+                                                    @if ($inscrito == true)
+                                                        <a href="{{ route('panel.documentos.comprobante.pdf', [$alumno]) }}"
+                                                            target="_blank" class="float-right"><i class="fa fa-print"
+                                                                aria-hidden="true"></i></a>
+                                                    @endif
+                                                </div>
+                                                <div class="card-body">
+                                                    @if ($inscrito == false)
+                                                        <div class="callout callout-danger">
+                                                            <h5>
+                                                                El estudiante no se encuentra activo en el periodo
+                                                                academico actual.
+                                                            </h5>
+                                                        </div>
+                                                    @else
+                                                        <iframe id="comprobante"
+                                                            src="{{ route('panel.documentos.comprobante.pdf', [$alumno]) }}"
+                                                            frameborder="0" width="100%" height="500px"></iframe>
 
-													@endif
-												</div>
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="card card-info card-outline">
-												<div class="card-header">
-													<h4 class="card-title">CONSTANCIA DE ESTUDIOS</h4>
-													<a href="#" class="float-right"><i class="fa fa-print" aria-hidden="true"></i></a>
-												</div>
-												<div class="card-body">
-													@if ($inscrito == true)
-														<div class="callout callout-danger">
-															<h5>
-																El estudiante no se encuentra activo en el periodo academico actual.
-															</h5>
-														</div>
-													@else
-														<iframe src="#" frameborder="0" width="100%" height="500px"></iframe>
-													@endif
-												</div>
-											</div>
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-md-6">
-											<div class="card card-navy card-outline">
-												<div class="card-header">
-													<h4 class="card-title">CONSTANCIA DE NOTAS</h4>
-													<a href="{{ route('panel.documentos.notas.pdf', [$alumno]) }}" target="_blank" class="float-right"><i class="fa fa-print" aria-hidden="true"></i></a>
-												</div>
-												<div class="card-body">
-													{{-- @if ($inscrito == false)
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card card-info card-outline">
+                                                <div class="card-header">
+                                                    <h4 class="card-title">CONSTANCIA DE ESTUDIOS</h4>
+                                                    <a href="#" class="float-right"><i class="fa fa-print"
+                                                            aria-hidden="true"></i></a>
+                                                </div>
+                                                <div class="card-body">
+                                                    @if ($inscrito == true)
+                                                        <div class="callout callout-danger">
+                                                            <h5>
+                                                                El estudiante no se encuentra activo en el periodo
+                                                                academico actual.
+                                                            </h5>
+                                                        </div>
+                                                    @else
+                                                        {{-- <iframe src="#" frameborder="0" width="100%" height="500px"></iframe> --}}
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="card card-navy card-outline">
+                                                <div class="card-header">
+                                                    <h4 class="card-title">CONSTANCIA DE NOTAS</h4>
+                                                    <a href="{{ route('panel.documentos.notas.pdf', [$alumno]) }}"
+                                                        target="_blank" class="float-right"><i class="fa fa-print"
+                                                            aria-hidden="true"></i></a>
+                                                </div>
+                                                <div class="card-body">
+                                                    {{-- @if ($inscrito == false)
 														<div class="callout callout-danger">
 															<h5>
 																El estudiante no se encuentra activo en el periodo academico actual.
 															</h5>
 														</div>
 													@else --}}
-														<iframe src="{{ route('panel.documentos.notas.pdf', [$alumno]) }}" frameborder="0" width="100%" height="500px"></iframe>
-													{{-- @endif --}}
-												</div>
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="card card-lightblue card-outline">
-												<div class="card-header">
-													<h4 class="card-title">CARNET</h4>
-													<a href="#" class="float-right"><i class="fa fa-print" aria-hidden="true"></i></a>
-												</div>
-												<div class="card-body">
-													@if ($inscrito == true)
-														<div class="callout callout-danger">
-															<h5>
-																El estudiante no se encuentra activo en el periodo academico actual.
-															</h5>
-														</div>
-													@else
-														<iframe src="#" frameborder="0" width="100%" height="500px"></iframe>
-													@endif
-												</div>
-											</div>
-										</div>
-									</div>
+                                                    <iframe id="notas"
+                                                        src="{{ route('panel.documentos.notas.pdf', [$alumno]) }}"
+                                                        frameborder="0" width="100%" height="500px"></iframe>
+                                                    {{-- @endif --}}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="card card-lightblue card-outline">
+                                                <div class="card-header">
+                                                    <h4 class="card-title">CARNET</h4>
+                                                    <a href="#" class="float-right"><i class="fa fa-print"
+                                                            aria-hidden="true"></i></a>
+                                                </div>
+                                                <div class="card-body">
+                                                    @if ($inscrito == true)
+                                                        <div class="callout callout-danger">
+                                                            <h5>
+                                                                El estudiante no se encuentra activo en el periodo
+                                                                academico actual.
+                                                            </h5>
+                                                        </div>
+                                                    @else
+                                                        {{-- <iframe src="#" frameborder="0" width="100%" height="500px"></iframe> --}}
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                                 <!-- /.tab-pane -->
                                 <div class="tab-pane" id="timeline">
                                     <!-- The timeline -->
                                     <div class="timeline timeline-inverse">
 
-										@foreach ($alumno->Periodos as $periodo)
-											<div class="time-label">
-												<span class="bg-info">
-													{{ $periodo->periodo }}
-												</span>
-											</div>
-											@forelse($alumno->Historico->where('nro_periodo',$periodo->nro_periodo)->groupBy('cod_asignatura') as $asig)
-											<!-- timeline item -->
-											<div>
-												<i class="fas fa-book bg-primary"></i>
+                                        @foreach ($alumno->Periodos as $periodo)
+                                            <div class="time-label">
+                                                <span class="bg-info">
+                                                    {{ $periodo->periodo }}
+                                                </span>
+                                            </div>
+                                            @forelse($alumno->Historico->where('nro_periodo',$periodo->nro_periodo)->groupBy('cod_asignatura')
+                                                as $asig)
+                                                <!-- timeline item -->
+                                                <div>
+                                                    <i class="fas fa-book bg-primary"></i>
 
-												<div class="timeline-item">
-													<span class="time"><i class="far fa-bookmark-o"></i>{{ @$asig->first()->Asignatura->Trayecto->observacion}}</span>
+                                                    <div class="timeline-item">
+                                                        <span class="time"><i
+                                                                class="far fa-bookmark-o"></i>{{ @$asig->first()->Asignatura->Trayecto->observacion }}</span>
 
-													<h3 class="timeline-header"><a href="#">{{ @$asig->first()->Asignatura->nombre }}</a></h3>
+                                                        <h3 class="timeline-header"><a
+                                                                href="#">{{ @$asig->first()->Asignatura->nombre }}</a>
+                                                        </h3>
 
-													<div class="timeline-body">
-														@foreach ($asig as $uc)
-															@if ($uc->Asignatura->Plan->observacion == 'ANUAL')
-																AÑO:
-															@elseif($uc->Asignatura->Plan->observacion == 'SEMESTRAL')
-																SEMESTRE:
-															@elseif($uc->Asignatura->Plan->observacion == 'TRIMESTRAL')
-																TRIMESTRE:
-															@endif
-															<b>{{ $uc->DesAsignatura->tri_semestre }}</b>
-															<br>
-															<b>{{ $uc->DesAsignatura->nombre }}</b> Sección: {{ $uc->seccion }}  Nota: <b>{{ $uc->nota }}</b>
-															<br>
-														@endforeach
-													</div>
-												</div>
-											</div>
-											@empty
-											@endforelse
-										@endforeach
+                                                        <div class="timeline-body">
+                                                            @foreach ($asig as $uc)
+                                                                @if ($uc->Asignatura->Plan->observacion == 'ANUAL')
+                                                                    AÑO:
+                                                                @elseif($uc->Asignatura->Plan->observacion ==
+                                                                    'SEMESTRAL')
+                                                                    SEMESTRE:
+                                                                @elseif($uc->Asignatura->Plan->observacion ==
+                                                                    'TRIMESTRAL')
+                                                                    TRIMESTRE:
+                                                                @endif
+                                                                <b>{{ $uc->DesAsignatura->tri_semestre }}</b>
+                                                                <br>
+                                                                <b>{{ $uc->DesAsignatura->nombre }}</b> Sección:
+                                                                {{ $uc->seccion }} Nota: <b>{{ $uc->nota }}</b>
+                                                                <br>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @empty
+                                        @endforelse
+                                        @endforeach
 
 
                                         <!-- END timeline item -->
@@ -497,6 +394,9 @@
                                         </div>
                                     </form>
                                 </div>
+                                <div class="tab-pane" id="retiro">
+                                    @livewire('admin.retiros.create',['alumno' => $alumno])
+                                </div>
                                 <!-- /.tab-pane -->
                             </div>
                             <!-- /.tab-content -->
@@ -509,4 +409,26 @@
             <!-- /.row -->
         </div><!-- /.container-fluid -->
     </section>
+
+    @push('js')
+	<!-- scriptps show-alumnos -->
+        <script>
+            $(function() {
+                alert('kbkbhjb')
+				window.addEventListener('recargar_iframes',()  => {
+					// alert('Name updated to: ' + event.detail.newName);
+					alert('adsasd')
+				})
+                window.livewire.on('as', () => {
+                    console.log('recargar')
+                    document.getElementById('comprobante').contentDocument.location.reload(true);
+                    // document.getElementById('constacia').contentDocument.location.reload(true);
+                    document.getElementById('notas').contentDocument.location.reload(true);
+                    // document.getElementById('carnet').contentDocument.location.reload(true);
+                    // $("#select2").select2("val", "0");
+                });
+            });
+
+        </script>
+    @endpush
 </div>

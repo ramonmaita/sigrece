@@ -19,6 +19,7 @@ class CreateInscripcionsTable extends Migration
 			$table->integer('inscrito_id');
 			$table->integer('alumno_id');
             $table->timestamps();
+			$table->softDeletes();
         });
     }
 

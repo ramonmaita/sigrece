@@ -78,6 +78,16 @@ class Alumno extends Model
 		return $this->hasMany(Inscrito::class)->where('periodo_id',$periodo->id)->first();
 	}
 
+	public function Inscripcion()
+	{
+		return $this->hasMany(Inscripcion::class)->with('RelacionDocenteSeccion');
+	}
+
+	public function Usuario()
+	{
+		return $this->hasOne(User::class,'cedula','cedula');
+	}
+
 	// TODO: QUITAR SI NO VOY A USAR
 	public function Periodos()
     {

@@ -95,6 +95,7 @@
                         class="block font-bold tracking-wide capitalize" />
 					<x-jet-input id="lugarn" class="block w-full mt-1 " type="text" name="lugarn"
 					:value="old('lugarn')"   wire:model.defer="lugarn"/>
+					<small class="text-sm font-medium text-gray-400">Ciudad, Estado</small>
 					<x-jet-input-error for="lugarn" />
                 </div>
             </div>

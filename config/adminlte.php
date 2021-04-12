@@ -239,12 +239,6 @@ return [
             'route'         => 'panel.index',
             'icon'        => 'fas fa-fw fa-home',
         ],
-		[
-            'text'        => 'Panel de Docente',
-            'route'         => 'panel.docente.index',
-            'icon'        => 'fas fa-home',
-			'can' => 'panel.docente'
-        ],
 
         ['header' => 'OPCIONES DE ADMINISTRADOR','role' => 'Alumno'],
         [
@@ -301,10 +295,21 @@ return [
             'can'  => 'estudiantes.index',
         ],
 		[
-            'text' => 'Inscripciones',
-            'route'  => 'panel.inscripciones.regulares.index',
+            'text'    => 'Inscripciones',
             'icon' => 'fas fa-fw fa-chalkboard',
-            // 'can'  => 'estudiantes.index',
+			'can' => 'inscripciones.index',
+            'submenu' => [
+                [
+					'text' => 'Regulares',
+					'route'  => 'panel.inscripciones.regulares.index',
+					'can'  => 'inscripciones.regulares.index',
+				],
+				[
+					'text' => 'Retiro de UC',
+					'route'  => 'panel.retiros.index',
+					'can'  => 'retiros.index',
+				],
+            ],
         ],
 		[
             'text' => 'Solicitudes',
