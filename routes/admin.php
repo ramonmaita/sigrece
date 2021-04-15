@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AlumnosController;
+use App\Http\Controllers\Admin\ExpedienteController;
 use App\Http\Controllers\Admin\InscripcionesController;
 use Illuminate\Support\Facades\Route;
 
@@ -68,6 +69,9 @@ Route::prefix('panel')->name('panel.')->group(function () {
 		});
 		Route::prefix('comprobante')->name('comprobante.')->group(function () {
 			Route::get('pdf/{alumno}',[ComprobanteController::class,'pdf'])->name('pdf')->middleware(['role_or_permission:estudiantes.show']);
+		});
+		Route::prefix('expediente')->name('expediente.')->group(function () {
+			Route::get('pdf/{alumno}',[ExpedienteController::class,'pdf'])->name('pdf')->middleware(['role_or_permission:estudiantes.show']);
 		});
 	});
 

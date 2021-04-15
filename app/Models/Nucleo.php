@@ -22,4 +22,9 @@ class Nucleo extends Model implements Auditable
     {
     	return $this->hasMany(Seccion::class);
     }
+
+    public function Alumnos()
+    {
+    	return $this->hasMany(Alumno::class);
+    }
 }

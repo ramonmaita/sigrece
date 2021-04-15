@@ -65,7 +65,9 @@
 													{{-- <div class="form-group"> --}}
 														<x-select class="block w-full mt-1" name="seccion[{{$asignatura->trayecto_id}}]" id=""  >
 															@forelse ($asignatura->RelacionSeccionDocente() as $relacion)
+															@if (@$relacion->Seccion->cupos > 0)
 															<option value="{{ @$relacion->Seccion->id }}">{{ @$relacion->Seccion->nombre }}</option>
+															@endif
 																{{-- @foreach ($relacion->Seccion as $seccion)
 																@endforeach --}}
 																@empty

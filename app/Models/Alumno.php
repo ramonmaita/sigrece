@@ -42,6 +42,15 @@ class Alumno extends Model
 	{
 		return $this->hasOne(InformacionComplementaria::class);
 	}
+	public function ActualizacionDatos()
+	{
+		return $this->hasOne(ActualizacionDato::class);
+	}
+
+	public function Nucleo()
+	{
+		return $this->belongsTo(Nucleo::class,'nucleo_id','id');
+	}
 
 	public function NotaUc($cedula_docente,$periodo,$seccion,$cod_desasignatura)
 	{

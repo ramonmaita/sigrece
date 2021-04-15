@@ -86,6 +86,10 @@
                                     <span class="text-center badge badge-pill badge-danger">INACTIVO</span>
                                 @endif
                             </center>
+							@if ($alumno->ActualizacionDatos)
+								<br>
+								<a href="{{ route('panel.documentos.expediente.pdf', [$alumno]) }}" target="documento" class="show-documento btn btn-primary btn-sm btn-block"><b>Expediente</b></a>
+							@endif
                         </div>
                         <!-- /.card-body -->
                     </div>

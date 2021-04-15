@@ -418,7 +418,7 @@ class InscripcionesController extends Controller
 
 						case 3:
 							# TRAYECTO 3
-							if ($inf_a_ti >= 3 && $inf_a_pst2 == 1 && $asignatura->aprueba == 0 && round($nota_final) < 12 || $inf_a_ti >= 3 && $inf_a_pst2 == 1 && $asignatura->aprueba == 1 && round($nota_final) < 16) {
+							if ($titulo == 1 && $asignatura->aprueba == 0 && round($nota_final) < 12 || $titulo == 1 &&  $asignatura->aprueba == 1 && round($nota_final) < 16 || $inf_a_ti >= 3 && $inf_a_pst2 == 1 && $asignatura->aprueba == 0 && round($nota_final) < 12 || $inf_a_ti >= 3 && $inf_a_pst2 == 1 && $asignatura->aprueba == 1 && round($nota_final) < 16) {
 								# code...
 								array_push($uc_acursar, $asignatura);
 							}
@@ -429,7 +429,7 @@ class InscripcionesController extends Controller
 
 						case 4:
 							# TRAYECTO 4
-							if ( $inf_a_ti >= 3 && $inf_a_pst3 == 1 && $asignatura->aprueba == 0 && round($nota_final) < 12 || $inf_a_ti >= 3 && $inf_a_pst3 == 1 && $asignatura->aprueba == 1 && round($nota_final) < 16) {
+							if ($inf_a_pst3 == 1 && $asignatura->aprueba == 0 && round($nota_final) < 12 || $inf_a_pst3 == 1 && $asignatura->aprueba == 1 && round($nota_final) < 16) {
 								array_push($uc_acursar, $asignatura);
 							}
 						break;
