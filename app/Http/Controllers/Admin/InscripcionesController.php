@@ -293,7 +293,7 @@ class InscripcionesController extends Controller
 
 						case 4:
 							# TRAYECTO 4
-							if ($e_a_uc_t3 == 8 || $e_a_uc_tn == 5) {
+							if ($e_a_uc_t3 == 8 || $e_a_uc_tn == 5|| $titulo ==1) {
 								if (round($nota_final) < 12 && $asignatura->aprueba == 0 || round($nota_final) < 16 && $asignatura->aprueba == 1) {
 
 									if ($asignatura->codigo =="01PSI407" && round($nota_final) < 16 ) {
@@ -741,6 +741,22 @@ class InscripcionesController extends Controller
 								}else{
 									array_push($uc_acursar, $asignatura);
 								}
+							}else{
+								if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
+									if ($asignatura->codigo == 'ENEGDP457') {
+										# APRUEBA GENERACIÓN DE POTENCIA PRELACION DE DINÁMICA DE MAQUINAS
+										$t4_a_generacion_p = true;
+									}elseif ($asignatura->codigo == 'DISDDM457') {
+										# APRUEBA DISEÑO DE MÁQUINAS PRELACION DE DINÁMICA DE MAQUINAS
+										$t4_a_diseno_mac = true;
+									}elseif ($asignatura->codigo == 'PSIPSI468') {
+										# APRUEBA PROYECTO SOCIO-INTEGRADOR IV PRELACION DE PROYECTO SOCIO-INTEGRADOR V
+										$t4_a_psi_iv = true;
+									}
+								}else{
+									array_push($uc_acursar, $asignatura);
+								}
+
 							}
 						break;
 

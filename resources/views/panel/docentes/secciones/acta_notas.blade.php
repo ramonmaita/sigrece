@@ -94,7 +94,7 @@
 					<td width="80%">
 						UNIDAD CURRICULAR: <u>{{ $detalles->nombre_asignatura }}</u>
 						<br>
-						TRAYECTO: <u> {{ $detalles->Asignatura->Trayecto->nombre }}</u>  TRIMESTRE: <u>{{ $detalles->DesAsignatura->tri_semestre }}</u>
+						TRAYECTO: <u> {{ @$detalles->Asignatura->Trayecto->nombre }}</u>  TRIMESTRE: <u>{{ $detalles->DesAsignatura->tri_semestre }}</u>
 
 					</td>
 					<td width="20%" align="right">
