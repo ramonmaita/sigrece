@@ -42,6 +42,15 @@ class Alumno extends Model
 	{
 		return $this->hasOne(InformacionComplementaria::class);
 	}
+	public function ActualizacionDatos()
+	{
+		return $this->hasOne(ActualizacionDato::class);
+	}
+
+	public function Nucleo()
+	{
+		return $this->belongsTo(Nucleo::class,'nucleo_id','id');
+	}
 
 	public function NotaUc($cedula_docente,$periodo,$seccion,$cod_desasignatura)
 	{
@@ -76,6 +85,16 @@ class Alumno extends Model
 	{
 		$periodo = Periodo::where('estatus',0)->first();
 		return $this->hasMany(Inscrito::class)->where('periodo_id',$periodo->id)->first();
+	}
+
+	public function Inscripcion()
+	{
+		return $this->hasMany(Inscripcion::class)->with('RelacionDocenteSeccion');
+	}
+
+	public function Usuario()
+	{
+		return $this->hasOne(User::class,'cedula','cedula');
 	}
 
 	// TODO: QUITAR SI NO VOY A USAR

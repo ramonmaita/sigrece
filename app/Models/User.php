@@ -83,6 +83,11 @@ class User extends Authenticatable implements Auditable
         return 'profile/username';
     }
 
+	public function Logins()
+	{
+		return $this->hasMany(Login::class)->orderBy('created_at','desc');
+	}
+
 	public function Alumno()
 	{
 		return $this->hasOne(Alumno::class,'cedula','cedula');

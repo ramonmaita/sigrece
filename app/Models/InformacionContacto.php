@@ -24,4 +24,17 @@ class InformacionContacto extends Model implements Auditable
 		'correo',
 		'correo_alternativo',
 	];
+
+	public function Estado()
+	{
+		return $this->belongsTo(Estado::class);
+	}
+	public function Municipio()
+	{
+		return $this->belongsTo(Municipio::class);
+	}
+	public function Parroquia()
+	{
+		return $this->belongsTo(Parroquia::class);
+	}
 }

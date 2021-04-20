@@ -32,6 +32,7 @@
 		<h2 class="animation__shake">
 			@yield('title', config('adminlte.title', 'AdminLTE 3'))
 		</h2>
+		<small class="animation__shake text-info text-capitalize">cargando por favor espere...</small>
 	  </div>
    {{-- Top Navbar --}}
         @if($layoutHelper->isLayoutTopnavEnabled())

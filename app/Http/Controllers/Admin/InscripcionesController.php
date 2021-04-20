@@ -60,10 +60,11 @@ class InscripcionesController extends Controller
 			}else{
 				$trayectos_aprobados = [8,1,2];
 				foreach ($alumno->Plan->Asignaturas->whereIn('trayecto_id',$trayectos_aprobados) as $key => $asignatura) {
-					// array_push($incritas,$asignatura->id);
+					array_push($incritas,$asignatura->id);
 				}
 			}
 		}
+		// dd($incritas);
 		// return '';
 		// return $alumno->Historico;
 		// foreach ($alumno->Plan->Asignaturas as $key => $a) {
@@ -369,7 +370,7 @@ class InscripcionesController extends Controller
 
 						case 3:
 							# TRAYECTO 3
-							if ($gcs_a_t1 == 7 && $gcs_a_t2 == 7 && $gcs_a_ti >= 5 && $gcs_a_pst2 == 1 && $asignatura->aprueba == 0 && round($nota_final) < 12 || $gcs_a_t1 == 7 && $gcs_a_t2 == 7 &&  $gcs_a_ti >= 5 && $gcs_a_pst2 == 1 && $asignatura->aprueba == 1 && round($nota_final) < 16) {
+							if (($titulo == 1 && $asignatura->aprueba == 1 && round($nota_final) < 16) || ($titulo == 1 && $asignatura->aprueba == 0 && round($nota_final) < 12) || ($gcs_a_t1 == 7 && $gcs_a_t2 == 7 && $gcs_a_ti >= 5 && $gcs_a_pst2 == 1 && $asignatura->aprueba == 0 && round($nota_final) < 12) || ($gcs_a_t1 == 7 && $gcs_a_t2 == 7 &&  $gcs_a_ti >= 5 && $gcs_a_pst2 == 1 && $asignatura->aprueba == 1 && round($nota_final) < 16)) {
 								# code...
 								array_push($uc_acursar, $asignatura);
 							}
@@ -428,7 +429,7 @@ class InscripcionesController extends Controller
 
 						case 3:
 							# TRAYECTO 3
-							if ($inf_a_ti >= 3 && $inf_a_pst2 == 1 && $asignatura->aprueba == 0 && round($nota_final) < 12 || $inf_a_ti >= 3 && $inf_a_pst2 == 1 && $asignatura->aprueba == 1 && round($nota_final) < 16) {
+							if ($titulo == 1 && $asignatura->aprueba == 0 && round($nota_final) < 12 || $titulo == 1 &&  $asignatura->aprueba == 1 && round($nota_final) < 16 || $inf_a_ti >= 3 && $inf_a_pst2 == 1 && $asignatura->aprueba == 0 && round($nota_final) < 12 || $inf_a_ti >= 3 && $inf_a_pst2 == 1 && $asignatura->aprueba == 1 && round($nota_final) < 16) {
 								# code...
 								array_push($uc_acursar, $asignatura);
 							}
@@ -439,7 +440,7 @@ class InscripcionesController extends Controller
 
 						case 4:
 							# TRAYECTO 4
-							if ( $inf_a_ti >= 3 && $inf_a_pst3 == 1 && $asignatura->aprueba == 0 && round($nota_final) < 12 || $inf_a_ti >= 3 && $inf_a_pst3 == 1 && $asignatura->aprueba == 1 && round($nota_final) < 16) {
+							if ($inf_a_pst3 == 1 && $asignatura->aprueba == 0 && round($nota_final) < 12 || $inf_a_pst3 == 1 && $asignatura->aprueba == 1 && round($nota_final) < 16) {
 								array_push($uc_acursar, $asignatura);
 							}
 						break;
@@ -520,7 +521,7 @@ class InscripcionesController extends Controller
 
 						case 3:
 							// TRAYECTO 3
-							if ($mtto_a_uc_tn == 4 || $mtto_a_psi2 == 1 && round($nota_final) < 12 && $asignatura->aprueba == 0 || $mtto_a_psi2 == 1 && round($nota_final) < 16 && $asignatura->aprueba == 1 ) {
+							if (($titulo == 1 && $asignatura->aprueba == 1 && round($nota_final) < 16) || ($titulo == 1 && $asignatura->aprueba == 0 && round($nota_final) < 12) || $mtto_a_uc_tn == 4 || $mtto_a_psi2 == 1 && round($nota_final) < 12 && $asignatura->aprueba == 0 || $mtto_a_psi2 == 1 && round($nota_final) < 16 && $asignatura->aprueba == 1 ) {
 
 								array_push($uc_acursar, $asignatura);
 							}
@@ -838,7 +839,7 @@ class InscripcionesController extends Controller
 
 						case 3:
 							# TRAYECTO 3
-							if ($cya_a_t1 == 8 && $cya_a_ti == 5 && $cya_a_psi2 == 1) {
+							if ($cya_a_t1 == 8 && $cya_a_ti == 5 && $cya_a_psi2 == 1  || $titulo == 1) {
 								if (round($nota_final) < 12 && $asignatura->aprueba == 0 || round($nota_final) < 16 && $asignatura->aprueba == 1) {
 									array_push($uc_acursar, $asignatura);
 								}
@@ -916,7 +917,7 @@ class InscripcionesController extends Controller
 
 						case 3:
 							# TRAYECTO 3
-							if ($oyj_a_t1 == 8 && $oyj_a_ti == 5 && $oyj_a_psi2 == 1) {
+							if ( $titulo == 1|| $oyj_a_t1 == 8 && $oyj_a_ti == 5 && $oyj_a_psi2 == 1) {
 								if (round($nota_final) < 12 && $asignatura->aprueba == 0 || round($nota_final) < 16 && $asignatura->aprueba == 1) {
 									array_push($uc_acursar, $asignatura);
 								}
@@ -994,7 +995,7 @@ class InscripcionesController extends Controller
 
 						case 3:
 							# TRAYECTO 3
-							if ($imi_a_t1 == 8 && $imi_a_ti == 5 && $imi_a_psi2 == 1) {
+							if ($titulo == 1 || $imi_a_t1 == 8 && $imi_a_ti == 5 && $imi_a_psi2 == 1) {
 								if (round($nota_final) < 12 && $asignatura->aprueba == 0 || round($nota_final) < 16 && $asignatura->aprueba == 1) {
 									array_push($uc_acursar, $asignatura);
 								}
@@ -1072,7 +1073,7 @@ class InscripcionesController extends Controller
 
 						case 3:
 							# TRAYECTO 3
-							if ($hsl_a_t1 == 8 && $hsl_a_ti == 5 && $hsl_a_psi2 == 1) {
+							if ($titulo == 1 || $hsl_a_t1 == 8 && $hsl_a_ti == 5 && $hsl_a_psi2 == 1) {
 								if (round($nota_final) < 12 && $asignatura->aprueba == 0 || round($nota_final) < 16 && $asignatura->aprueba == 1) {
 									array_push($uc_acursar, $asignatura);
 								}
@@ -1104,7 +1105,6 @@ class InscripcionesController extends Controller
 					break;
 			}
 		}
-
 		return view('panel.admin.inscripciones.regulares.uc_inscribir',['alumno' => $alumno, 'uc_acursar' => $uc_acursar]);
 	}
 

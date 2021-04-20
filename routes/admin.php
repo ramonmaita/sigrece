@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AlumnosController;
+use App\Http\Controllers\Admin\ExpedienteController;
 use App\Http\Controllers\Admin\InscripcionesController;
 use Illuminate\Support\Facades\Route;
 
@@ -12,6 +13,7 @@ use App\Http\Controllers\Admin\SolicitudesController;
 use App\Http\Controllers\EstadisticasController;
 use App\Http\Controllers\NotasController;
 use App\Http\Controllers\Admin\PerController;
+use App\Http\Controllers\Admin\RetirosController;
 use App\Http\Controllers\ComprobanteController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -56,9 +58,9 @@ Route::prefix('panel')->name('panel.')->group(function () {
 
     // Route::view('/secciones/configurar/{}','panel.admin.secciones.index')->name('secciones.config')->middleware(['role:Admin']);
     Route::view('/estudiantes','panel.admin.estudiantes.index')->name('estudiantes.index')->middleware(['role_or_permission:estudiantes.index']);
-    // Route::view('/estudiantes/ver/{alumno}','panel.admin.estudiantes.show')->name('estudiantes.show')->middleware(['role_or_permission:estudiantes.show']);
 	Route::prefix('estudiantes')->name('estudiantes.')->group(function () {
 		Route::get('ver/{alumno}',[AlumnosController::class,'show'])->name('show')->middleware(['role_or_permission:estudiantes.show']);
+		Route::get('/periodos/corregir/{alumno}',[AlumnosController::class,'periodos'])->name('periodo.corregir')->middleware(['role_or_permission:periodo.corregir']);
 	});
 
 	Route::prefix('documentos')->name('documentos.')->group(function () {
@@ -67,6 +69,9 @@ Route::prefix('panel')->name('panel.')->group(function () {
 		});
 		Route::prefix('comprobante')->name('comprobante.')->group(function () {
 			Route::get('pdf/{alumno}',[ComprobanteController::class,'pdf'])->name('pdf')->middleware(['role_or_permission:estudiantes.show']);
+		});
+		Route::prefix('expediente')->name('expediente.')->group(function () {
+			Route::get('pdf/{alumno}',[ExpedienteController::class,'pdf'])->name('pdf')->middleware(['role_or_permission:estudiantes.show']);
 		});
 	});
 
@@ -109,6 +114,14 @@ Route::prefix('panel')->name('panel.')->group(function () {
 
 	Route::prefix('solicitudes')->name('solicitudes.')->group(function () {
 		Route::get('/', [SolicitudesController::class, 'index'])->middleware(['role_or_permission:Admin'])->name('index');
+
+    });
+
+	Route::prefix('retiro-de-uc-inscritas')->name('retiros.')->group(function () {
+		Route::get('/',[RetirosController::class, 'index'])->middleware(['role_or_permission:Admin'])->name('index');
+		Route::get('/nueva-solicitud',[RetirosController::class, 'create'])->middleware(['role_or_permission:Admin'])->name('create');
+		Route::get('/{solicitud}',[RetirosController::class, 'show'])->middleware(['role_or_permission:Admin'])->name('show');
+		// Route::get('/', [SolicitudesController::class, 'index'])->middleware(['role_or_permission:Admin'])->name('index');
 
     });
 
