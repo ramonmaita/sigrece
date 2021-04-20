@@ -57,6 +57,9 @@ class AlumnosController extends Controller
 		$trayectos_a = [];
 		// echo '<table width="100%" border="1">';
 
+		$aprueba_normal = ($alumno->tipo == 10) ? 10 : 12;
+		$aprueba_proyecto = ($alumno->tipo == 10) ? 10 : 16;
+
 		$titulo = DB::table('graduandos')->where('cedula',$alumno->cedula)->where('pnf',$alumno->Pnf->codigo)->max('titulo');
 		if ($titulo == 2) {
 			# TITULO DE INGENIERO
@@ -141,7 +144,7 @@ class AlumnosController extends Controller
 							$nota_final += $nota_trimestre->nota;
 						}
 					}
-					if(round($nota_final/count($asignatura->DesAsignaturas)) >= 12 && $asignatura->aprueba == 0 || round($nota_final/count($asignatura->DesAsignaturas)) >= 16 && $asignatura->aprueba == 1){
+					if(round($nota_final/count($asignatura->DesAsignaturas)) >= $aprueba_normal && $asignatura->aprueba == 0 || round($nota_final/count($asignatura->DesAsignaturas)) >= $aprueba_proyecto && $asignatura->aprueba == 1){
 						$aprobadas++;
 					}else{
 						$reprobadas++;

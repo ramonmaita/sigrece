@@ -158,7 +158,21 @@
 								<small  class="form-text text-danger">{{ $message }}</small>
 							@enderror
 						</div>
-						<div class="col-md-3">
+						<div class="col-md-2">
+							<label for="">Plan</label>
+							<select name="" id="" class="form-control" wire:model="plan_id">
+								<option value="">Seleccione</option>
+								@if (!is_null($planes))
+									@foreach ($planes as $plan)
+										<option value="{{ $plan->id }}">{{ $plan->codigo }}</option>
+									@endforeach
+								@endif
+							</select>
+							@error('plan_id')
+								<small  class="form-text text-danger">{{ $message }}</small>
+							@enderror
+						</div>
+						<div class="col-md-2">
 							<label for="">Trayecto</label>
 							<select name="" id="" class="form-control" wire:model="trayecto">
 								<option value="">Seleccione</option>
@@ -182,7 +196,7 @@
 								<small  class="form-text text-danger">{{ $message }}</small>
 							@enderror
 						</div>
-						<div class="col-md-3">
+						<div class="col-md-2">
 							<label for="">
 								Cohorte
 								{{-- {{ (!is_null($pnf) || !is_null($trayecto) || !empty($plan)) ? @$plan->observacion : 'f' }} --}}

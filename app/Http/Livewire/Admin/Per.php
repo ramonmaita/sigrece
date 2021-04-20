@@ -6,6 +6,7 @@ use App\Models\Alumno;
 use App\Models\Asignatura;
 use App\Models\DesAsignatura;
 use App\Models\HistoricoNota;
+use App\Models\Plan;
 use App\Models\Pnf;
 use App\Models\Solicitud;
 use App\Models\SolicitudDetalle;
@@ -31,9 +32,10 @@ class Per extends Component
     ];
 
 	public $modo = 'crear';
-	public $pnf,$trayecto,$uc,$estudiantea,$cohorte,$password;
+	public $pnf,$trayecto,$uc,$estudiantea,$cohorte,$password,$planes = [];
 	public $ucs = [];
 	public $plan = [];
+	public $plan_id;
 	public $desucs = [];
 	public $estudiantes = [];
 	public $estudiantes_ad = [];
@@ -41,7 +43,7 @@ class Per extends Component
 
 	public $confirmingPass = false;
 
-	public $p,$t,$u;
+	public $p,$t,$u,$plan_actual;
 	public function updated($propertyName)
     {
         $this->validateOnly($propertyName, [
@@ -61,39 +63,47 @@ class Per extends Component
 		$pnfs = Pnf::whereIn('id',[1,2,3,4,5,6,7,12,13])->get();
 		$trayectos = Trayecto::orderBy('index')->get();
 		if(!empty($this->pnf)){
-			if(!empty($this->trayecto)){
-				if($this->pnf != $this->p){
-					$this->reset(['trayecto','uc','estudiantea','cohorte','estudiante_uc_nota','estudiantes_ad','desucs','ucs','plan']);
-				}
-
-				if($this->trayecto != $this->t){
-					$this->reset(['uc','estudiantea','cohorte','estudiante_uc_nota','estudiantes_ad','desucs','ucs']);
-				}
-				$pnf = Pnf::find($this->pnf);
-				$plan = collect($pnf->Planes->where('observacion','!=','NINGUNA'))->last();
-				$this->ucs = $plan->Asignaturas->where('trayecto_id',$this->trayecto);
-				$this->plan = $plan;
-
-				if(!empty($this->uc) && !is_null($this->uc)){
-					if($this->uc != $this->u){
-						$this->reset(['estudiantea','cohorte','estudiante_uc_nota','estudiantes_ad','desucs']);
+			$pnf = Pnf::find($this->pnf);
+			$this->planes = $pnf->Planes;
+			if (!empty($this->plan_id)) {
+				if(!empty($this->trayecto)){
+					$plan = Plan::find($this->plan_id);
+					if($this->pnf != $this->p){
+						$this->reset(['trayecto','uc','estudiantea','cohorte','estudiante_uc_nota','estudiantes_ad','desucs','ucs','plan']);
 					}
-					$uc = Asignatura::where('codigo',$this->uc)->first();
-					$this->desucs = $uc->DesAsignaturas;
 
-					// $this->estudiantes = HistoricoNota::where('periodo','2020')->where('cod_asignatura',$uc->codigo)->where('estatus',0)->groupBy('cedula_estudiante')->get();
-					$this->estudiantes = HistoricoNota::where('cod_asignatura',$uc->codigo)->where('estatus',0)->groupBy('cedula_estudiante')->get();
-					if(!empty($this->estudiantea) && !empty($this->cohorte)){
-						$this->estudiantes_ad =  HistoricoNota::whereIn('cedula_estudiante',$this->estudiantea)->where('cod_asignatura',$uc->codigo)->whereIn('cod_desasignatura',$this->cohorte)->groupBy('cedula_estudiante')->where('estatus',0)->get();
-						// $this->estudiantes_ad =  HistoricoNota::whereIn('cedula_estudiante',$this->estudiantea)->where('periodo','2020')->where('cod_asignatura',$uc->codigo)->whereIn('cod_desasignatura',$this->cohorte)->groupBy('cedula_estudiante')->where('estatus',0)->get();
-					}else{
-						$this->addError('cohorte', 'El campo cohorte es requerido.');
-						$this->reset(['estudiantes_ad']);
+					if($this->trayecto != $this->t){
+						$this->reset(['uc','estudiantea','cohorte','estudiante_uc_nota','estudiantes_ad','desucs','ucs']);
 					}
-					// $this->uc = $uc;
-					$this->u = $this->uc;
+
+					if($this->plan_actual != $this->plan_id){
+						$this->reset(['uc','estudiantea','cohorte','estudiante_uc_nota','estudiantes_ad','desucs','ucs']);
+					}
+					$this->ucs = $plan->Asignaturas->where('trayecto_id',$this->trayecto);
+					$this->plan = $plan;
+
+					if(!empty($this->uc) && !is_null($this->uc)){
+						if($this->uc != $this->u){
+							$this->reset(['estudiantea','cohorte','estudiante_uc_nota','estudiantes_ad','desucs']);
+						}
+						$uc = Asignatura::where('codigo',$this->uc)->first();
+						$this->desucs = $uc->DesAsignaturas;
+
+						// $this->estudiantes = HistoricoNota::where('periodo','2020')->where('cod_asignatura',$uc->codigo)->where('estatus',0)->groupBy('cedula_estudiante')->get();
+						$this->estudiantes = HistoricoNota::where('cod_asignatura',$uc->codigo)->where('estatus',0)->groupBy('cedula_estudiante')->get();
+						if(!empty($this->estudiantea) && !empty($this->cohorte)){
+							$this->estudiantes_ad =  HistoricoNota::whereIn('cedula_estudiante',$this->estudiantea)->where('cod_asignatura',$uc->codigo)->whereIn('cod_desasignatura',$this->cohorte)->groupBy('cedula_estudiante')->where('estatus',0)->get();
+							// $this->estudiantes_ad =  HistoricoNota::whereIn('cedula_estudiante',$this->estudiantea)->where('periodo','2020')->where('cod_asignatura',$uc->codigo)->whereIn('cod_desasignatura',$this->cohorte)->groupBy('cedula_estudiante')->where('estatus',0)->get();
+						}else{
+							$this->addError('cohorte', 'El campo cohorte es requerido.');
+							$this->reset(['estudiantes_ad']);
+						}
+						// $this->uc = $uc;
+						$this->u = $this->uc;
+					}
+					$this->t = $this->trayecto;
 				}
-				$this->t = $this->trayecto;
+				$this->plan_actual = $this->plan_id;
 			}
 			$this->p = $this->pnf;
 		}
@@ -127,6 +137,7 @@ class Per extends Component
 
 		$this->validate([
             'pnf' => 'required|min:1|required_with_all:trayecto,uc,cohorte',
+			'plan' => 'required',
             'trayecto' => 'required|required_with_all:pnf,uc,cohorte',
             'uc' => 'required|required_with_all:trayecto,pnf,cohorte',
             'cohorte' => 'required|required_with_all:trayecto,pnf,uc',
