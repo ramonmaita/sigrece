@@ -48,7 +48,7 @@ class Seccion extends Model implements Auditable
     {
         // return DB::table('desasignatura_docente_seccion')->where('seccion_id',$this->id)->get();
         // return $thsi->has
-        return $this->belongsToMany(DesAsignatura::class,'desasignatura_docente_seccion')->withPivot('seccion_id','des_asignatura_id', 'docente_id','estatus')->withTimestamps();
+        return $this->belongsToMany(DesAsignatura::class,'desasignatura_docente_seccion')->withPivot('id','seccion_id','des_asignatura_id', 'docente_id','estatus')->where('estatus','ACTIVO')->withTimestamps();
     }
 
     public function checkDesAsignaturas($value='')
@@ -76,7 +76,7 @@ class Seccion extends Model implements Auditable
         // }else{
         //     return $this->Docentes->where('id',$value)->count();
         // }
-        
+
     }
 
     public function checkAsignatura($value='')
@@ -99,5 +99,17 @@ class Seccion extends Model implements Auditable
         // }else{
         // }
         // $seccion->DesAsignaturas->where('id',210)->first()->Asignatura
+    }
+
+	public function ConsultarDocente($docente_id,$des_asignatura_id)
+    {
+        return DesAsignaturaDocenteSeccion::where('docente_id',$docente_id)->where('seccion_id',$this->id)->where('des_asignatura_id',$des_asignatura_id)->first();
+
+    }
+
+	public function Docente($des_asignatura_id)
+    {
+        return DesAsignaturaDocenteSeccion::where('seccion_id',$this->id)->where('des_asignatura_id',$des_asignatura_id)->first();
+
     }
 }

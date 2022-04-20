@@ -25,6 +25,7 @@
 
         <!-- Scripts -->
         <script src="{{ mix('js/app.js') }}" defer></script>
+		@method('css')
     </head>
     <body class="font-sans antialiased">
         <x-jet-banner />
@@ -62,7 +63,7 @@
         <script>
             $(document).ready(function() {
 				$('.select2').select2({});
-                var table = $('#example').DataTable( {
+                var table = $('#example, .datatables').DataTable( {
                         responsive: true,
 						columnDefs: [
 							{ type: 'num', targets: 0 }
@@ -77,6 +78,22 @@
                     .responsive.recalc();
             } );
 
+			window.livewire.on('datatables', () => {
+			console.log('asdasdasdsada');
+            var table = $('#example, .datatables').DataTable( {
+                        responsive: true,
+						columnDefs: [
+							{ type: 'num', targets: 0 }
+						],
+						"order": [[ 0, "asc" ]],
+						language: {
+							url: '{{ asset('datatables/es.json') }}'
+						},
+						"pageLength": 100
+                    } )
+                    .columns.adjust()
+                    .responsive.recalc();
+            } );
         </script>
 
 	<script type="text/javascript">

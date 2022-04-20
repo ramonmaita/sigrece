@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\RegistroUsuario;
+use App\Models\Docente;
 use App\Models\HistoricoNota;
 use Illuminate\Http\Request;
 
@@ -25,6 +26,22 @@ class UsuariosController extends Controller
     {
         return view('panel.admin.usuarios.index',['usuarios' => User::all()]);
     }
+
+	public function dataDocente(Request $request)
+	{
+		// return dd($request);
+		$docentes = Docente::where('cedula','like',$request->term.'%')
+					->orWhere('nombres','like',$request->term.'%')
+					->orWhere('apellidos','like',$request->term.'%')
+					->orderBy('cedula')
+					->get();
+		$a = [];
+		foreach ($docentes as  $docente) {
+			$a[] = ['id' => $docente->id, 'text' => $docente->cedula.' '.$docente->nombres.' '.$docente->apellidos];
+		}
+
+		return response()->json($a);
+	}
 
     /**
      * Show the form for creating a new resource.
@@ -69,7 +86,8 @@ class UsuariosController extends Controller
     {
 		Auth::loginUsingId($id);
 
-		return redirect()->route('panel.docente.index');
+		return redirect('panel/');
+		return redirect()->route('panel.index');
     }
 
     /**

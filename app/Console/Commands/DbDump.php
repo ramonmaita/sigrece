@@ -110,5 +110,7 @@ class DbDump extends Command
 			}
 			return; // error
 		}
+
+		\Log::info('ESTA FUNCIONANDO EL RESPALDO');
 	}
 }

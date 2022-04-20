@@ -36,7 +36,11 @@
 								<div class="media-body">
 									<h3 class="dropdown-item-title">
 										<span class="float-right text-sm text-primary"><i class="fas fa-user"></i></span>
-										{{ $item }}
+										@if ($item == 'Coordinador')
+											Jefe de PNF
+										@else
+											{{ $item }}
+										@endif
 									</h3>
 								</div>
 							</div>

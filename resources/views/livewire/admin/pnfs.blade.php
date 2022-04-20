@@ -11,9 +11,9 @@
          @endcan
       </div>
       <div class="card-body table-responsive">
-         <div class="card-tools float-right mb-2 ">
+         <div class="float-right mb-2 card-tools ">
             <div class="input-group input-group-sm" style="width: 200px;">
-               <input class="form-control float-right" placeholder="Buscar" type="text" wire:model="search"/>
+               <input class="float-right form-control" placeholder="Buscar" type="text" wire:model="search"/>
                @if ($search != '')
                <div class="input-group-append">
                   <button class="btn btn-default" wire:click="resetSearch">
@@ -66,7 +66,11 @@
                            </i>
                         </button>
                      @endcan
+					 <a class="btn btn-warning btn-sm" type="button" role="button" target="_blank" href="{{ route('panel.secciones.planificacion',[$pnf->id]) }}">
+					   <i class="fa fa-file">
+					   </i>
                   </td>
+				 </a>
                </tr>
                @empty
                <tr>
@@ -74,7 +78,7 @@
                      <smal class="text-muted">
                         @if ($search == '')
                         No hay registro para mostrar.
-                     @else 
+                     @else
                         No se encontraron resultados de la busqueda "{{$search}}" en la pagina {{$page}}.
                      @endif
                      </smal>

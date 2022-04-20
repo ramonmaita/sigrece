@@ -48,6 +48,11 @@ class HistoricoNota extends Model implements Auditable
     	return $this->belongsTo(Alumno::class,'cedula_estudiante','cedula');
     }
 
+	public function Docente()
+	{
+		return $this->belongsTo(Docente::class,'cedula_docente','cedula');
+	}
+
 	public function estatus_carga($seccion,$periodo,$cod_desasignatura)
 	{
 		return CargaNota::where('seccion',$seccion)->where('periodo',$periodo)->where('cod_desasignatura',$cod_desasignatura)->first();
@@ -121,5 +126,10 @@ class HistoricoNota extends Model implements Auditable
                 return 'CERO';
                 break;
         }
+    }
+
+	public function nota_trimestre()
+    {
+        return HistoricoNota::where('cedula_estudiante',$this->cedula_estudiante)->where('cod_asignatura',$this->cod_asignatura)->OrderByRaw(' cod_desasignatura ASC, nro_periodo ASC')->where('estatus',0)->groupBy('cod_desasignatura')->get();
     }
 }

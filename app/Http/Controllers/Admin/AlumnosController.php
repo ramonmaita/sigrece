@@ -68,7 +68,8 @@ class AlumnosController extends Controller
 				foreach ($alumno->Plan->Asignaturas->whereIn('trayecto_id',$trayectos_aprobados)->groupBy('trayecto_id') as $key => $a) {
 					$trayecto = Trayecto::find($key);
 					$uc_t = count($trayecto->Asignaturas->where('plan_id',$alumno->plan_id));
-					$trayectos_a[] = [
+					$trayectos_a[$trayecto->id] = [
+						'id' => $trayecto->id,
 						'nombre' => $trayecto->observacion,
 						'uc_totales' => $uc_t,
 						'uc_aprobadas' => $uc_t,
@@ -81,7 +82,8 @@ class AlumnosController extends Controller
 				foreach ($alumno->Plan->Asignaturas->whereIn('trayecto_id',$trayectos_aprobados)->groupBy('trayecto_id') as $key => $a) {
 					$trayecto = Trayecto::find($key);
 					$uc_t = count($trayecto->Asignaturas->where('plan_id',$alumno->plan_id));
-					$trayectos_a[] = [
+					$trayectos_a[$trayecto->id] = [
+						'id' => $trayecto->id,
 						'nombre' => $trayecto->observacion,
 						'uc_totales' => $uc_t,
 						'uc_aprobadas' => $uc_t,
@@ -97,7 +99,8 @@ class AlumnosController extends Controller
 				foreach ($alumno->Plan->Asignaturas->whereIn('trayecto_id',$trayectos_aprobados)->groupBy('trayecto_id') as $key => $a) {
 					$trayecto = Trayecto::find($key);
 					$uc_t = count($trayecto->Asignaturas->where('plan_id',$alumno->plan_id));
-					$trayectos_a[] = [
+					$trayectos_a[$trayecto->id] = [
+						'id' => $trayecto->id,
 						'nombre' => $trayecto->observacion,
 						'uc_totales' => $uc_t,
 						'uc_aprobadas' => $uc_t,
@@ -110,7 +113,8 @@ class AlumnosController extends Controller
 				foreach ($alumno->Plan->Asignaturas->whereIn('trayecto_id',$trayectos_aprobados)->groupBy('trayecto_id') as $key => $a) {
 					$trayecto = Trayecto::find($key);
 					$uc_t = count($trayecto->Asignaturas->where('plan_id',$alumno->plan_id));
-					$trayectos_a[] = [
+					$trayectos_a[$trayecto->id] = [
+						'id' => $trayecto->id,
 						'nombre' => $trayecto->observacion,
 						'uc_totales' => $uc_t,
 						'uc_aprobadas' => $uc_t,
@@ -144,7 +148,9 @@ class AlumnosController extends Controller
 							$nota_final += $nota_trimestre->nota;
 						}
 					}
-					if(round($nota_final/count($asignatura->DesAsignaturas)) >= $aprueba_normal && $asignatura->aprueba == 0 || round($nota_final/count($asignatura->DesAsignaturas)) >= $aprueba_proyecto && $asignatura->aprueba == 1){
+					// TODO: ELEGIBLE DE IMI
+					$cohortes = ($asignatura->codigo == '75ELE4918')? 1 : count($asignatura->DesAsignaturas);
+					if(round($nota_final/$cohortes) >= $aprueba_normal && $asignatura->aprueba == 0 || round($nota_final/$cohortes) >= $aprueba_proyecto && $asignatura->aprueba == 1){
 						$aprobadas++;
 					}else{
 						$reprobadas++;
@@ -154,7 +160,8 @@ class AlumnosController extends Controller
 					// echo "</tr>";
 				}
 				$uc_t = count($trayecto->Asignaturas->where('plan_id',$alumno->plan_id));
-				$trayectos_a[] = [
+				$trayectos_a[$trayecto->id] = [
+					'id' => $trayecto->id,
 					'nombre' => $trayecto->observacion,
 					'uc_totales' => $uc_t,
 					'uc_aprobadas' => $aprobadas,

@@ -118,4 +118,44 @@ class Alumno extends Model
 		return HistoricoNota::where('nro_periodo',$nro_periodo)->where('especialidad',$this->Pnf->codigo)->where('cedula_estudiante',$this->cedula)->where('cod_asignatura',$cod_asignatura)->OrderByRaw(' cod_desasignatura ASC, nro_periodo ASC')->where('estatus',0)->groupBy('cod_desasignatura')->get();
 	}
 
+	public function NotasTrayecto($cod_asignaturas)
+	{
+		return HistoricoNota::where('especialidad',$this->Pnf->codigo)->where('cedula_estudiante',$this->cedula)->whereIn('cod_asignatura',$cod_asignaturas)->OrderByRaw(' cod_desasignatura ASC, nro_periodo ASC')->where('estatus',0)->groupBy('cod_desasignatura')->get();
+	}
+
+	public function IngresoActual()
+	{
+		$periodo = Periodo::where('estatus',0)->first();
+		return $this->hasMany(Ingreso::class)->where('periodo_id',$periodo->id)->first();
+	}
+
+	public function NotasActividades($actividades)
+	{
+		return ActividadNota::whereIn('actividad_id',$actividades)->where('alumno_id',$this->id)->sum('nota');
+	}
+
+	public function Escala($nota)
+	{
+		if($nota <= 5.99) { return "01"; }
+		if($nota >= 6 && $nota <= 10.99) { return "02"; }
+		if($nota >= 11 && $nota <= 15.99) { return "03"; }
+		if($nota >= 16 && $nota <= 20.99) { return "04"; }
+		if($nota >= 21 && $nota <= 25.99) { return "05"; }
+		if($nota >= 26 && $nota <= 30.99) { return "06"; }
+		if($nota >= 31 && $nota <= 35.99) { return "07"; }
+		if($nota >= 36 && $nota <= 40.99) { return "08"; }
+		if($nota >= 41 && $nota <= 45.99) { return "09"; }
+		if($nota >= 46 && $nota <= 50.99) { return "10"; }
+		if($nota >= 51 && $nota <= 55.99) { return "11"; }
+		if($nota >= 56 && $nota <= 60.99) { return "12"; }
+		if($nota >= 61 && $nota <= 65.99) { return "13"; }
+		if($nota >= 66 && $nota <= 70.99) { return "14"; }
+		if($nota >= 71 && $nota <= 75.99) { return "15"; }
+		if($nota >= 76 && $nota <= 80.99) { return "16"; }
+		if($nota >= 81 && $nota <= 85.99) { return "17"; }
+		if($nota >= 86 && $nota <= 90.99) { return "18"; }
+		if($nota >= 91 && $nota <= 95.99) { return "19"; }
+		if($nota >= 96 && $nota <= 100) { return "20"; }
+	}
+
 }

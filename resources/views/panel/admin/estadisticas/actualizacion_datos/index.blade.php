@@ -200,8 +200,15 @@
 					</div>
 				</div>
 				<div class="card-body">
-					<canvas id="inscritoPorPnf"
-						style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+					<div class="row">
+						<div class="col-md-2"  id="table-inscritos">
+
+						</div>
+						<div class="col-md-10">
+							<canvas id="inscritoPorPnf"
+								style="min-height: 500px; height: 500px; max-height: 500px; max-width: 100%;"></canvas>
+						</div>
+					</div>
 				</div>
 				<!-- /.card-body -->
 			</div>
@@ -232,7 +239,6 @@
 			<div class="card card-info card-outline">
 				<div class="card-header">
 					<h3 class="card-title">Estudiantes Inscritos</h3>
-
 					<div class="card-tools">
 						<button type="button" class="btn btn-tool" data-card-widget="collapse">
 							<i class="fas fa-minus"></i>
@@ -544,6 +550,9 @@
 							response.data_inscritos_pnf[70]['pnf'],
 							response.data_inscritos_pnf[75]['pnf'],
 							response.data_inscritos_pnf[80]['pnf'],
+							response.data_inscritos_pnf[85]['pnf'],
+							response.data_inscritos_pnf[90]['pnf'],
+							response.data_inscritos_pnf[95]['pnf'],
 						],
 						datasets: [{
 							data: [
@@ -555,7 +564,10 @@
 								response.data_inscritos_pnf[65]['cantidad'],
 								response.data_inscritos_pnf[70]['cantidad'],
 								response.data_inscritos_pnf[75]['cantidad'],
-								response.data_inscritos_pnf[80]['cantidad']
+								response.data_inscritos_pnf[80]['cantidad'],
+								response.data_inscritos_pnf[85]['cantidad'],
+								response.data_inscritos_pnf[90]['cantidad'],
+								response.data_inscritos_pnf[95]['cantidad']
 							],
 							backgroundColor: [
 								'#00a65a',
@@ -566,7 +578,10 @@
 								'#004d01',
 								'#f5f107',
 								'#52500c',
-								'#f39c12'
+								'#f39c12',
+								'#f39d12',
+								'#f79c12',
+								'#f35c12'
 							],
 
 						}]
@@ -575,6 +590,20 @@
 						maintainAspectRatio: false,
 						responsive: true,
 					}
+
+					var table ='<table class="table table-stripped table-hover table-sm"><thead><tr><th>PNF</th><th>Inscritos</th></tr></thead><tbody>'
+					// var table =''
+					var total = 0;
+					$.each(response.data_inscritos_pnf, function (indexInArray, valueOfElement) {
+						 console.log('index '+indexInArray);
+						 console.log('value '+valueOfElement.pnf);
+						 console.log('value '+valueOfElement.cantidad);
+						table = table + '<tr><td>'+valueOfElement.pnf+'</td><td>'+valueOfElement.cantidad+'</td></tr>';
+						// table =table + ' '+valueOfElement.pnf+' '+valueOfElement.cantidad+' <br>';
+						total = total + valueOfElement.cantidad;
+					});
+					table = table + '<tr><th>Total</th><th>'+total+'</th></tr></tbody></table>';
+					$('#table-inscritos').html(table);
 					//Create pie or douhnut chart
 					// You can switch between pie and douhnut using the method below.
 					new Chart(GraficaInscirtosPnf, {

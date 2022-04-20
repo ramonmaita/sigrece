@@ -22,9 +22,14 @@ class DesAsignatura extends Model
     	return $this->belongsTo(Asignatura::class);
     }
 
-	public function FunctionName()
+	public function RelacionDocente()
 	{
-		return $this->hasMany(DesAsignaturaDocenteSeccion::class,'id','des_asignatura_id');
+		return $this->hasOne(DesAsignaturaDocenteSeccion::class,'des_asignatura_id','id');
+	}
+
+	public function estatus_carga($seccion,$periodo)
+	{
+		return CargaNota::where('seccion',$seccion)->where('periodo',$periodo)->where('cod_desasignatura',$this->codigo)->first();
 	}
 
 }

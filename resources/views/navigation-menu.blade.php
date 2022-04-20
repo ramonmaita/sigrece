@@ -1,23 +1,76 @@
 @php
 	$menu = [];
+	$actual = \Carbon\Carbon::now()->toDateTimeString();
+	$evento_inscripcion_activo = false;
+	$evento_inscripcion = \App\Models\Evento::where('tipo','INSCRIPCION')
+	->where('evento_padre',0)
+	->where('inicio','<=',$actual)
+	->whereDate('fin','>=',$actual)
+	->orderBy('id','desc')
+	->first();
+	// dd($actual);
+	// dd($evento_inscripcion);
+	if($evento_inscripcion){
+		$evento_inscripcion_activo = true;
+		if(Auth::user()->Alumno->IngresoActual()){
+			$inscripcion_ruta = ($evento_inscripcion->aplicar == 'NUEVO INGRESO' && Auth::user()->Alumno->IngresoActual()->tipo != 'REINGRESO') ? 'panel.estudiante.inscripciones.nuevo-ingreso.index' : 'panel.estudiante.inscripciones.regulares.index' ;
+		}else{
+			$inscripcion_ruta = ($evento_inscripcion->aplicar == 'NUEVO INGRESO' ) ? 'panel.estudiante.inscripciones.regulares.index' :'panel.estudiante.inscripciones.nuevo-ingreso.index'  ;
+		}
+	}else{
+		$fin = \Carbon\Carbon::create(2021, 10, 15, 23, 59, 00);
+		$actual = \Carbon\Carbon::now();
+
+		if ($actual->lessThanOrEqualTo($fin) == true) {
+			$evento_inscripcion = \App\Models\Evento::where('tipo','INSCRIPCION')
+			->where('evento_padre',0)
+			->orderBy('id','desc')
+			->first();
+			$evento_inscripcion_activo = true;
+			if(Auth::user()->Alumno->IngresoActual()){
+			$inscripcion_ruta = ($evento_inscripcion->aplicar == 'NUEVO INGRESO' && Auth::user()->Alumno->IngresoActual()->tipo != 'REINGRESO') ? 'panel.estudiante.inscripciones.nuevo-ingreso.index' : 'panel.estudiante.inscripciones.regulares.index' ;
+		}else{
+			$inscripcion_ruta = ($evento_inscripcion->aplicar == 'NUEVO INGRESO' ) ? 'panel.estudiante.inscripciones.regulares.index' :'panel.estudiante.inscripciones.nuevo-ingreso.index'  ;
+		}
+		}
+	}
+	// $inicio = \Carbon\ Carbon::create(2021, 4, 8, 8, 30, 00);
+	// $fin = \Carbon\Carbon::create(2021, 4, 25, 23, 59, 00);
     if(Auth::user()->hasRole('Estudiante') && session('rol') == 'Estudiante'){
-		$menu = [
-            [
-                'nombre' => 'Inicio',
-                'route' => route('panel.estudiante.index'),
-                'active' => request()->routeIs('panel.estudiante.index'),
-            ],
-			[
-                'nombre' => 'Inscripción',
-                'route' => route('panel.estudiante.inscripciones.regulares.index'),
-                'active' => request()->routeIs('panel.estudiante.inscripciones.regulares.index'),
-            ],
-			[
-                'nombre' => 'Documentos',
-                'route' => route('panel.estudiante.documentos.index'),
-                'active' => request()->routeIs('panel.estudiante.documentos.index'),
-            ],
-        ];
+		if ($evento_inscripcion_activo == true) {
+		// if ($actual->greaterThanOrEqualTo($inicio) == true && $actual->lessThanOrEqualTo($fin) == true) {
+			$menu = [
+				[
+					'nombre' => 'Inicio',
+					'route' => route('panel.estudiante.index'),
+					'active' => request()->routeIs('panel.estudiante.index'),
+				],
+				[
+					'nombre' => 'Inscripción',
+					'route' => route($inscripcion_ruta),
+					'active' => request()->routeIs($inscripcion_ruta),
+				],
+				[
+					'nombre' => 'Documentos',
+					'route' => route('panel.estudiante.documentos.index'),
+					'active' => request()->routeIs('panel.estudiante.documentos.index'),
+				],
+			];
+		} else {
+			$menu = [
+				[
+					'nombre' => 'Inicio',
+					'route' => route('panel.estudiante.index'),
+					'active' => request()->routeIs('panel.estudiante.index'),
+				],
+				[
+					'nombre' => 'Documentos',
+					'route' => route('panel.estudiante.documentos.index'),
+					'active' => request()->routeIs('panel.estudiante.documentos.index'),
+				],
+			];
+		}
+
 	}elseif (Auth::user()->hasRole('Docente') && session('rol') == 'Docente') {
         $menu = [
             [
@@ -34,6 +87,24 @@
                 'nombre' => 'Mis Solicitudes',
                 'route' =>  route('panel.docente.solicitudes.index'),
                 'active' => request()->routeIs('panel.docente.solicitudes.index') ? true : request()->routeIs('panel.docentes.solicitudes.create'),
+            ],
+        ];
+    }elseif (Auth::user()->hasRole('Coordinador') && session('rol') == 'Coordinador') {
+        $menu = [
+            [
+                'nombre' => 'Inicio',
+                'route' => route('panel.coordinador.index'),
+                'active' => request()->routeIs('panel.coordinador.index'),
+            ],
+            [
+                'nombre' => 'Secciones',
+				'route' => route('panel.coordinador.secciones.index'),
+                'active' => request()->routeIs('panel.coordinador.secciones.index'),
+            ],
+			[
+                'nombre' => 'Planificación',
+                'route' => route('panel.coordinador.planificacion'),
+                'active' => request()->routeIs('panel.coordinador.planificacion'),
             ],
         ];
     }
@@ -59,9 +130,16 @@
 						</x-jet-nav-link>
 					@endif --}}
                     @forelse ($menu as $item)
+						@if ($item['nombre'] == 'Planificación')
+
+                        <x-jet-nav-link href="{{ $item['route'] }}" target="_blank" :active="$item['active']">
+                            {{ $item['nombre'] }}
+                        </x-jet-nav-link>
+						@else
                         <x-jet-nav-link href="{{ $item['route'] }}" :active="$item['active']">
                             {{ $item['nombre'] }}
                         </x-jet-nav-link>
+						@endif
 					@empty
 					<x-jet-nav-link href="#" :active="false">
 
@@ -93,7 +171,11 @@
 									</div>
 									@foreach (Auth::user()->getRoleNames()  as $item)
 									<x-jet-dropdown-link href="{{ route('cambiar-rol',['rol' => $item]) }}">
-										{{ $item }}
+										@if ($item == 'Coordinador')
+											Jefe de PNF
+										@else
+											{{ $item }}
+										@endif
 									</x-jet-dropdown-link>
 									@endforeach
 								</div>

@@ -78,7 +78,7 @@
                                                 @endphp
                                                 @foreach ($pnf['secciones'] as $seccion)
                                                     <tr>
-                                                        <td> <a href="{{ route('panel.estadisticas.carga-de-notas.show', ['seccion'=>$seccion['seccion'], 'periodo' => '2020']) }}"> {{ $seccion['seccion'] }}</a></td>
+                                                        <td> <a href="{{ route('panel.estadisticas.carga-de-notas.show', ['seccion'=>$seccion['seccion'], 'periodo' => '2021']) }}"> {{ $seccion['seccion'] }}</a></td>
                                                         <td>{{ $seccion['uc_total'] }}</td>
                                                         <td>{{ $seccion['uc_cargada'] }}</td>
                                                         <td class="text-center">
@@ -105,7 +105,8 @@
                                             <tfoot>
                                                 <tr>
                                                     @php
-                                                        $porcentage = round(($total_uc_cargadas * 100) / $total_uc, 2);
+                                                        $porcentage = ($total_uc != 0) ? round(($total_uc_cargadas * 100) / $total_uc, 2) : 0;
+                                                        // $porcentage =0;
                                                     @endphp
                                                     <th>Total</th>
                                                     <th colspan="3" class="text-center">

@@ -141,6 +141,9 @@ class InscripcionesController extends Controller
 		$imi_a_t1 = 0;
 		$imi_a_psi2 = 0;
 		$imi_a_psi3 = 0;
+		$imi_r_t1=0;
+		$imi_r_t2=0;
+		$imi_r_t3=0;
 
 		// TODO: HIGIENE Y SEGURIDAD LABORAL
 		$hsl_r_ti = 0;
@@ -169,7 +172,10 @@ class InscripcionesController extends Controller
 		$t4_a_psi_iv = false;
 		$t4_a_generacion_p = false;
 		$t4_a_diseno_mac = false;
-
+		$ti_a = 0;
+		$t1_a = 0;
+		$t2_a = 0;
+		$t3_a = 0;
 		foreach ($alumno->Plan->Asignaturas->whereNotIn('id',$incritas) as $key => $asignatura) {
 			$u_periodo_asignatura = $alumno->ultimo_periodo($asignatura->codigo);
 			$cursado = $alumno->Notas($asignatura->codigo , @$u_periodo_asignatura->nro_periodo)->count();
@@ -299,17 +305,18 @@ class InscripcionesController extends Controller
 									if ($asignatura->codigo =="01PSI407" && round($nota_final) < 16 ) {
 										$e_r_psi4 = 1; // reprobo proyecto
 									}
-
-
 									array_push($uc_acursar, $asignatura);
 								}
 
+								if ($asignatura->codigo =="01PSI407" && round($nota_final) >= 16 ) {
+									$e_r_psi4 = 2;; // aprobo proyecto
+								}
 							}
 						break;
 
 						case 5:
 							# TRAYECTO 5
-							if ($e_r_psi4 == 0 && $e_a_uc_t3 == 8 || $e_a_uc_tn == 5) {
+							if ($e_r_psi4 == 2) {
 								if (round($nota_final) < 12 && $asignatura->aprueba == 0 || round($nota_final) < 16 && $asignatura->aprueba == 1) {
 									array_push($uc_acursar, $asignatura);
 								}
@@ -549,8 +556,10 @@ class InscripcionesController extends Controller
 							if ($asignatura->codigo == 'CBAMAT060' && round($nota_final) >= 12) {
 								# APRUEBA MATEMATICA PARA CURSAR T1
 								$ti_matematica = 1;
+								$ti_a++;
 							}elseif ($asignatura->codigo != 'CBAMAT060' && $asignatura->aprueba == 0 && round($nota_final) >= 12) {
 								$ti_porcentaje_aprobado++;
+								$ti_a++;
 							}else{
 								array_push($uc_acursar, $asignatura);
 							}
@@ -561,8 +570,8 @@ class InscripcionesController extends Controller
 							# TRAYECTO 1
 							// 75% APROBADO DE TI INCULIDO MATEMATICA
 							$ti_porcentaje_aprobado += $ti_matematica;
-							if($ti_porcentaje_aprobado >= 3){
-								if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+							if($ti_porcentaje_aprobado >= 3 && $ti_matematica == 1){
+								if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 									// $ti_porcentaje_aprobado++;
 									if ($asignatura->codigo == 'CBACAL168') {
 										# APRUEBA CALCULO I PRELACION DE CALCULO II
@@ -580,6 +589,7 @@ class InscripcionesController extends Controller
 										# APRUEBA DIBUJO MECÁNICO PRELACION DE TALLER MECANIZADO
 										$t1_a_dibujo_mecanico = true;
 									}
+									$t1_a++;
 								}else{
 									array_push($uc_acursar, $asignatura);
 								}
@@ -599,8 +609,8 @@ class InscripcionesController extends Controller
 								case 'CBACAL235':
 									# code...
 									if ($t1_a_calculo_i == true && $t1_a_algebraYgeometria == true) {
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
-
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
+											$t2_a++;
 										}else{
 											array_push($uc_acursar, $asignatura);
 										}
@@ -608,9 +618,11 @@ class InscripcionesController extends Controller
 								break;
 								case 'DISMAP268':
 									if($t1_a_fisica == true){
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 											// APRUEBA MECÁNICA APLICADA PRECACION DE DISEÑO DE ELEMENTOS MECÁNICOS
 											$t2_a_mec_aplicada = true;
+											$t2_a++;
+
 										}else{
 											array_push($uc_acursar, $asignatura);
 										}
@@ -619,8 +631,9 @@ class InscripcionesController extends Controller
 
 								case 'PSIPSI257':
 									if($t1_a_psi_i == true){
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 1 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 											// APRUEBA PROYECTO SOCIO-INTEGRADOR II PRECACION DE PROYECTO SOCIO-INTEGRADOR III
+											$t2_a++;
 											$t2_a_psi_ii = true;
 										}else{
 											array_push($uc_acursar, $asignatura);
@@ -630,8 +643,9 @@ class InscripcionesController extends Controller
 
 								case 'MYMTME257':
 									if($t1_a_dibujo_mecanico == true){
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 											// APRUEBA TALLER MECANIZADO PRECACION DE DISEÑO DE ELEMENTOS MECÁNICOS
+											$t2_a++;
 											$t2_a_mec_aplicada = true;
 										}else{
 											array_push($uc_acursar, $asignatura);
@@ -641,7 +655,8 @@ class InscripcionesController extends Controller
 
 								case 'ENETER268':
 									if($t1_a_fisica == true){
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
+											$t2_a++;
 
 										}else{
 											array_push($uc_acursar, $asignatura);
@@ -652,7 +667,12 @@ class InscripcionesController extends Controller
 								default:
 									# RESTO DE LAS UC DE T1 QUE NO TIENEN PRELACION
 									if($t1_cursado >= 5){
-										array_push($uc_acursar, $asignatura);
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
+											$t2_a++;
+
+										}else{
+											array_push($uc_acursar, $asignatura);
+										}
 									}
 								break;
 							}
@@ -664,8 +684,8 @@ class InscripcionesController extends Controller
 								case 'DISDEM354':
 									# code...
 									if ($t2_a_mec_aplicada == true && $t2_a_mec_aplicada == true) {
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
-
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
+											$t3_a++;
 										}else{
 											array_push($uc_acursar, $asignatura);
 										}
@@ -673,7 +693,8 @@ class InscripcionesController extends Controller
 								break;
 								case 'AUTEIA354':
 									if($t1_a_fisica == true){
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
+											$t3_a++;
 
 										}else{
 											array_push($uc_acursar, $asignatura);
@@ -683,8 +704,9 @@ class InscripcionesController extends Controller
 
 								case 'PSIPSI354':
 									if($t2_a_psi_ii == true){
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 											// APRUEBA PROYECTO SOCIO-INTEGRADOR II PRECACION DE PROYECTO SOCIO-INTEGRADOR III
+											$t3_a++;
 											$t3_a_psi_iii = true;
 										}else{
 											array_push($uc_acursar, $asignatura);
@@ -694,8 +716,9 @@ class InscripcionesController extends Controller
 
 								case 'ENEMHI354':
 									if($t1_a_fisica == true){
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 											// APRUEBA TALLER MECANIZADO PRECACION DE DISEÑO DE ELEMENTOS MECÁNICOS
+											$t3_a++;
 											// $t2_a_mec_aplicada = true;
 										}else{
 											array_push($uc_acursar, $asignatura);
@@ -705,7 +728,8 @@ class InscripcionesController extends Controller
 
 								case 'MYMCNC354':
 									if($t2_a_mec_aplicada == true){
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
+											$t3_a++;
 
 										}else{
 											array_push($uc_acursar, $asignatura);
@@ -716,7 +740,12 @@ class InscripcionesController extends Controller
 								default:
 									# RESTO DE LAS UC DE T1 QUE NO TIENEN PRELACION
 									if($t2_cursado >= 5){
-										array_push($uc_acursar, $asignatura);
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
+											$t3_a++;
+
+										}else{
+											array_push($uc_acursar, $asignatura);
+										}
 									}
 								break;
 							}
@@ -726,7 +755,7 @@ class InscripcionesController extends Controller
 							if ($cursado >= 1) {
 								$t4_cursado += 1;
 							}
-							if ($titulo == 1) {
+							if ($titulo == 1 || $ti_a == 4 && $t1_a == 7 && $t2_a == 7 && $t3_a == 9) {
 								if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 									if ($asignatura->codigo == 'ENEGDP457') {
 										# APRUEBA GENERACIÓN DE POTENCIA PRELACION DE DINÁMICA DE MAQUINAS
@@ -741,23 +770,24 @@ class InscripcionesController extends Controller
 								}else{
 									array_push($uc_acursar, $asignatura);
 								}
-							}else{
-								if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
-									if ($asignatura->codigo == 'ENEGDP457') {
-										# APRUEBA GENERACIÓN DE POTENCIA PRELACION DE DINÁMICA DE MAQUINAS
-										$t4_a_generacion_p = true;
-									}elseif ($asignatura->codigo == 'DISDDM457') {
-										# APRUEBA DISEÑO DE MÁQUINAS PRELACION DE DINÁMICA DE MAQUINAS
-										$t4_a_diseno_mac = true;
-									}elseif ($asignatura->codigo == 'PSIPSI468') {
-										# APRUEBA PROYECTO SOCIO-INTEGRADOR IV PRELACION DE PROYECTO SOCIO-INTEGRADOR V
-										$t4_a_psi_iv = true;
-									}
-								}else{
-									array_push($uc_acursar, $asignatura);
-								}
-
 							}
+							// else{
+							// 	if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
+							// 		if ($asignatura->codigo == 'ENEGDP457') {
+							// 			# APRUEBA GENERACIÓN DE POTENCIA PRELACION DE DINÁMICA DE MAQUINAS
+							// 			$t4_a_generacion_p = true;
+							// 		}elseif ($asignatura->codigo == 'DISDDM457') {
+							// 			# APRUEBA DISEÑO DE MÁQUINAS PRELACION DE DINÁMICA DE MAQUINAS
+							// 			$t4_a_diseno_mac = true;
+							// 		}elseif ($asignatura->codigo == 'PSIPSI468') {
+							// 			# APRUEBA PROYECTO SOCIO-INTEGRADOR IV PRELACION DE PROYECTO SOCIO-INTEGRADOR V
+							// 			$t4_a_psi_iv = true;
+							// 		}
+							// 	}else{
+							// 		array_push($uc_acursar, $asignatura);
+							// 	}
+
+							// }
 						break;
 
 						case 5:
@@ -962,13 +992,15 @@ class InscripcionesController extends Controller
 							// TRAYECTO 1
 							if ($imi_a_ti >= 0) {
 								if (round($nota_final) < 12 && $asignatura->aprueba == 0 || round($nota_final) < 16 && $asignatura->aprueba == 1) {
-									if($asignatura->codigo == "PROY1367"){
+									if($asignatura->codigo == "75PRY1318"){
 										$imi_r_psi1 = 1;
+									}else{
+										$imi_r_t1++;
 									}
 									array_push($uc_acursar, $asignatura);
 								}
 
-								if($asignatura->codigo == "PROY1367" &&  round($nota_final) >= 16){
+								if($asignatura->codigo == "75PRY1318" &&  round($nota_final) >= 16){
 									$imi_a_psi1 = 1;
 								}
 
@@ -980,13 +1012,16 @@ class InscripcionesController extends Controller
 
 						case 2:
 							// TRAYECTO 2
-							if ($imi_a_psi1 == 1) {
+							if ($imi_a_psi1 == 1 || $imi_r_t1 == 0) {
 								if (round($nota_final) < 12 && $asignatura->aprueba == 0 || round($nota_final) < 16 && $asignatura->aprueba == 1) {
-									array_push($uc_acursar, $asignatura);
+
+									if($asignatura->codigo != "75PRY2318"){
+										array_push($uc_acursar, $asignatura);
+									}
 
 								}
 
-								if($asignatura->codigo == "PROY2367" &&  round($nota_final) >= 16){
+								if($asignatura->codigo == "75PRY2318" &&  round($nota_final) >= 16){
 									$imi_a_psi2 = 1;
 								}
 							}
@@ -1000,7 +1035,7 @@ class InscripcionesController extends Controller
 								}
 							}
 
-							if($asignatura->codigo == "PROY3367" &&  round($nota_final) >= 16){
+							if($asignatura->codigo == "75PST3318" &&  round($nota_final) >= 16){
 								$imi_a_psi3 = 1;
 							}
 						break;
@@ -1098,6 +1133,67 @@ class InscripcionesController extends Controller
 					}
 					// FIN HIGIENE Y SEGURIDAD LABORAL
 				break;
+
+				case 85:
+					switch ($asignatura->trayecto_id) {
+						case 8:
+							// TRAYECTO INICIAL
+
+							if (round($nota_final) < 12) {
+								$hsl_r_ti++;
+								array_push($uc_acursar, $asignatura);
+							}else{
+								$hsl_a_ti++;
+							}
+
+						break;
+
+						default:
+						# code...
+						break;
+					}
+
+					break;
+				case 90:
+					switch ($asignatura->trayecto_id) {
+						case 8:
+							// TRAYECTO INICIAL
+
+							if (round($nota_final) < 12) {
+								$hsl_r_ti++;
+								array_push($uc_acursar, $asignatura);
+							}else{
+								$hsl_a_ti++;
+							}
+
+						break;
+
+						default:
+						# code...
+						break;
+					}
+
+					break;
+				case 95:
+					switch ($asignatura->trayecto_id) {
+						case 8:
+							// TRAYECTO INICIAL
+
+							if (round($nota_final) < 12) {
+								$hsl_r_ti++;
+								array_push($uc_acursar, $asignatura);
+							}else{
+								$hsl_a_ti++;
+							}
+
+						break;
+
+						default:
+						# code...
+						break;
+					}
+
+					break;
 
 				default:
 					# code...

@@ -33,9 +33,18 @@
 @section('content')
 
 	@include('alertas')
+	<div class="small-box bg-warning">
+		<div class="inner">
+		  <h3>{{ $estudiantes }}</h3>
+
+		  <p>Estudiantes en esta sección</p>
+		</div>
+		<div class="icon">
+		  <i class="fas fa-users"></i>
+		</div>
+	  </div>
     <div class="card card-primary card-outline">
 		{{-- @dump($seccion->Docentes) --}}
-
         <div class="card-body table-responsive">
             <table class="table table-striped table-inverse " id="table-uc">
                 <thead class="thead-inverse">
@@ -51,6 +60,7 @@
                 <tbody>
 					@forelse ($seccion->DesAsignaturas as $key => $desasignatura)
 						<tr>
+							{{-- <td class="hidden">{{ $desasignatura->obseracion }}</td> --}}
 							<td>{{ $desasignatura->tri_semestre }}</td>
 							<td>{{ $desasignatura->Asignatura->nombre }}</td>
 							<td>{{ $desasignatura->nombre }}</td>

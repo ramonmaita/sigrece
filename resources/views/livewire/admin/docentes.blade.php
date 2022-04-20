@@ -67,6 +67,10 @@
                                         <i class="fa fa-edit">
                                         </i>
                                     </button>
+                                    <a class="btn btn-info btn-sm" href="{{ route('panel.docentes.show',[$docente->id]) }}">
+                                        <i class="fa fa-eye">
+                                        </i>
+                                    </a>
                                 @endcan
                             </td>
                         </tr>

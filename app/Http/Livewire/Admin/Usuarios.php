@@ -96,7 +96,6 @@ class Usuarios extends Component
 				if(!$user){
 					session()->flash('error', 'Docente no encontrado.'. $this->user_id);
 				}else{
-
 					$usuario = User::create([
 						'cedula' => $user->cedula,
 						'nombre' => $user->nombres,
@@ -111,7 +110,7 @@ class Usuarios extends Component
 				}
 			}
 			$this->emit('cerrar_modal'); // Close model to using to jquery
-
+			$this->reset(['user_id','correo']);
 			DB::commit();
 		} catch (\Throwable $th) {
 			DB::rollback();

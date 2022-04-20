@@ -129,7 +129,7 @@
 
 					<tr align="center">
 					<td style="font-size: 12pt">__________________________________________<br>
-			 MsC. Yomely Josefina Pérez Fajardo <br /> Directora {{-- de la Dirección --}} De Registro Y Control De Actividades Académicas </p></td></tr>
+				Ing. Dulce María José Pérez Suárez {{-- MsC.Yomely Josefina Pérez Fajardo --}}  <br /> Directora Encargada{{-- de la Dirección --}} De Registro Y Control De Actividades Académicas </p></td></tr>
 			<tr>
 				<td><p align="center" class="Estilo3">Revolucionado La educaciòn Universitaria<br style="margin-top: 0px;" />
 				 _____________________________________________________________________________________________________<br />
@@ -148,7 +148,7 @@
 		<br>
 		<h3 align="center"><u>Constancia de Calificaciones</u></h3>
 		<p align="justify" class="parrafo">
-			Quien suscribe, Directora {{-- de la Dirección --}} De Registro Y Control De Actividades Académicas
+			Quien suscribe, Directora (E) {{-- de la Dirección --}} De Registro Y Control De Actividades Académicas
 			de la Universidad Politécnica Territorial Del Estado Bolívar, hace constar por medio de la presente que
 			en esta casa de Estudios Universitarios reposa el Expediente de Estudios
 			del Ciudadano: <span style="text-transform: uppercase;">{{ $alumno->nombres.' '.$alumno->apellidos }}</span>,
@@ -291,103 +291,113 @@
 
 				@foreach ($alumno->Historico->where('estatus',0)->groupBy('cod_asignatura') as $key => $asig)
 
-					<tr>
-						<td>{{ $alumno->ultimo_periodo($asig->first()->cod_asignatura)->periodo }}</td>
-						<td align="center">{{@$asig->first()->Asignatura->Trayecto->nombre}}</td>
-						<td>{{@$asig->first()->Asignatura->nombre}}</td>
-						<td
-							@php
-								@$trim = $asig->first()->asignatura(@$asig->first()->cod_asignatura)->tri_semestre;
-							@endphp
-							@if(($trim == 01) || ($trim == 04) || ($trim == 07) || ($trim == 10))
+					@if($asig->first()->Asignatura->Plan->id == $alumno->plan_id)
+						<tr>
+							<td>{{ $alumno->ultimo_periodo($asig->first()->cod_asignatura)->periodo }}</td>
+							<td align="center">{{@$asig->first()->Asignatura->Trayecto->nombre}}</td>
+							<td>{{@$asig->first()->Asignatura->nombre}}</td>
+							<td
+								@php
+									@$trim = $asig->first()->asignatura(@$asig->first()->cod_asignatura)->tri_semestre;
+								@endphp
+								@if(($trim == 01) || ($trim == 04) || ($trim == 07) || ($trim == 10))
 
-								align="left"
-							@elseif(($trim == 02) || ($trim == 05) || ($trim == '08') || ($trim == 11))
-								align="center"
-							@elseif(($trim == 03) || ($trim == 06) || ($trim == '09') || ($trim == 12))
+									align="left"
+								@elseif(($trim == 02) || ($trim == 05) || ($trim == '08') || ($trim == 11))
+									align="center"
+								@elseif(($trim == 03) || ($trim == 06) || ($trim == '09') || ($trim == 12))
 
-								align="right"
-							@elseif(($trim == 00))
+									align="right"
+								@elseif(($trim == 00))
 
-								align="left"
-							@else
-								align="right"
+									align="left"
+								@else
+									align="right"
 
-							@endif
+								@endif
 
-						>
+							>
 
-							@php
-							if($calificaciones[$key] == 30){
-								echo "Aprobado";
-							}else{
-								echo $calificaciones[$key];
-							}
-							@endphp
+								@php
+								if($calificaciones[$key] == 30){
+									echo "Aprobado";
+								}else{
+									echo $calificaciones[$key];
+								}
+								@endphp
 
-							@foreach ($alumno->Notas($asig->first()->cod_asignatura,$alumno->ultimo_periodo($asig->first()->cod_asignatura)->nro_periodo) as $nota_trimestre)
+								@foreach ($alumno->Notas($asig->first()->cod_asignatura,$alumno->ultimo_periodo($asig->first()->cod_asignatura)->nro_periodo) as $nota_trimestre)
+
+									@if ($loop->first && $nota_trimestre->nota == 30)
+										Aprobado
+										@php break; @endphp
+									@endif
+								{{ $nota_trimestre->nota }}
+								@endforeach
+							</td>
+							<td>
+								{{-- @php
+								if($nota_final[$key] == 30){
+									echo "APROBADO";
+								}else{
+
+									echo round($nota_final[$key]) .' '. $asig->first()->letras(round($nota_final[$key]));
+								}
+								@endphp --}}
+
+								@foreach ($alumno->Notas($asig->first()->cod_asignatura,$alumno->ultimo_periodo($asig->first()->cod_asignatura)->nro_periodo) as $nota_trimestre)
 
 								{{-- @if ($loop->last)
 
 								@endif --}}
-							{{ $nota_trimestre->nota }}
-							@endforeach
-						</td>
-						<td>
-							{{-- @php
-							if($nota_final[$key] == 30){
-								echo "APROBADO";
-							}else{
+								@php
+									$nota_final_a += $nota_trimestre->nota;
+									$nta = round($nota_final_a/count($asig->first()->Asignatura->DesAsignaturas));
+								@endphp
+								@endforeach
+								{{-- {{ $nota_final_a }} --}}
+								@if ($nta == 30)
+									APROBADO
+								@else
+									{{ $nta }}
+									{{ $asig->first()->letras($nta) }}
+								@endif
+							</td>
+							<td>
+								@php
+									echo @$asig->first()->Asignatura->credito;
+								@endphp
+							</td>
+						</tr>
+						@php
 
-								echo round($nota_final[$key]) .' '. $asig->first()->letras(round($nota_final[$key]));
-							}
-							@endphp --}}
+							if($nta != 30 && round($nta) >= $alumno->tipo ){
+								if (@$alumno->tipo == 12 && @$asig->first()->Asignatura->aprueba == 1 && round($nta) >= 16 || @$asig->first()->Asignatura->aprueba != 1) {
 
-							@foreach ($alumno->Notas($asig->first()->cod_asignatura,$alumno->ultimo_periodo($asig->first()->cod_asignatura)->nro_periodo) as $nota_trimestre)
+									$nota_promedio = $nota_promedio + (round($nta) * @$asig->first()->Asignatura->credito);
+									$creditos += @$asig->first()->Asignatura->credito;
 
-							{{-- @if ($loop->last)
+								}if (@$alumno->tipo == 10 && @$asig->first()->Asignatura->aprueba == 1 && round($nta) >= 10) {
 
-							@endif --}}
-							@php $nota_final_a += $nota_trimestre->nota @endphp
-							@endforeach
-							{{-- {{ $nota_final_a }} --}}
-							{{ $nta = round($nota_final_a/count($asig->first()->Asignatura->DesAsignaturas)) }}
-							{{ $asig->first()->letras($nta) }}
-						</td>
-						<td>
-							@php
-								echo @$asig->first()->Asignatura->credito;
-							@endphp
-						</td>
-					</tr>
-					@php
+									$nota_promedio = $nota_promedio + (round($nta) * @$asig->first()->Asignatura->credito);
+									$creditos += @$asig->first()->Asignatura->credito;
+								}else{
+									// $nota_promedio = $nota_promedio + (round($nota_final[$key]) * @$asig->first()->Asignatura->credito);
+									// $creditos += @$asig->first()->Asignatura->credito;
+									// $creditos_totales += @$asig->first()->Asignatura->credito;
+								}
 
-						if($nta != 30 && round($nta) >= $alumno->tipo ){
-							if (@$alumno->tipo == 12 && @$asig->first()->Asignatura->aprueba == 1 && round($nta) >= 16 || @$asig->first()->Asignatura->aprueba != 1) {
 
-								$nota_promedio = $nota_promedio + (round($nta) * @$asig->first()->Asignatura->credito);
-								$creditos += @$asig->first()->Asignatura->credito;
-
-							}if (@$alumno->tipo == 10 && @$asig->first()->Asignatura->aprueba == 1 && round($nta) >= 10) {
-
-								$nota_promedio = $nota_promedio + (round($nta) * @$asig->first()->Asignatura->credito);
-								$creditos += @$asig->first()->Asignatura->credito;
-							}else{
-								// $nota_promedio = $nota_promedio + (round($nota_final[$key]) * @$asig->first()->Asignatura->credito);
-								// $creditos += @$asig->first()->Asignatura->credito;
-								// $creditos_totales += @$asig->first()->Asignatura->credito;
 							}
 
+								$creditos_totales += @$asig->first()->Asignatura->credito;
 
-						}
+						@endphp
 
-							$creditos_totales += @$asig->first()->Asignatura->credito;
-
-					@endphp
-
-					@php
-						$nota_final_a = 0;
-					@endphp
+						@php
+							$nota_final_a = 0;
+						@endphp
+					@endif
 				@endforeach
 			</tbody>
 		</table>

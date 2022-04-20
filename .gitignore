@@ -16,3 +16,4 @@ archivos_por_subir.txt
 database/backups/
 .vscode/sftp.json
 ..vscode
+*.zip

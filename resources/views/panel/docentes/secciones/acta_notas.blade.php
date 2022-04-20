@@ -61,7 +61,7 @@
 
 				<tr>
 					<td width="50%">
-						DOCENTE: {{ (empty($detalles->Docente->nombre)) ? $detalles->docente : $detalles->Docente->nombre }}
+						DOCENTE: {{ (empty($detalles->Docente->nombre)) ? $detalles->docente : $detalles->Docente->nombres }}
 						<br>
 						CÉDULA: {{ (empty($detalles->Docente->cedula)) ? $detalles->cedula_docente : $detalles->Docente->cedula }}
 						<br>

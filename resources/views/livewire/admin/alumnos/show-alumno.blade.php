@@ -308,7 +308,7 @@
 
                                                         <div class="timeline-body">
                                                             @foreach ($asig as $uc)
-                                                                @if ($uc->Asignatura->Plan->observacion == 'ANUAL')
+                                                                @if (@$uc->Asignatura->Plan->observacion == 'ANUAL')
                                                                     AÑO:
                                                                 @elseif($uc->Asignatura->Plan->observacion ==
                                                                     'SEMESTRAL')

@@ -88,6 +88,11 @@ class User extends Authenticatable implements Auditable
 		return $this->hasMany(Login::class)->orderBy('created_at','desc');
 	}
 
+	public function Coordinador()
+	{
+		return $this->hasOne(Coordinador::class);
+	}
+
 	public function Alumno()
 	{
 		return $this->hasOne(Alumno::class,'cedula','cedula');

@@ -24,29 +24,31 @@
 						<x-link href="{{ route('panel.estudiante.documentos.comprobante.pdf') }}" target="documento" color="blue" intensidad="700" class="py-5 show-documento">
 							COMPROBANTE DE INSCRIPCION
 						</x-link>
-						<x-link color="blue" intensidad="700" class="py-5 show-documento">
+						{{-- <x-link color="blue" intensidad="500" class="py-5 show-documento"> --}}
+						<x-link href="{{ route('panel.estudiante.documentos.constancia.pdf') }}" target="documento" color="blue" intensidad="700" class="py-5 show-documento">
 							CONSTANCIA DE ESTUDIO
 						</x-link>
-						<x-link color="blue" intensidad="700" class="py-5 show-documento">
+						{{-- <x-link color="blue" intensidad="500" class="py-5 show-documento"> --}}
+						<x-link href="{{ route('panel.estudiante.documentos.notas.pdf') }}" target="documento" color="blue" intensidad="700" class="py-5 show-documento">
 							CONSTANCIA DE CALIFICACIONES
 						</x-link>
 						{{-- <x-link href="{{ route('panel.estudiante.documentos.notas.pdf') }}" target="documento" color="blue" intensidad="700" class="py-5 show-documento">
 							CONSTANCIA DE CALIFICACIONES
 						</x-link> --}}
-						<x-link color="blue" intensidad="700" class="py-5 show-documento">
+						<x-link color="blue" intensidad="500" class="py-5 show-documento">
 							CARNET ESTUDIANTIL
 						</x-link>
 					@else
-						<x-link color="blue" intensidad="700" class="py-5 show-documento">
+						<x-link color="blue" intensidad="500" class="py-5 show-documento">
 							COMPROBANTE DE INSCRIPCION
 						</x-link>
-						<x-link color="blue" intensidad="700" class="py-5 show-documento">
+						<x-link color="blue" intensidad="500" class="py-5 show-documento">
 							CONSTANCIA DE ESTUDIO
 						</x-link>
-						<x-link color="blue" intensidad="700" class="py-5 show-documento">
+						<x-link color="blue" intensidad="500" class="py-5 show-documento">
 							CONSTANCIA DE CALIFICACIONES
 						</x-link>
-						<x-link color="blue" intensidad="700" class="py-5 show-documento">
+						<x-link color="blue" intensidad="500" class="py-5 show-documento">
 							CARNET ESTUDIANTIL
 						</x-link>
 

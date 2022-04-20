@@ -1,7 +1,12 @@
 <?php
 
 use App\Http\Controllers\Admin\AlumnosController;
+use App\Http\Controllers\Admin\CambiosController;
+use App\Http\Controllers\Admin\CorreccionesController as AdminCorreccionesController;
+use App\Http\Controllers\Admin\DocentesController;
+use App\Http\Controllers\Admin\EventosController;
 use App\Http\Controllers\Admin\ExpedienteController;
+use App\Http\Controllers\Admin\GraduacionesController;
 use App\Http\Controllers\Admin\InscripcionesController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,10 +19,18 @@ use App\Http\Controllers\EstadisticasController;
 use App\Http\Controllers\NotasController;
 use App\Http\Controllers\Admin\PerController;
 use App\Http\Controllers\Admin\RetirosController;
+use App\Http\Controllers\AsignadosController;
 use App\Http\Controllers\ComprobanteController;
+use App\Http\Controllers\ConstanciaController;
+use App\Models\Asignatura;
+use App\Models\DesAsignaturaDocenteSeccion;
+use App\Models\Docente;
+use App\Models\Seccion;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
+
 // use App\Http\Livewire\Admin\PeriodosComponet;
 
 // Route::prefix('panel')->name('panel.')->middleware(['auth:sanctum', 'verified'])->group(function () {SupervisorNotas
@@ -34,6 +47,9 @@ Route::prefix('panel')->name('panel.')->group(function () {
             }elseif(Auth::user()->hasRole('Estudiante')){
 				session(['rol' => 'Estudiante']);
 				return redirect()->route('panel.estudiante.index');
+            }elseif(Auth::user()->hasRole('Coordinador')){
+				session(['rol' => 'Coordinador']);
+				return redirect()->route('panel.coordinador.index');
             }
         }
     })->name('index');
@@ -44,6 +60,7 @@ Route::prefix('panel')->name('panel.')->group(function () {
 
     Route::prefix('usuarios')->name('usuarios.')->group(function () {
 		Route::get('generar', [UsuariosController::class,'generar_usuarios'])->name('generar')->middleware(['role_or_permission:SuperAdmin']);
+		Route::get('/data-docentes', [UsuariosController::class, 'dataDocente'])->middleware(['role_or_permission:Admin'])->name('dataDocente');
     });
 
     Route::resource('usuarios', UsuariosController::class)->middleware(['role_or_permission:SuperAdmin|usuarios.index']);
@@ -55,6 +72,9 @@ Route::prefix('panel')->name('panel.')->group(function () {
     Route::view('/pnfs','panel.admin.pnfs.index')->name('pnfs.index')->middleware(['role_or_permission:pnfs.index']);
     Route::view('/nucleos','panel.admin.nucleos.index')->name('nucleos.index')->middleware(['role_or_permission:nucleos.index']);
     Route::view('/docentes','panel.admin.docentes.index')->name('docentes.index')->middleware(['role_or_permission:docentes.index']);
+	Route::get('/docentes/ver/{docente}', [DocentesController::class,'show'])->name('docentes.show');
+	Route::get('/docentes/ver-uc/{docente}/{seccion}/{asignatura}', [DocentesController::class,'show_uc'])->name('docentes.show_uc');
+    // Route::view('/docentes/ver/{docente}','panel.admin.docentes.show')->name('docentes.show')->middleware(['role_or_permission:docentes.index']);
 
     // Route::view('/secciones/configurar/{}','panel.admin.secciones.index')->name('secciones.config')->middleware(['role:Admin']);
     Route::view('/estudiantes','panel.admin.estudiantes.index')->name('estudiantes.index')->middleware(['role_or_permission:estudiantes.index']);
@@ -70,16 +90,50 @@ Route::prefix('panel')->name('panel.')->group(function () {
 		Route::prefix('comprobante')->name('comprobante.')->group(function () {
 			Route::get('pdf/{alumno}',[ComprobanteController::class,'pdf'])->name('pdf')->middleware(['role_or_permission:estudiantes.show']);
 		});
+		Route::prefix('constancia')->name('constancia.')->group(function () {
+			Route::get('pdf/{alumno}',[ConstanciaController::class,'pdf'])->name('pdf')->middleware(['role_or_permission:estudiantes.show']);
+		});
 		Route::prefix('expediente')->name('expediente.')->group(function () {
 			Route::get('pdf/{alumno}',[ExpedienteController::class,'pdf'])->name('pdf')->middleware(['role_or_permission:estudiantes.show']);
 		});
 	});
+
+	Route::prefix('graduacion')->name('graduacion.')->group(function () {
+		Route::get('/',[GraduacionesController::class,'index'])->name('index')->middleware(['role_or_permission:graduacion.index']);
+		Route::get('graduando/{graduando}',[GraduacionesController::class,'show'])->name('show')->middleware(['role_or_permission:graduacion.index']);
+		Route::post('buscar', [GraduacionesController::class,'buscar'])->name('buscar')->middleware(['role_or_permission:graduacion.index']);
+
+		Route::prefix('documentos')->name('documentos.')->group(function () {
+			Route::get('/titulo/{graduando}',[GraduacionesController::class,'titulo'])->name('titulo')->middleware(['role_or_permission:graduacion.index']);
+			Route::get('/acta/{graduando}',[GraduacionesController::class,'acta'])->name('acta')->middleware(['role_or_permission:graduacion.index']);
+			Route::get('/notas/{graduando}',[GraduacionesController::class,'notas'])->name('notas')->middleware(['role_or_permission:graduacion.index']);
+
+
+			Route::get('/titulos/{pnf}/{titulo}/{periodo}',[GraduacionesController::class,'titulos'])->name('titulos')->middleware(['role_or_permission:graduacion.index']);
+			Route::get('/actas/{pnf}/{titulo}/{periodo}',[GraduacionesController::class,'actas'])->name('actas')->middleware(['role_or_permission:graduacion.index']);
+		});
+
+	});
+
+	Route::prefix('eventos')->name('eventos.')->group(function () {
+		Route::get('/',[EventosController::class,'index'])->name('index')->middleware(['role_or_permission:eventos.index']);
+	});
+
+	Route::resource('eventos', EventosController::class);
+
+	Route::prefix('asignados')->name('asignados.')->group(function () {
+		Route::get('/',[AsignadosController::class,'index'])->name('index')->middleware(['role_or_permission:asignados.index']);
+	});
+
+	Route::resource('asignados', AsignadosController::class);
 
 	Route::prefix('programa-especial-de-recuperacion')->name('per.')->group(function () {
 		Route::get('/',[PerController::class,'index'])->name('index')->middleware(['role_or_permission:correcciones.index']);
 	});
 
 	Route::prefix('secciones')->name('secciones.')->group(function () {
+		Route::get('planificacion/{id}',[SeccionesController::class,'planificacion'])->name('planificacion')->middleware(['role_or_permission:secciones.index']);
+
 		Route::view('/','panel.admin.secciones.index')->name('index')->middleware(['role_or_permission:secciones.index']);
 		Route::get('{seccion}/ver',[SeccionesController::class,'ver_seccion'])->name('show')->middleware(['role_or_permission:secciones.index']);
 		Route::get('listado_de_estudiantes/{seccion}/{desasignatura}',[SeccionesController::class,'lista_esudiantes'])->name('lista_estudiantes')->middleware(['role_or_permission:secciones.index']);
@@ -140,6 +194,22 @@ Route::prefix('panel')->name('panel.')->group(function () {
 		});
     });
 
+
+	Route::prefix('cambios')->name('cambios.')->group(function () {
+		Route::get('/', function () {
+			return redirect()->route('panel.cambios.create');
+		})->name('index');
+		// Route::get('/', [CambiosController::class, 'index'])->middleware(['role_or_permission:cambios.index'])->name('index');
+		Route::get('/nueva-solicitud', [CambiosController::class, 'create'])->middleware(['role_or_permission:cambios.create'])->name('create');
+    });
+
+	Route::prefix('correcciones-de-calificaciones')->name('correcciones.')->group(function () {
+		Route::get('/', function () {
+			return redirect()->route('panel.correcciones.create');
+		})->name('index');
+		// Route::get('/', [AdminCorreccionesController::class, 'index'])->middleware(['role_or_permission:correcciones.index'])->name('index');
+		Route::get('/nueva-solicitud', [AdminCorreccionesController::class, 'create'])->middleware(['role_or_permission:correcciones.create'])->name('create');
+    });
 
     Route::prefix('comandos')->name('comandos.')->group(function () {
         Route::view('/','panel.admin.comandos.index')->name('index')->middleware(['role_or_permission:SuperAdmin|comandos.index']);

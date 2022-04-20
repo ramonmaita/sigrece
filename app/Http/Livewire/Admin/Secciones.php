@@ -53,7 +53,8 @@ class Secciones extends Component
     	if(!empty($this->nucleo_id) && $this->nucleo_id != ''&& $this->nucleo_id != null) {
     		$p = Nucleo::find($this->nucleo_id);
 
-			if(empty($this->pnf_id)){$this->pnf_id = $p->id;}
+			if(empty($this->pnf_id)){$this->pnf_id = $p->Pnfs->first()->id;}
+			// if(empty($this->pnf_id)){$this->pnf_id = $p->id;}
 
     		if ($p) {
     			$p = $p->Pnfs;
@@ -174,12 +175,25 @@ class Secciones extends Component
         $this->cupos = $seccion->cupos;
     	$this->turno = $seccion->turno;
     	$this->observacion = $seccion->observacion;
+		$this->estatus = $seccion->estatus;
 
     }
 
     public function update()
     {
-    	$this->validate();
+    	$this->validate(
+			[
+				'nucleo_id' => 'required',
+				'pnf_id' => 'required',
+				'plan_id' => 'required',
+				'periodo_id' => 'required',
+				'trayecto_id' => 'required',
+				'nombre' => 'required|string|min:8|max:40',
+				'cupos' => 'required|numeric|digits_between:1,3|min:0|max:100',
+				'turno' => 'required',
+				'observacion' => 'required|string|min:2|max:150',
+			]
+		);
     	try {
     		DB::beginTransaction();
 
@@ -194,6 +208,7 @@ class Secciones extends Component
     			// 'cupos' => $this->cupos ,
     			'turno' => $this->turno ,
     			'observacion' => $this->observacion ,
+				'estatus' => $this->estatus ,
     		]);
     		DB::commit();
             $this->resetInputs();

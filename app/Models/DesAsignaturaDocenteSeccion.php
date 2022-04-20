@@ -32,10 +32,22 @@ class DesAsignaturaDocenteSeccion extends Model implements Auditable
 		// 	'id', // Local key on the mechanics table...
 		// 	'id' // Local key on the cars table...
 		// );
-		return $this->hasMany(Inscripcion::class,'desasignatura_docente_seccion_id','id');
+		return $this->hasMany(Inscripcion::class,'desasignatura_docente_seccion_id','id')->groupBy('alumno_id');
 	}
 	public function Docente()
 	{
 		return $this->belongsTo(Docente::class);
+	}
+
+
+	public function Actividades()
+	{
+		return $this->hasMany(Actividad::class,'desasignatura_docente_seccion_id','id');
+	}
+
+
+	public function NotasActividades()
+	{
+		return ActividadNota::whereIn('actividad_id',$this->Actividades->pluck('id'))->get();
 	}
 }

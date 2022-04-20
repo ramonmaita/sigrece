@@ -187,7 +187,8 @@ return [
     */
 
     'use_route_url' => true,
-    'dashboard_url' => 'panel.index',
+    'dashboard_url' => 'raiz',
+    // 'dashboard_url' => 'panel.index',
     'logout_url' => 'logout',
     'login_url' => 'login',
     'register_url' => 'register',
@@ -312,16 +313,39 @@ return [
             ],
         ],
 		[
+            'text' => 'Graduación',
+            'route'  => 'panel.graduacion.index',
+            'icon' => 'fas fa-fw fa-graduation-cap',
+            'can'  => 'graduacion.index',
+        ],
+		[
+            'text' => 'Cambios',
+            'route'  => 'panel.cambios.index',
+            'icon' => 'fas fa-fw fa-exchange-alt',
+            'can'  => 'cambios.index',
+        ],
+		[
             'text' => 'Solicitudes',
             'route'  => 'panel.solicitudes.index',
             'icon' => 'fas fa-fw fa-question-circle',
             'can'  => 'solicitudes.index',
         ],
 		[
-            'text' => 'PER',
-            'route'  => 'panel.per.index',
+            'text'    => 'Correcciones',
             'icon' => 'fas fa-fw fa-undo',
-            'can'  => 'correcciones.index',
+			'can'  => 'correcciones.index',
+            'submenu' => [
+                [
+					'text' => 'PER',
+					'route'  => 'panel.per.index',
+					'can'  => 'correcciones.index',
+				],
+				[
+					'text' => 'Calificaciones',
+					'route'  => 'panel.correcciones.index',
+					'can'  => 'correcciones.index',
+				],
+            ],
         ],
         [
             'text' => 'Usuarios',
@@ -334,6 +358,18 @@ return [
             'route'  => 'panel.roles.index',
             'icon' => 'fas fa-fw fa-users-cog',
             'can' => 'roles-permisos.index',
+        ],
+        [
+            'text' => 'Eventos',
+            'route'  => 'panel.eventos.index',
+            'icon' => 'fas fa-fw fa-calendar',
+            'can' => 'eventos.index',
+        ],
+		[
+            'text' => 'Asignados',
+            'route'  => 'panel.asignados.index',
+            'icon' => 'fas fa-fw fa-calendar',
+            'can' => 'asignados.index',
         ],
 		[
             'text'    => 'Estadisticas',

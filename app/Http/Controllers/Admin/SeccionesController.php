@@ -11,6 +11,8 @@ use App\Models\CargaNota;
 use App\Models\DesAsignatura;
 use App\Models\DesAsignaturaDocenteSeccion;
 use App\Models\HistoricoNota;
+use App\Models\Inscripcion;
+use App\Models\Pnf;
 use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
 use Dompdf\Dompdf;
@@ -21,7 +23,15 @@ class SeccionesController extends Controller
 {
 	public function ver_seccion(Seccion $seccion)
 	{
-		return view('panel.admin.secciones.show', ['seccion' => $seccion]);
+		$ucs = DesAsignaturaDocenteSeccion::where('seccion_id',$seccion->id)->pluck('id');
+		$total = Inscripcion::whereIn('desasignatura_docente_seccion_id',$ucs)->groupBy('alumno_id')->get();
+		// $total = DesAsignaturaDocenteSeccion::with(['inscritos' => function ($query)
+		// {
+		// 	$query->groupBy('alumno_id');
+		// }])->where('seccion_id',$seccion->id)->get();
+		$estudiantes = count($total);
+		// dd($total);
+		return view('panel.admin.secciones.show', ['seccion' => $seccion, 'estudiantes' => $estudiantes]);
 	}
 	public function lista_esudiantes(Seccion $seccion, DesAsignatura $desasignatura)
 	{
@@ -219,26 +229,33 @@ class SeccionesController extends Controller
 		return view('panel.admin.secciones.listado_estudiantes',['seccion' =>  $seccion]);
 	}
 
-	public function acta(HistoricoNota $seccion)
+	public function acta($relacion)
 	{
 		// if($seccion->cedula_docente != Auth::user()->cedula){
 		// 	return abort(403);
 		// }
-		$detalles = HistoricoNota::where('seccion', $seccion->seccion)->where('cod_desasignatura', $seccion->cod_desasignatura)->where('cedula_docente', $seccion->cedula_docente)->where('periodo', $seccion->periodo)->first();
-		$notas = HistoricoNota::where('seccion', $seccion->seccion)
-			->where('periodo', $seccion->periodo)
-			->where('cod_desasignatura',$seccion->cod_desasignatura)
-			->where('cedula_docente',$seccion->cedula_docente)
-			->where('docente',$seccion->docente)
-			->where('especialidad',$seccion->especialidad)
-			->where('estatus', 0)
-			->groupBy('cedula_estudiante')
-			->orderBy('cedula_estudiante', 'asc')
-			->get();
-		$fecha = CargaNota::where('periodo',$seccion->periodo)
-			->where('cod_desasignatura',$seccion->cod_desasignatura)
-			->where('cedula_docente',$seccion->cedula_docente)
-			->where('seccion',$seccion->seccion)
+		$relacion = DesAsignaturaDocenteSeccion::find($relacion);
+		// return dd($relacion);
+		$seccion = $relacion->Seccion;
+		$detalles = HistoricoNota::where('seccion', $relacion->Seccion->nombre)
+		->where('cod_desasignatura', $relacion->DesAsignatura->codigo)
+		->where('cedula_docente', $relacion->Docente->cedula)
+		->where('periodo', $seccion->Periodo->nombre)
+		->first();
+		$notas = HistoricoNota::where('seccion', $relacion->Seccion->nombre)
+		->where('periodo', $relacion->Seccion->Periodo->nombre)
+		->where('cod_desasignatura',$relacion->DesAsignatura->codigo)
+		->where('cedula_docente',$relacion->Docente->cedula)
+		->where('especialidad', $relacion->Seccion->Pnf->codigo)
+		->where('estatus', 1)
+		->groupBy('cedula_estudiante')
+		->orderBy('cedula_estudiante', 'asc')
+		->get();
+		// return dd($notas);
+		$fecha = CargaNota::where('periodo', $seccion->Periodo->nombre)
+			->where('cod_desasignatura',$relacion->DesAsignatura->codigo)
+			->where('cedula_docente',$relacion->Docente->cedula)
+			->where('seccion',$relacion->Seccion->nombre)
 			->first();
 
 		$html = view('panel.docentes.secciones.acta_notas', ['estudiantes' => $notas, 'detalles' => $detalles,'fecha' => $fecha]);
@@ -256,5 +273,23 @@ class SeccionesController extends Controller
 
 		// return $pdf->stream();
 		// return $pdf->download('invoice.pdf');
+	}
+
+	public function planificacion($id)
+	{
+		$pnf = Pnf::find($id);
+
+		$html = view('panel.admin.secciones.planificacion',['pnf' => $pnf]);
+
+		$options = new Options();
+		$options->setIsRemoteEnabled(true);
+		$dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A3','portrait');
+        $dompdf->render();
+        $font = $dompdf->getFontMetrics()->get_font("helvetica");
+                                        //ancho alto
+        // $dompdf->getCanvas()->page_text(500, 750, "Pág. {PAGE_NUM} de {PAGE_COUNT}", $font, 10, array(0,0,0));
+        return $dompdf->stream('PLANIFICACION '.$pnf->nombre.'.pdf', array("Attachment" => false));
 	}
 }

@@ -14,7 +14,7 @@
     <!-- Styles -->
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
     @laravelPWA
-	@livewireStyles
+    @livewireStyles
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
     <style>
@@ -24,49 +24,50 @@
 
     </style>
 
-<style>
-	.animated {
-		-webkit-animation-duration: 1s;
-		animation-duration: 1s;
-		-webkit-animation-fill-mode: both;
-		animation-fill-mode: both;
-	}
+    <style>
+        .animated {
+            -webkit-animation-duration: 1s;
+            animation-duration: 1s;
+            -webkit-animation-fill-mode: both;
+            animation-fill-mode: both;
+        }
 
-	.animated.faster {
-		-webkit-animation-duration: 500ms;
-		animation-duration: 500ms;
-	}
+        .animated.faster {
+            -webkit-animation-duration: 500ms;
+            animation-duration: 500ms;
+        }
 
-	.fadeIn {
-		-webkit-animation-name: fadeIn;
-		animation-name: fadeIn;
-	}
+        .fadeIn {
+            -webkit-animation-name: fadeIn;
+            animation-name: fadeIn;
+        }
 
-	.fadeOut {
-		-webkit-animation-name: fadeOut;
-		animation-name: fadeOut;
-	}
+        .fadeOut {
+            -webkit-animation-name: fadeOut;
+            animation-name: fadeOut;
+        }
 
-	@keyframes fadeIn {
-		from {
-			opacity: 0;
-		}
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
 
-		to {
-			opacity: 1;
-		}
-	}
+            to {
+                opacity: 1;
+            }
+        }
 
-	@keyframes fadeOut {
-		from {
-			opacity: 1;
-		}
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
 
-		to {
-			opacity: 0;
-		}
-	}
-</style>
+            to {
+                opacity: 0;
+            }
+        }
+
+    </style>
 </head>
 
 <body class="min-h-screen bg-gray-100">
@@ -77,22 +78,22 @@
             <div class="inline-flex">
                 <a class="_o6689fn" href="/">
                     <div class="hidden md:block">
-						<div class="inline-flex">
+                        <div class="inline-flex">
 
-							<img src="{{ asset('img/logo.png') }}" alt="logo" style="max-width: 50px">
+                            <img src="{{ asset('img/logo.png') }}" alt="logo" style="max-width: 50px">
 
                         </div>
                     </div>
                     <div class="block md:hidden">
-						<img src="{{ asset('img/logo.png') }}" alt="logo" style="max-width: 50px">
+                        <img src="{{ asset('img/logo.png') }}" alt="logo" style="max-width: 50px">
                     </div>
                 </a>
             </div>
-			<div class="top-0 left-0 inline-flex float-left">
+            <div class="top-0 left-0 inline-flex float-left">
 
-				<h4 class="items-center text-xl font-semibold leading-tight text-center text-gray-800">
-					UPTBolivar</h4>
-			</div>
+                <h4 class="items-center text-xl font-semibold leading-tight text-center text-gray-800">
+                    UPTBolivar</h4>
+            </div>
 
             <!-- end logo -->
 
@@ -115,7 +116,15 @@
                         </button>
                       </div>
                     </div> --}}
-
+                    @php
+                       $actual = \Carbon\Carbon::now();
+						$inicio = \Carbon\Carbon::create(2021, 9, 27, 9, 00, 00);
+						// $fin = \Carbon\Carbon::create(2021, 4, 25, 23, 59, 00);
+						$fin = \Carbon\Carbon::create(2021, 10, 15, 23, 59, 00);
+                        $nuevo_ingreso = true;
+                        $active_ni = request()->routeIs('nuevo-ingreso.index') ? true : false;
+                        $active_ad = request()->routeIs('actualizar-datos.index') ||  request()->routeIs('actualizar-datos.show-form')? true : false;
+                    @endphp
                     @if (Auth::check())
                         <div class="block">
                             <div class="relative inline">
@@ -132,21 +141,44 @@
                                 </a>
                             </div>
                         </div>
+						@if (Auth::user()->hasRole('Admin'))
+                            <a href="{{ route('nuevo-ingreso.index') }}"
+                                class="ml-1 inline-block px-3 py-2 rounded-full border-2 border-transparent {{ $active_ni == true ? 'bg-blue-800 text-white  hover:bg-white hover:border-blue-800 hover:text-blue-800' : 'hover:border-blue-800 hover:text-blue-800' }} ">
+                                <div class="relative flex items-center cursor-pointer whitespace-nowrap">Nuevo Ingreso
+                                </div>
+                            </a>
+                        @endif
                     @else
-					{{-- @if (\Carbon\Carbon::now())
+                        {{-- @if (\Carbon\Carbon::now())
 
 					@endif --}}
-						@php
-							$actual = \Carbon\Carbon::now();
-							$inicio = \Carbon\ Carbon::create(2021, 4, 8, 8, 30, 00);
-							$fin = \Carbon\Carbon::create(2021, 4, 23, 23, 59, 00);
-						@endphp
-						{{-- @dump( $actual->greaterThanOrEqualTo($inicio)) --}}
-						@if ($actual->greaterThanOrEqualTo($inicio) == true)
-							<a href="{{ route('actualizar-datos.index') }}" class="inline-block px-3 py-2 rounded-full hover:bg-blue-800 hover:text-white">
-								<div class="relative flex items-center cursor-pointer whitespace-nowrap">Actualizar Datos</div>
-							</a>
-						@endif
+
+                        {{-- @dump( $actual->greaterThanOrEqualTo($inicio)) --}}
+                        @if (!request()->routeIs('login') && !request()->routeIs('raiz') )
+                            <a href="{{ route('login') }}"
+                                class="inline-block px-3 py-2 ml-1 border-2 border-transparent rounded-full hover:border-blue-800 hover:text-blue-800">
+                                <div class="relative flex items-center cursor-pointer whitespace-nowrap">Iniciar Sesión
+                                </div>
+                            </a>
+                        @endif
+
+                        @if ($actual->greaterThanOrEqualTo($inicio) == true && $actual->lessThanOrEqualTo($fin) == true)
+                            <a href="{{ route('actualizar-datos.index') }}"
+                                class="inline-block px-3 py-2 ml-1 rounded-full border-2 border-transparent {{ $active_ad == true ? 'bg-blue-800 text-white  hover:bg-white hover:border-blue-800 hover:text-blue-800' : 'hover:border-blue-800 hover:text-blue-800' }} ">
+                                <div class="relative flex items-center cursor-pointer whitespace-nowrap">Actualizar
+                                    Datos</div>
+                            </a>
+                        @endif
+
+
+                        {{-- @if ($nuevo_ingreso == true) --}}
+                        @if ($actual->greaterThanOrEqualTo($inicio) == true && $actual->lessThanOrEqualTo($fin) == true)
+                            <a href="{{ route('nuevo-ingreso.index') }}"
+                                class="ml-1 inline-block px-3 py-2 rounded-full border-2 border-transparent {{ $active_ni == true ? 'bg-blue-800 text-white  hover:bg-white hover:border-blue-800 hover:text-blue-800' : 'hover:border-blue-800 hover:text-blue-800' }} ">
+                                <div class="relative flex items-center cursor-pointer whitespace-nowrap">Nuevo Ingreso
+                                </div>
+                            </a>
+                        @endif
                     @endif
                 </div>
             </div>
@@ -154,121 +186,124 @@
         </nav>
         {{ $slot }}
 
-		<div class="fixed inset-0 z-50 flex items-center justify-center w-full overflow-hidden main-modal h-100 animated fadeIn faster"
-		style="background: rgba(0,0,0,.7); ">
-		<div
-			class="z-50 w-11/12 mx-auto overflow-y-auto bg-white border border-teal-500 rounded shadow-lg h-5/6 modal-container">
-			<div class="px-6 py-4 text-left modal-content h-5/6">
-				<!--Title-->
-				<div class="flex items-center justify-between pb-3">
-					<p class="text-2xl font-bold">Manual de Inscripción</p>
-					<div class="z-50 cursor-pointer modal-close">
-						<svg class="text-black fill-current" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-							viewBox="0 0 18 18">
-							<path
-								d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z">
-							</path>
-						</svg>
-					</div>
-				</div>
-				<!--Body-->
-				<div class="my-5 h-5/6">
-                	<iframe src="{{ asset('manual_inscripcion.pdf') }}" frameborder="0" class="h-full w-100" width="100%" height="80%"></iframe>
-				</div>
-				<!--Footer-->
-				<div class="flex justify-end pt-2">
-					<button
-						class="p-3 px-4 text-white bg-gray-900 rounded-lg focus:outline-none modal-close hover:bg-gray-700">Cerrar</button>
-					{{-- <button
+        <div class="fixed inset-0 z-50 flex items-center justify-center w-full overflow-hidden main-modal h-100 animated fadeIn faster"
+            style="background: rgba(0,0,0,.7); display:none">
+            <div
+                class="z-50 w-11/12 mx-auto overflow-y-auto bg-white border border-teal-500 rounded shadow-lg h-5/6 modal-container">
+                <div class="px-6 py-4 text-left modal-content h-5/6">
+                    <!--Title-->
+                    <div class="flex items-center justify-between pb-3">
+                        <p class="text-2xl font-bold">Manual de Inscripción</p>
+                        <div class="z-50 cursor-pointer modal-close">
+                            <svg class="text-black fill-current" xmlns="http://www.w3.org/2000/svg" width="18"
+                                height="18" viewBox="0 0 18 18">
+                                <path
+                                    d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z">
+                                </path>
+                            </svg>
+                        </div>
+                    </div>
+                    <!--Body-->
+                    <div class="my-5 h-5/6">
+                        <iframe src="{{ asset('manual_inscripcion.pdf') }}" frameborder="0" class="h-full w-100"
+                            width="100%" height="80%"></iframe>
+                    </div>
+                    <!--Footer-->
+                    <div class="flex justify-end pt-2">
+                        <button
+                            class="p-3 px-4 text-white bg-gray-900 rounded-lg focus:outline-none modal-close hover:bg-gray-700">Cerrar</button>
+                        {{-- <button
 						class="p-3 px-4 ml-3 text-white bg-gray-900 rounded-lg focus:outline-none hover:bg-gray-700">Confirm</button> --}}
-				</div>
-			</div>
-		</div>
-	</div>
-	@livewireScripts()
-	<!-- jQuery -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        @livewireScripts()
+        <!-- jQuery -->
         <script type="text/javascript" src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-		<script>
-		$(function() {
-			$(document).on('keypress', '.SoloLetras', function(e) {
-		       	key = e.keyCode || e.which;
-		       	tecla = String.fromCharCode(key).toLowerCase();
-		       	letras = " áéíóúabcdefghijklmnñopqrstuvwxyz";
-		       	especiales = "8-37-39-46";
+        <script>
+            $(function() {
+                $(document).on('keypress', '.SoloLetras', function(e) {
+                    key = e.keyCode || e.which;
+                    tecla = String.fromCharCode(key).toLowerCase();
+                    letras = " áéíóúabcdefghijklmnñopqrstuvwxyz";
+                    especiales = "8-37-39-46";
 
-		       tecla_especial = false
-		       	for(var i in especiales){
-		            if(key == especiales[i]){
-		                tecla_especial = true;
-		                break;
-		            }
-		        }
+                    tecla_especial = false
+                    for (var i in especiales) {
+                        if (key == especiales[i]) {
+                            tecla_especial = true;
+                            break;
+                        }
+                    }
 
-		        if(letras.indexOf(tecla)==-1 && !tecla_especial){
-		            return false;
-		        }
-		     });
+                    if (letras.indexOf(tecla) == -1 && !tecla_especial) {
+                        return false;
+                    }
+                });
 
-	     	$(document).on('keypress', '.SoloNumeros', function(e) {
-		       	key = e.keyCode || e.which;
-		       	tecla = String.fromCharCode(key).toLowerCase();
-		       	letras = "0123456789";
-		       	especiales = "8-37-39-46";
+                $(document).on('keypress', '.SoloNumeros', function(e) {
+                    key = e.keyCode || e.which;
+                    tecla = String.fromCharCode(key).toLowerCase();
+                    letras = "0123456789";
+                    especiales = "8-37-39-46";
 
-		       	tecla_especial = false
-		       for(var i in especiales){
-		            if(key == especiales[i]){
-		                tecla_especial = true;
-		                break;
-		            }
-		        }
+                    tecla_especial = false
+                    for (var i in especiales) {
+                        if (key == especiales[i]) {
+                            tecla_especial = true;
+                            break;
+                        }
+                    }
 
-		        if(letras.indexOf(tecla)==-1 && !tecla_especial){
-		            return false;
-		        }
-		     });
+                    if (letras.indexOf(tecla) == -1 && !tecla_especial) {
+                        return false;
+                    }
+                });
 
 
-		});
-	</script>
-		<script>
-			const modal = document.querySelector('.main-modal');
-			const closeButton = document.querySelectorAll('.modal-close');
+            });
+        </script>
+        <script>
+            const modal = document.querySelector('.main-modal');
+            const closeButton = document.querySelectorAll('.modal-close');
 
-			const modalClose = () => {
-				modal.classList.remove('fadeIn');
-				modal.classList.add('fadeOut');
-				setTimeout(() => {
-					modal.style.display = 'none';
-				}, 500);
-			}
+            const modalClose = () => {
+                modal.classList.remove('fadeIn');
+                modal.classList.add('fadeOut');
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                }, 500);
+            }
 
-			const openModal = () => {
-				modal.classList.remove('fadeOut');
-				modal.classList.add('fadeIn');
-				modal.style.display = 'flex';
-			}
+            const openModal = () => {
+                modal.classList.remove('fadeOut');
+                modal.classList.add('fadeIn');
+                modal.style.display = 'flex';
+            }
 
-			for (let i = 0; i < closeButton.length; i++) {
+            for (let i = 0; i < closeButton.length; i++) {
 
-				const elements = closeButton[i];
+                const elements = closeButton[i];
 
-				elements.onclick = (e) => modalClose();
+                elements.onclick = (e) => modalClose();
 
-				modal.style.display = 'none';
+                modal.style.display = 'none';
 
-				window.onclick = function (event) {
-					if (event.target == modal) modalClose();
-				}
-			}
+                window.onclick = function(event) {
+                    if (event.target == modal) modalClose();
+                }
+            }
 
-			@if (request()->routeIs('login') || request()->routeIs('raiz') || request()->routeIs('actualizar-datos.index'))
+            // @if ($actual->lessThanOrEqualTo($fin) == true)
+            //     @if (request()->routeIs('login') || request()->routeIs('raiz') || request()->routeIs('actualizar-datos.index'))
 
-				openModal();
+            //         openModal();
 
-			@endif
-		</script>
+            //     @endif
+            // @endif
+        </script>
     </div>
 
     @yield('scripts')

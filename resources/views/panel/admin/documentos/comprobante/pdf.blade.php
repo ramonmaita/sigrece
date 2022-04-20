@@ -129,6 +129,7 @@
      	</tr>
 	@endforeach --}}
 	@foreach ($inscrito->Inscripcion as $uc)
+		@if( @$uc->RelacionDocenteSeccion->DesAsignatura->Asignatura->plan_id == $alumno->plan_id)
 		<tr>
 			<td width="6%" align="center">
 				<div>
@@ -161,6 +162,7 @@
 			</td> --}}
 
 		</tr>
+		@endif
 	@endforeach
 
 	</table>

@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\ActualizacionDato;
 use App\Models\CargaNota;
+use App\Models\Evento;
 use App\Models\HistoricoNota;
 use App\Models\Inscrito;
+use App\Models\Periodo;
 use App\Models\Pnf;
+use App\Models\Seccion;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
@@ -25,20 +28,23 @@ class EstadisticasController extends Controller
 		// return HistoricoNota::where('periodo',2020)->where('especialidad',$pnfs->first()->codigo)->groupBy('seccion')->pluck('seccion');
 		foreach ($pnfs as $key => $pnf) {
 			// echo $pnf->codigo."<br>";
-			$total_secciones = HistoricoNota::where('periodo',2020)->where('especialidad',$pnf->codigo)->groupBy('seccion')->pluck('seccion');
-			// $total_cargado = HistoricoNota::where('periodo',2020)->where('especialidad',$pnf->codigo)->where('estatus',0)->groupBy('seccion')->pluck('seccion');
+			$total_secciones = Seccion::where('periodo_id',6)->where('estatus','ACTIVA')->where('pnf_id',$pnf->id)->get();
+			// $total_secciones = HistoricoNota::where('periodo',2021)->where('especialidad',$pnf->codigo)->groupBy('seccion')->pluck('seccion');
+			// $total_cargado = HistoricoNota::where('periodo',2021)->where('especialidad',$pnf->codigo)->where('estatus',0)->groupBy('seccion')->pluck('seccion');
 			foreach ($total_secciones as $key => $seccion) {
-				$seccion_uc = HistoricoNota::where('periodo',2020)->where('especialidad',$pnf->codigo)->where('seccion',$seccion)->groupBy('cod_desasignatura')->pluck('cod_desasignatura');
-				$cargado = CargaNota::where('periodo',2020)->where('seccion',$seccion)->count();
+				// $seccion_uc = HistoricoNota::where('periodo',2021)->where('especialidad',$pnf->codigo)->where('seccion',$seccion)->groupBy('cod_desasignatura')->pluck('cod_desasignatura');
+				$cargado = CargaNota::where('periodo',2021)->where('seccion',$seccion->nombre)->count();
+				$seccion_uc = $seccion->DesAsignaturas;
 				// $cargado += 3;
-				$porcentage = ($cargado*100)/count($seccion_uc);
-				// echo $seccion." total: ".count($seccion_uc)." Cargado: ".$cargado." %de carga: ".$porcentage."<br>";
+				// return dd(count($seccion_uc));
+				$porcentaje = ($cargado == 0) ? 0 : ($cargado*100)/count($seccion_uc);
+				// echo $seccion." total: ".count($seccion_uc)." Cargado: ".$cargado." %de carga: ".$porcentaje."<br>";
 
 				array_push($pnf_detalles,array(
-					'seccion' => $seccion,
+					'seccion' => $seccion->nombre,
 					'uc_total' => count($seccion_uc),
 					'uc_cargada' => $cargado,
-					'p_carga' => $porcentage
+					'p_carga' => $porcentaje
 				));
 			}
 			// print_r($pnf_detalles);
@@ -61,8 +67,11 @@ class EstadisticasController extends Controller
 
 	public function show_secciones($seccion,$periodo)
 	{
-		$seccion = HistoricoNota::where('seccion', $seccion)->where('periodo', $periodo)->groupBy('cod_desasignatura')->get();
-		return view('panel.admin.estadisticas.carga_notas.show',['seccion' => $seccion]);
+		$nombre_seccion = $seccion;
+		$periodo_id = Periodo::where('nombre',$periodo)->first();
+		// $seccion = HistoricoNota::where('seccion', $seccion)->where('periodo', $periodo)->groupBy('cod_desasignatura')->get();
+		$secciones = Seccion::where('nombre',$nombre_seccion)->where('estatus','ACTIVA')->where('periodo_id',$periodo_id->id)->first();
+		return view('panel.admin.estadisticas.carga_notas.show',['seccion' => $seccion, 'secciones' => $secciones]);
 	}
 
 	// TODO: INSCRIPCIONES
@@ -73,10 +82,37 @@ class EstadisticasController extends Controller
 
 	public function data()
 	{
-		$inicio = Carbon::create(2021,4,8); //TODO: CAMBIAR POR LA FECHA 2021-04-08
-		$fin = Carbon::create(2021,4,23);
 
-		$dia = Carbon::parse('2021-04-08'); //TODO: CAMBIAR POR LA FECHA 2021-04-08
+		$actual = \Carbon\Carbon::now()->toDateTimeString();
+		$evento_inscripcion_activo = false;
+		$evento_inscripcion = Evento::where('tipo','INSCRIPCION')
+		->where('evento_padre',0)
+		->where('inicio','<=',$actual)
+		->whereDate('fin','>=',$actual)
+		->orderBy('id','desc')
+		->first();
+		// return dd($actual);
+		// return dd($evento_inscripcion);
+		if($evento_inscripcion){
+			$evento_inscripcion_activo = true;
+			$inicio = Carbon::parse($evento_inscripcion->inicio);
+			$fin =  Carbon::parse($evento_inscripcion->fin);
+			$dia = Carbon::parse($evento_inscripcion->inicio); //TODO: CAMBIAR POR LA FECHA 2021-04-08
+		}else{
+
+			// $inicio = Carbon::create(2021,4,8); //TODO: CAMBIAR POR LA FECHA 2021-04-08
+			// $fin = Carbon::create(2021,4,23);
+
+			// $dia = Carbon::parse('2021-04-08'); //TODO: CAMBIAR POR LA FECHA 2021-04-08
+			$evento_inscripcion = Evento::where('tipo','INSCRIPCION')
+			->where('evento_padre',0)
+			->orderBy('id','desc')
+			->first();
+			$inicio = Carbon::parse($evento_inscripcion->inicio);
+			$fin =  Carbon::parse($evento_inscripcion->fin);
+			$dia = Carbon::parse($evento_inscripcion->inicio); //TODO: CAMBIAR POR LA FECHA 2021-04-08
+		}
+
 		$datos = [];
 		$label = [];
 		$cantidad = 0;
@@ -91,7 +127,15 @@ class EstadisticasController extends Controller
 			array_push($datos, $cantidad);
 		}
 
-		$dia = Carbon::parse('2021-04-08'); //TODO: CAMBIAR POR LA FECHA 2021-04-08
+		if ($evento_inscripcion) {
+			$dia = Carbon::parse($evento_inscripcion->inicio);
+		}else{
+			// $dia = Carbon::parse('2021-04-08');
+			$inicio = Carbon::parse($evento_inscripcion->inicio);
+			$fin =  Carbon::parse($evento_inscripcion->fin);
+			$dia = Carbon::parse($evento_inscripcion->inicio); //TODO: CAMBIAR POR LA FECHA 2021-04-08
+		}
+		// $dia = Carbon::parse('2021-04-08'); //TODO: CAMBIAR POR LA FECHA 2021-04-08
 		$datos_inscritos = [];
 		$label_inscritos = [];
 		$cantidad = 0;
@@ -106,14 +150,26 @@ class EstadisticasController extends Controller
 
 		// TODO: PARA GRAFICA DE INSCRITOS POR PNF
 		$data = [];
-		$pnfs = Pnf::whereIn('id',[1,2,3,4,5,6,7,12,13])->get();
+		$pnfs = Pnf::whereIn('id',[1,2,3,4,5,6,7,12,13,14,15,16])->get();
 		foreach ($pnfs as $key => $pnf) {
 			$data[$pnf->codigo] = [
 				'pnf' => $pnf->acronimo,
 				'cantidad' => 0
 			];
 		}
-		$inscritos = Inscrito::with('alumno')->get();
+		if($evento_inscripcion){
+			$evento_inscripcion_activo = true;
+			$inicio = $evento_inscripcion->inicio;
+			$fin =  $evento_inscripcion->fin;
+			$dia = $evento_inscripcion->inicio; //TODO: CAMBIAR POR LA FECHA 2021-04-08
+		}else{
+			// $inicio = Carbon::create(2021,4,8); //TODO: CAMBIAR POR LA FECHA 2021-04-08
+			// $fin = Carbon::create(2021,4,23);
+
+			// $dia = Carbon::parse('2021-04-08'); //TODO: CAMBIAR POR LA FECHA 2021-04-08
+		}
+		// return $fin;
+		$inscritos = Inscrito::with('alumno')->where('created_at','>=',$inicio)->where('created_at','<=',$fin)->get();
 		foreach ($inscritos as $key => $inscrito_pnf) {
 			$data[$inscrito_pnf->Alumno->Pnf->codigo]['cantidad'] = $data[$inscrito_pnf->Alumno->Pnf->codigo]['cantidad'] + 1;
 		}

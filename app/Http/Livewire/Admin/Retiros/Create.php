@@ -80,7 +80,7 @@ class Create extends Component
 						// echo 'esta se va a retirar <br>';
 						$inscripcion = Inscripcion::find($inscripcion_id);
 						$soliciutd = Solicitud::create([
-							'solicitante_id' => $alumno->Usuario->id,
+							'solicitante_id' => ($alumno->Usuario) ? $alumno->Usuario->id : Auth::user()->id,
 							'admin_id' => Auth::user()->id ,
 							'desasignatura_id' => $inscripcion->RelacionDocenteSeccion->DesAsignatura->id ,
 							'periodo' => $inscripcion->RelacionDocenteSeccion->Seccion->Periodo->nombre ,

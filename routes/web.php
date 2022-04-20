@@ -40,6 +40,31 @@ Route::prefix('actualizar-datos')->name('actualizar-datos.')->group(function () 
 
 });
 
+Route::get('/{nacionalidad}/{cedula}/verificar',[WebController::class, 'verifcar_graduando'])->name('verificar_graduando');
+
+
+Route::prefix('nuevo-ingreso')->name('nuevo-ingreso.')->group(function () {
+	Route::get('/', function () {
+		return view('web.nuevo_ingreso.index');
+	})->name('index');
+	Route::prefix('asignados')->name('asignados.')->group(function () {
+		Route::get('/', [WebController::class, 'index_nuevo_ingreso'])->name('index');
+		Route::post('/buscar', [WebController::class, 'search_asignado'])->name('buscar');
+		Route::get('/{id_encriptado}', [WebController::class, 'show_form_asignado'])->name('show-form');
+	});
+	Route::prefix('otras-oportunidades-de-estudios')->name('flotante.')->group(function () {
+		// Route::get('/', function () {
+		// 	return view('web.nuevo_ingreso.flotante.index');
+		// })->name('index');
+		Route::get('/', [WebController::class, 'show_form_flotante'])->name('index');
+	});
+	// Route::get('/', [WebController::class, 'index_estudiante_actualizar'])->name('index');
+	Route::post('/buscar', [WebController::class, 'search_estudiante_actualizar'])->name('buscar');
+	Route::get('/{id_encriptado}', [WebController::class, 'show_form_actualizar_estudiante'])->name('show-form');
+
+});
+
+
 Route::get('/actualizar-datos1', function () {
 	return view('web.estudiantes.index');
 })->name('buscar_estudiante');

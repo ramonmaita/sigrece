@@ -6,7 +6,7 @@
         <div class="mb-2 row">
             <div class="col-sm-6">
                 <h1>
-                    Estadisticas: {{ $seccion->first()->seccion }}
+                    Estadisticas: {{ $secciones->nombre }}
                 </h1>
             </div>
             <div class="col-sm-6">
@@ -22,7 +22,7 @@
                         </a>
                     </li>
                     <li class="breadcrumb-item active">
-                        Estadisticas: {{ $seccion->first()->seccion }}
+                        Estadisticas: {{ $secciones->nombre }}
                     </li>
                 </ol>
             </div>
@@ -46,15 +46,15 @@
                     </tr>
                 </thead>
                 <tbody>
-					@forelse ($seccion as $uc)
+					@forelse ($secciones->DesAsignaturas as $uc)
 						<tr>
-							<td scope="row">{{ @$uc->DesAsignatura->tri_semestre }}</td>
-							<td>{{ $uc->nombre_asignatura }}</td>
-							<td>{{ $uc->cedula_docente }} {{ $uc->docente }}</td>
+							<td scope="row">{{ @$uc->tri_semestre }}</td>
+							<td>{{ @$uc->nombre }}</td>
+							<td>{{ $secciones->ConsultarDocente($uc->pivot->docente_id,$uc->id)->Docente->nombre_completo }}</td>
 							<td>
 								<small>
-									@if ($uc->estatus == 0)
-									CARGADA POR: <b>{{ $uc->estatus_carga($uc->seccion,$uc->periodo,$uc->cod_desasignatura)->User->nombre }}  {{ $uc->estatus_carga($uc->seccion,$uc->periodo,$uc->cod_desasignatura)->User->apellido }} </b> EL <b>{{ \Carbon\Carbon::parse($uc->estatus_carga($uc->seccion,$uc->periodo,$uc->cod_desasignatura)->fecha)->format('d/m/Y h:i:s A') }}</b>
+									@if (@$uc->estatus_carga($secciones->nombre,$secciones->Periodo->nombre))
+									CARGADA POR: <b>{{ $uc->estatus_carga($secciones->nombre,$secciones->Periodo->nombre)->User->nombre }}  {{ $uc->estatus_carga($secciones->nombre,$secciones->Periodo->nombre)->User->apellido }} </b> EL <b>{{ \Carbon\Carbon::parse($uc->estatus_carga($secciones->nombre,$secciones->Periodo->nombre)->fecha)->format('d/m/Y h:i:s A') }}</b>
 									@else
 									POR CARGAR
 									@endif
@@ -62,8 +62,8 @@
 							</td>
 							<td>
 								{{-- {{ route('panel.docente.secciones.acta',[$uc]) }} --}}
-								@if ($uc->estatus == 0)
-								<a class="btn btn-sm btn-danger" href="{{ route('panel.secciones.acta',[$uc]) }}" role="button" target="_blank">
+								@if (@$uc->estatus_carga($secciones->nombre,$secciones->Periodo->nombre))
+								<a class="btn btn-sm btn-danger" href="{{ route('panel.secciones.acta',['seccion' => $uc->pivot->id]) }}" role="button" target="_blank">
 									<i class="far fa-file-pdf "></i>
 								</a>
 								@else

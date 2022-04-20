@@ -26,6 +26,6 @@ class ComprobanteController extends Controller
         $font = $dompdf->getFontMetrics()->get_font("helvetica");
                                         //ancho alto
         $dompdf->getCanvas()->page_text(500, 770, "Pág. {PAGE_NUM} de {PAGE_COUNT}", $font, 10, array(0,0,0));
-        return $dompdf->stream("$alumno->nombres$alumno->apellidos.pdf", array("Attachment" => false));
+        return $dompdf->stream("COMPROBANTE DE $alumno->nombres $alumno->apellidos.pdf", array("Attachment" => false));
 	}
 }

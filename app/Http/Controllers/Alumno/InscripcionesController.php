@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Alumno;
 use App\Models\Asignatura;
 use App\Models\DesAsignaturaDocenteSeccion;
+use App\Models\Ingreso;
 use App\Models\Inscripcion;
 use App\Models\Inscrito;
 use App\Models\Periodo;
@@ -14,6 +15,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
+use function PHPUnit\Framework\isEmpty;
 
 class InscripcionesController extends Controller
 {
@@ -178,6 +181,10 @@ class InscripcionesController extends Controller
 			switch ($alumno->Pnf->codigo) {
 				case 40:
 					// TODO: COMIENZA ELECTRICIDAD
+					if ($alumno->plan_id == 27) {
+						# code...
+						return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+					}
 					switch ($asignatura->trayecto_id) {
 						case 8:
 							// TRAYECTO INICIAL
@@ -187,7 +194,12 @@ class InscripcionesController extends Controller
 									if (round($nota_final) < 12) {
 										$e_r_mat = 1; //REPROBO MATEMATICA TI
 										array_push($uc_acursar, $asignatura);
-
+										if($alumno->NotasTrayecto($alumno->Plan->Asignaturas->where('trayecto_id',1)->pluck('codigo'))->count() == 0 && $alumno->plan_id != $alumno->Pnf->Planes->sortByDesc('id')->first()->id){
+											$alumno->update([
+												'plan_id'  => $alumno->Pnf->Planes->sortByDesc('id')->first()->id
+											]);
+											return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+										}
 									}
 								break;
 
@@ -196,7 +208,12 @@ class InscripcionesController extends Controller
 									if (round($nota_final) < 12) {
 										$e_r_fisi = 1; //REPROBO FISICA TI
 										array_push($uc_acursar, $asignatura);
-
+										if($alumno->NotasTrayecto($alumno->Plan->Asignaturas->where('trayecto_id',1)->pluck('codigo'))->count() == 0 && $alumno->plan_id != $alumno->Pnf->Planes->sortByDesc('id')->first()->id){
+											$alumno->update([
+												'plan_id'  => $alumno->Pnf->Planes->sortByDesc('id')->first()->id
+											]);
+											return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+										}
 									}
 								break;
 
@@ -206,7 +223,12 @@ class InscripcionesController extends Controller
 										array_push($uc_acursar, $asignatura);
 									}else{
 										$e_a_uc_ti++; //APROBO TI
-
+										// if($alumno->NotasTrayecto($alumno->Plan->Asignaturas->where('trayecto_id',1)->pluck('codigo')) && $alumno->plan_id != $alumno->Pnf->Planes->sortByDesc('id')->first()->id){
+										// 	$alumno->update([
+										// 		'plan_id'  => $alumno->Pnf->Planes->sortByDesc('id')->first()->id
+										// 	]);
+										// 	return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+										// }
 									}
 								break;
 							}
@@ -283,23 +305,24 @@ class InscripcionesController extends Controller
 
 						case 4:
 							# TRAYECTO 4
-							if ($e_a_uc_t3 == 8 || $e_a_uc_tn == 5 || $titulo ==1) {
+							if ($e_a_uc_t3 == 8 || $e_a_uc_tn == 5|| $titulo ==1) {
 								if (round($nota_final) < 12 && $asignatura->aprueba == 0 || round($nota_final) < 16 && $asignatura->aprueba == 1) {
 
 									if ($asignatura->codigo =="01PSI407" && round($nota_final) < 16 ) {
 										$e_r_psi4 = 1; // reprobo proyecto
 									}
-
-
 									array_push($uc_acursar, $asignatura);
 								}
 
+								if ($asignatura->codigo =="01PSI407" && round($nota_final) >= 16 ) {
+									$e_r_psi4 = 2;; // aprobo proyecto
+								}
 							}
 						break;
 
 						case 5:
 							# TRAYECTO 5
-							if ($e_r_psi4 == 0 && $e_a_uc_t3 == 8 || $e_a_uc_tn == 5) {
+							if ($e_r_psi4 == 2) {
 								if (round($nota_final) < 12 && $asignatura->aprueba == 0 || round($nota_final) < 16 && $asignatura->aprueba == 1) {
 									array_push($uc_acursar, $asignatura);
 								}
@@ -318,7 +341,10 @@ class InscripcionesController extends Controller
 
 				case 45:
 					// TODO: COMIENZA GEOCIENCIAS
-
+					if ($alumno->plan_id == 28) {
+						# code...
+						return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+					}
 					switch ($asignatura->trayecto_id) {
 						case 8:
 							# TRAYECTO INICIAL
@@ -331,6 +357,15 @@ class InscripcionesController extends Controller
 
 						case 1:
 							# TRAYECTO 1
+							if ($gcs_a_ti < 3) {
+								// TODO: ESTA COMPROBACION ES SI CURSO TRAYECTO 1 !!! TODO: OJO REVISAR TODO:
+								if($alumno->NotasTrayecto($alumno->Plan->Asignaturas->where('trayecto_id',1)->pluck('codigo'))->count() == 0 && $alumno->plan_id != $alumno->Pnf->Planes->sortByDesc('id')->first()->id){
+									$alumno->update([
+										'plan_id'  => $alumno->Pnf->Planes->sortByDesc('id')->first()->id
+									]);
+									return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+								}
+							}
 							if ($gcs_a_ti >= 3 && $asignatura->aprueba == 0 && round($nota_final) < 12 || $gcs_a_ti >= 3 && $asignatura->aprueba == 1 && round($nota_final) < 16) {
 								# code...
 								array_push($uc_acursar, $asignatura);
@@ -386,6 +421,10 @@ class InscripcionesController extends Controller
 
 				case 50:
 					# TODO: COMIENZA INFORMATICA
+					if ($alumno->plan_id == 29) {
+						# code...
+						return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+					}
 					switch ($asignatura->trayecto_id) {
 						case 8:
 							# TRAYECTO INICIAL
@@ -393,6 +432,12 @@ class InscripcionesController extends Controller
 								$inf_a_ti++;
 							}else{
 								array_push($uc_acursar, $asignatura);
+								if($alumno->NotasTrayecto($alumno->Plan->Asignaturas->where('trayecto_id',1)->pluck('codigo'))->count() == 0 && $alumno->plan_id != $alumno->Pnf->Planes->sortByDesc('id')->first()->id){
+									$alumno->update([
+										'plan_id'  => $alumno->Pnf->Planes->sortByDesc('id')->first()->id
+									]);
+									return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+								}
 							}
 						break;
 
@@ -444,6 +489,10 @@ class InscripcionesController extends Controller
 
 				case 55:
 					# TODO: COMIENZA MATENIMIENTO
+					if ($alumno->plan_id == 30) {
+						# code...
+						return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+					}
 					switch ($asignatura->trayecto_id) {
 						case 8:
 							# TRAYECTO INICIAL
@@ -453,6 +502,12 @@ class InscripcionesController extends Controller
 										if (round($nota_final) < 12) {
 											$mtto_r_mat = 1; //REPROBO MATEMATICA TI
 											array_push($uc_acursar, $asignatura);
+											if($alumno->NotasTrayecto($alumno->Plan->Asignaturas->where('trayecto_id',1)->pluck('codigo'))->count() == 0 && $alumno->plan_id != $alumno->Pnf->Planes->sortByDesc('id')->first()->id){
+												$alumno->update([
+													'plan_id'  => $alumno->Pnf->Planes->sortByDesc('id')->first()->id
+												]);
+												return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+											}
 
 										}
 									break;
@@ -461,6 +516,12 @@ class InscripcionesController extends Controller
 										if (round($nota_final) < 12) {
 											$mtto_r_uc_ti++; //REPROBO TI
 											array_push($uc_acursar, $asignatura);
+											if($alumno->NotasTrayecto($alumno->Plan->Asignaturas->where('trayecto_id',1)->pluck('codigo'))->count() == 0 && $alumno->plan_id != $alumno->Pnf->Planes->sortByDesc('id')->first()->id){
+												$alumno->update([
+													'plan_id'  => $alumno->Pnf->Planes->sortByDesc('id')->first()->id
+												]);
+												return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+											}
 										}else{
 											$mtto_a_uc_ti++; //APROBO TI
 
@@ -476,6 +537,12 @@ class InscripcionesController extends Controller
 
 						case 1:
 							# TRAYECTO 1
+							if($alumno->NotasTrayecto($alumno->Plan->Asignaturas->where('trayecto_id',1)->pluck('codigo'))->count() == 0 && $alumno->plan_id != $alumno->Pnf->Planes->sortByDesc('id')->first()->id){
+								$alumno->update([
+									'plan_id'  => $alumno->Pnf->Planes->sortByDesc('id')->first()->id
+								]);
+								return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+							}
 							if ($mtto_r_mat == 0 && $mtto_a_uc_ti >= 3 && round($nota_final) < 12 && $asignatura->aprueba == 0 || $mtto_r_mat == 0 && $mtto_a_uc_ti >= 3 && round($nota_final) < 16 && $asignatura->aprueba == 1 ) {
 								array_push($uc_acursar, $asignatura);
 
@@ -532,7 +599,10 @@ class InscripcionesController extends Controller
 
 				// TODO: FALTA MECANICA
 				case 60:
-
+					if ($alumno->plan_id == 31) {
+						# code...
+						return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+					}
 					switch ($asignatura->trayecto_id) {
 						case 8:
 							# TRAYECTO INICIAL
@@ -543,6 +613,12 @@ class InscripcionesController extends Controller
 								$ti_porcentaje_aprobado++;
 							}else{
 								array_push($uc_acursar, $asignatura);
+								if($alumno->NotasTrayecto($alumno->Plan->Asignaturas->where('trayecto_id',1)->pluck('codigo'))->count() == 0 && $alumno->plan_id != $alumno->Pnf->Planes->sortByDesc('id')->first()->id){
+									$alumno->update([
+										'plan_id'  => $alumno->Pnf->Planes->sortByDesc('id')->first()->id
+									]);
+									return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+								}
 							}
 							// echo $asignatura->nombre.': '.$notas.'<br>';
 						break;
@@ -551,8 +627,14 @@ class InscripcionesController extends Controller
 							# TRAYECTO 1
 							// 75% APROBADO DE TI INCULIDO MATEMATICA
 							$ti_porcentaje_aprobado += $ti_matematica;
-							if($ti_porcentaje_aprobado >= 3){
-								if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+							if($ti_porcentaje_aprobado >= 3 && $ti_matematica == 1){
+								if($alumno->NotasTrayecto($alumno->Plan->Asignaturas->where('trayecto_id',1)->pluck('codigo'))->count() == 0 && $alumno->plan_id != $alumno->Pnf->Planes->sortByDesc('id')->first()->id){
+									$alumno->update([
+										'plan_id'  => $alumno->Pnf->Planes->sortByDesc('id')->first()->id
+									]);
+									return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+								}
+								if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 									// $ti_porcentaje_aprobado++;
 									if ($asignatura->codigo == 'CBACAL168') {
 										# APRUEBA CALCULO I PRELACION DE CALCULO II
@@ -589,7 +671,7 @@ class InscripcionesController extends Controller
 								case 'CBACAL235':
 									# code...
 									if ($t1_a_calculo_i == true && $t1_a_algebraYgeometria == true) {
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 
 										}else{
 											array_push($uc_acursar, $asignatura);
@@ -598,7 +680,7 @@ class InscripcionesController extends Controller
 								break;
 								case 'DISMAP268':
 									if($t1_a_fisica == true){
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 											// APRUEBA MECÁNICA APLICADA PRECACION DE DISEÑO DE ELEMENTOS MECÁNICOS
 											$t2_a_mec_aplicada = true;
 										}else{
@@ -609,7 +691,7 @@ class InscripcionesController extends Controller
 
 								case 'PSIPSI257':
 									if($t1_a_psi_i == true){
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 											// APRUEBA PROYECTO SOCIO-INTEGRADOR II PRECACION DE PROYECTO SOCIO-INTEGRADOR III
 											$t2_a_psi_ii = true;
 										}else{
@@ -620,7 +702,7 @@ class InscripcionesController extends Controller
 
 								case 'MYMTME257':
 									if($t1_a_dibujo_mecanico == true){
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 											// APRUEBA TALLER MECANIZADO PRECACION DE DISEÑO DE ELEMENTOS MECÁNICOS
 											$t2_a_mec_aplicada = true;
 										}else{
@@ -631,7 +713,7 @@ class InscripcionesController extends Controller
 
 								case 'ENETER268':
 									if($t1_a_fisica == true){
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 
 										}else{
 											array_push($uc_acursar, $asignatura);
@@ -654,7 +736,7 @@ class InscripcionesController extends Controller
 								case 'DISDEM354':
 									# code...
 									if ($t2_a_mec_aplicada == true && $t2_a_mec_aplicada == true) {
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 
 										}else{
 											array_push($uc_acursar, $asignatura);
@@ -663,7 +745,7 @@ class InscripcionesController extends Controller
 								break;
 								case 'AUTEIA354':
 									if($t1_a_fisica == true){
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 
 										}else{
 											array_push($uc_acursar, $asignatura);
@@ -673,7 +755,7 @@ class InscripcionesController extends Controller
 
 								case 'PSIPSI354':
 									if($t2_a_psi_ii == true){
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 											// APRUEBA PROYECTO SOCIO-INTEGRADOR II PRECACION DE PROYECTO SOCIO-INTEGRADOR III
 											$t3_a_psi_iii = true;
 										}else{
@@ -684,7 +766,7 @@ class InscripcionesController extends Controller
 
 								case 'ENEMHI354':
 									if($t1_a_fisica == true){
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 											// APRUEBA TALLER MECANIZADO PRECACION DE DISEÑO DE ELEMENTOS MECÁNICOS
 											// $t2_a_mec_aplicada = true;
 										}else{
@@ -695,7 +777,7 @@ class InscripcionesController extends Controller
 
 								case 'MYMCNC354':
 									if($t2_a_mec_aplicada == true){
-										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 0 && round($nota_final) >= 16) {
+										if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
 
 										}else{
 											array_push($uc_acursar, $asignatura);
@@ -731,23 +813,24 @@ class InscripcionesController extends Controller
 								}else{
 									array_push($uc_acursar, $asignatura);
 								}
-							}else{
-								if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
-									if ($asignatura->codigo == 'ENEGDP457') {
-										# APRUEBA GENERACIÓN DE POTENCIA PRELACION DE DINÁMICA DE MAQUINAS
-										$t4_a_generacion_p = true;
-									}elseif ($asignatura->codigo == 'DISDDM457') {
-										# APRUEBA DISEÑO DE MÁQUINAS PRELACION DE DINÁMICA DE MAQUINAS
-										$t4_a_diseno_mac = true;
-									}elseif ($asignatura->codigo == 'PSIPSI468') {
-										# APRUEBA PROYECTO SOCIO-INTEGRADOR IV PRELACION DE PROYECTO SOCIO-INTEGRADOR V
-										$t4_a_psi_iv = true;
-									}
-								}else{
-									array_push($uc_acursar, $asignatura);
-								}
-
 							}
+							// else{
+							// 	if ($asignatura->aprueba == 0 && round($nota_final) >= 12 || $asignatura->aprueba == 1 && round($nota_final) >= 16) {
+							// 		if ($asignatura->codigo == 'ENEGDP457') {
+							// 			# APRUEBA GENERACIÓN DE POTENCIA PRELACION DE DINÁMICA DE MAQUINAS
+							// 			$t4_a_generacion_p = true;
+							// 		}elseif ($asignatura->codigo == 'DISDDM457') {
+							// 			# APRUEBA DISEÑO DE MÁQUINAS PRELACION DE DINÁMICA DE MAQUINAS
+							// 			$t4_a_diseno_mac = true;
+							// 		}elseif ($asignatura->codigo == 'PSIPSI468') {
+							// 			# APRUEBA PROYECTO SOCIO-INTEGRADOR IV PRELACION DE PROYECTO SOCIO-INTEGRADOR V
+							// 			$t4_a_psi_iv = true;
+							// 		}
+							// 	}else{
+							// 		array_push($uc_acursar, $asignatura);
+							// 	}
+
+							// }
 						break;
 
 						case 5:
@@ -778,6 +861,10 @@ class InscripcionesController extends Controller
 
 				case 65:
 					// COMIENZA SISTEMAS DE CALIDAD Y AMBIENTE
+					if ($alumno->plan_id == 32) {
+						# code...
+						return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+					}
 					switch ($asignatura->trayecto_id) {
 						case 8:
 							// TRAYECTO INICIAL
@@ -785,6 +872,12 @@ class InscripcionesController extends Controller
 							if (round($nota_final) < 12) {
 								$cya_r_ti++; //REPROBO MATEMATICA TI
 									array_push($uc_acursar, $asignatura);
+									if($alumno->NotasTrayecto($alumno->Plan->Asignaturas->where('trayecto_id',1)->pluck('codigo'))->count() == 0 && $alumno->plan_id != $alumno->Pnf->Planes->sortByDesc('id')->first()->id){
+									$alumno->update([
+										'plan_id'  => $alumno->Pnf->Planes->sortByDesc('id')->first()->id
+									]);
+									return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+								}
 							}else{
 								$cya_a_ti++;
 							}
@@ -794,6 +887,12 @@ class InscripcionesController extends Controller
 						case 1:
 							// TRAYECTO 1
 							if ($cya_r_ti == 0) {
+								if($alumno->NotasTrayecto($alumno->Plan->Asignaturas->where('trayecto_id',1)->pluck('codigo'))->count() == 0 && $alumno->plan_id != $alumno->Pnf->Planes->sortByDesc('id')->first()->id){
+									$alumno->update([
+										'plan_id'  => $alumno->Pnf->Planes->sortByDesc('id')->first()->id
+									]);
+									return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+								}
 								if (round($nota_final) < 12 && $asignatura->aprueba == 0 || round($nota_final) < 16 && $asignatura->aprueba == 1) {
 									if($asignatura->codigo == "SCPSI3181106"){
 										$cya_r_psi1 = 1;
@@ -857,6 +956,10 @@ class InscripcionesController extends Controller
 
 				case 70:
 					// COMIENZA ORFREBERIA Y JOYERIA
+					if ($alumno->plan_id == 32) {
+						# code...
+						return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+					}
 					switch ($asignatura->trayecto_id) {
 						case 8:
 							// TRAYECTO INICIAL
@@ -864,6 +967,12 @@ class InscripcionesController extends Controller
 							if (round($nota_final) < 12) {
 								$oyj_r_ti++; //REPROBO MATEMATICA TI
 									array_push($uc_acursar, $asignatura);
+									if($alumno->NotasTrayecto($alumno->Plan->Asignaturas->where('trayecto_id',1)->pluck('codigo'))->count() == 0 && $alumno->plan_id != $alumno->Pnf->Planes->sortByDesc('id')->first()->id){
+									$alumno->update([
+										'plan_id'  => $alumno->Pnf->Planes->sortByDesc('id')->first()->id
+									]);
+									return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+								}
 							}else{
 								$oyj_a_ti++;
 							}
@@ -873,6 +982,12 @@ class InscripcionesController extends Controller
 						case 1:
 							// TRAYECTO 1
 							if ($oyj_a_ti >= 0) {
+								if($alumno->NotasTrayecto($alumno->Plan->Asignaturas->where('trayecto_id',1)->pluck('codigo'))->count() == 0 && $alumno->plan_id != $alumno->Pnf->Planes->sortByDesc('id')->first()->id){
+									$alumno->update([
+										'plan_id'  => $alumno->Pnf->Planes->sortByDesc('id')->first()->id
+									]);
+									return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+								}
 								if (round($nota_final) < 12 && $asignatura->aprueba == 0 || round($nota_final) < 16 && $asignatura->aprueba == 1) {
 									if($asignatura->codigo == "PROY1367"){
 										$oyj_r_psi1 = 1;
@@ -935,6 +1050,10 @@ class InscripcionesController extends Controller
 
 				case 75:
 					// COMIENZA INGENERIA DE MATERIALES INDUSTRIALES
+					if ($alumno->plan_id == 34) {
+						# code...
+						return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+					}
 					switch ($asignatura->trayecto_id) {
 						case 8:
 							// TRAYECTO INICIAL
@@ -951,6 +1070,12 @@ class InscripcionesController extends Controller
 						case 1:
 							// TRAYECTO 1
 							if ($imi_a_ti >= 0) {
+								if($alumno->NotasTrayecto($alumno->Plan->Asignaturas->where('trayecto_id',1)->pluck('codigo'))->count() == 0 && $alumno->plan_id != $alumno->Pnf->Planes->sortByDesc('id')->first()->id){
+									$alumno->update([
+										'plan_id'  => $alumno->Pnf->Planes->sortByDesc('id')->first()->id
+									]);
+									return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+								}
 								if (round($nota_final) < 12 && $asignatura->aprueba == 0 || round($nota_final) < 16 && $asignatura->aprueba == 1) {
 									if($asignatura->codigo == "PROY1367"){
 										$imi_r_psi1 = 1;
@@ -1013,6 +1138,10 @@ class InscripcionesController extends Controller
 
 				case 80:
 					// COMIENZA HIGIENE Y SEGURIDAD LABORAL
+					if ($alumno->plan_id == 35) {
+						# code...
+						return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+					}
 					switch ($asignatura->trayecto_id) {
 						case 8:
 							// TRAYECTO INICIAL
@@ -1029,6 +1158,12 @@ class InscripcionesController extends Controller
 						case 1:
 							// TRAYECTO 1
 							if ($hsl_a_ti >= 0) {
+								if($alumno->NotasTrayecto($alumno->Plan->Asignaturas->where('trayecto_id',1)->pluck('codigo'))->count() == 0 && $alumno->plan_id != $alumno->Pnf->Planes->sortByDesc('id')->first()->id){
+									$alumno->update([
+										'plan_id'  => $alumno->Pnf->Planes->sortByDesc('id')->first()->id
+									]);
+									return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+								}
 								if (round($nota_final) < 12 && $asignatura->aprueba == 0 || round($nota_final) < 16 && $asignatura->aprueba == 1) {
 									if($asignatura->codigo == "HSPR1540118"){
 										$hsl_r_psi1 = 1;
@@ -1089,6 +1224,18 @@ class InscripcionesController extends Controller
 					// FIN HIGIENE Y SEGURIDAD LABORAL
 				break;
 
+				case 85:
+					return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+				break;
+
+				case 90:
+					return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+				break;
+
+				case 95:
+					return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index');
+				break;
+
 				default:
 					# code...
 					break;
@@ -1143,6 +1290,93 @@ class InscripcionesController extends Controller
 		} catch (\Throwable $th) {
 			DB::rollback();
 			return redirect()->route('panel.estudiante.inscripciones.regulares.index')->with('jet_error',$th->getMessage());
+		}
+		// return dd($request);
+	}
+
+	public function secciones_nuevos()
+	{
+		$alumno = Auth::user()->Alumno;
+		$secciones = Seccion::where('cupos','>',0)->where('trayecto_id',8)->where('estatus','ACTIVA')
+		->where('nucleo_id',$alumno->nucleo_id)
+		->where('pnf_id',$alumno->pnf_id)
+		->where('plan_id',$alumno->plan_id)
+		->get();
+
+		return view('panel.estudiantes.inscripciones.nuevos.index',['secciones' => $secciones]);
+	}
+
+	public function seleccionar_seccion(Request $request)
+	{
+		$seccion = Seccion::find($request->seccion_id);
+		if ($seccion) {
+			if ($seccion->cupos > 0) {
+				return view('panel.estudiantes.inscripciones.nuevos.uc_inscribir',['seccion' => $seccion, 'alumno' => Auth::user()->Alumno]);
+			}
+		}
+
+		return back();
+	}
+	public function uc_inscribir_nuevos()
+	{
+		$alumno = Alumno::where('cedula',Auth::user()->cedula)->first();
+
+		$pnf = $alumno->Pnf;
+		$plan = $alumno->Plan;
+
+		return $alumno->Plan->Asignaturas->where('trayecto_id',8);
+	}
+
+	public function guardar(Request $request)
+	{
+		// return dd($request);
+		$request->validate(
+			[
+				'uc_a_inscribir' => 'required|array|min:1'
+			]
+		);
+		// return '';
+		try {
+			DB::beginTransaction();
+				$alumno = Alumno::find($request->alumno_id);
+				$periodo = Periodo::where('estatus',0)->first();
+				Ingreso::updateOrCreate(
+					[
+						'alumno_id' => $alumno->id,
+						'periodo_id' =>$periodo->id,
+						'tipo' => 'REINGRESO',
+					], //TODO: EL VALOR QUE NO SE ACTUALIZA
+					[
+						'estatus' => 'INSCRITO' ,
+					]
+				);
+				$inscrito = Inscrito::updateOrCreate(
+					[
+						'periodo_id' => $periodo->id,
+						'alumno_id' => $alumno->id,
+					],
+					['fecha' => Carbon::now()]
+				);
+				$seccion_db = Seccion::find($request->seccion_id);
+				$seccion_db->update(['cupos' => ($seccion_db->cupos - 1) ]);
+				$seccion_db = Seccion::find($request->seccion_id);
+				foreach ($seccion_db->Plan->Asignaturas->where('trayecto_id',8) as $key => $asignatura) {
+					$uc_cohortes = DesAsignaturaDocenteSeccion::where('seccion_id',$seccion_db->id)
+					->whereIn('des_asignatura_id', $asignatura->DesAsignaturas->pluck('id'))
+					->where('estatus','ACTIVO')->get();
+					foreach ($uc_cohortes as $key => $uc_cohorte) {
+						Inscripcion::updateOrCreate([
+							'desasignatura_docente_seccion_id' => $uc_cohorte->id,
+							'inscrito_id' => $inscrito->id,
+							'alumno_id' => $alumno->id
+						]);
+					}
+				}
+			DB::commit();
+			return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index')->with('jet_mensaje','inscripcion realizada con exito');
+		} catch (\Throwable $th) {
+			DB::rollback();
+			return redirect()->route('panel.estudiante.inscripciones.nuevo-ingreso.index')->with('jet_error',$th->getMessage());
 		}
 		// return dd($request);
 	}

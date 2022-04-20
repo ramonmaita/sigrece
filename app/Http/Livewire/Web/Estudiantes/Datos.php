@@ -10,8 +10,10 @@ use App\Models\InformacionComplementaria;
 use App\Models\InformacionContacto;
 use App\Models\InformacionLaboral;
 use App\Models\InformacionMedica;
+use App\Models\Ingreso;
 use App\Models\Municipio;
 use App\Models\Parroquia;
+use App\Models\Periodo;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -33,8 +35,13 @@ class Datos extends Component
 	// TODO: INFORMACION COMPLEMENTARIA
 	public $pertenece_etnia = 'NO',$etnia,$madre,$tlf_madre,$padre,$tlf_padre,$ingreso='',$carnet_patria;
 	public $equipos = [],$internet = [];
+	public $periodo_id;
+
 	public function mount($alumno)
 	{
+		$periodo = Periodo::where('estatus',0)->first();
+		$this->periodo_id = $periodo->id;
+
 		// TODO: INFORMACION PERSONAL
 		$this->alumno_id = $alumno->id;
 		$this->cedula = $alumno->cedula;
@@ -53,7 +60,7 @@ class Datos extends Component
 		foreach ($alumno->Pnf->Nucleos as $key => $nucleo) {
 			$this->nucleos[$nucleo->id] = $nucleo->nucleo;
 		}
-		$this->nucleo = $alumno->nucleo_id;
+		$this->nucleo = ($alumno->nucleo_id == 1) ? 4 : $alumno->nucleo_id;
 
 		// TODO: INFORMACION DEL ESTUDIANTE (DATA VALDEZ)
 		$inf_estudiante = DB::table('inf_estudiante')->where('cedula',$alumno->cedula)->first();
@@ -342,6 +349,17 @@ class Datos extends Component
 					'equipos' => (is_null($this->equipos)) ? NULL : implode(",",$this->equipos) ,
 					'internet' => (is_null($this->internet)) ? NULL : implode(",",$this->internet) ,
 					'ingreso' => $this->ingreso
+				]
+			);
+
+			Ingreso::updateOrCreate(
+				[
+					'alumno_id' => $alumno->id,
+					'periodo_id' => $this->periodo_id
+				], //TODO: EL VALOR QUE NO SE ACTUALIZA
+				[
+					'estatus' => 'ACTUALIZADO' ,
+					'tipo' => 'REINGRESO',
 				]
 			);
 

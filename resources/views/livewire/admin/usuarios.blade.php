@@ -52,7 +52,7 @@
                                     <a href="{{ route('panel.usuarios.show', ['usuario' => $usuario]) }}"
                                     class="btn btn-success btn-sm"><i class="fa fa-eye"></i></a>
                                 @endcan
-                                    
+
                                 @can('usuarios.loginId')
 								    <a href="{{ route('panel.usuarios.edit', ['usuario' => $usuario]) }}"
 										class="btn btn-warning btn-sm">
@@ -130,11 +130,11 @@
                         </div>
 
 						@if($tipo == 'DOCENTE')
-						<div class="form-group select-docente" wire:ignore>
+						<div class="form-group select-docente" >
                             <label for="">
                                 Docentes
                             </label>
-                            <select class="form-control"  id="select2-docente" name=""
+                            <select class="form-control"  id="select2-docentess" name="" wire:model='user_id'
                                 >
                                 @forelse ($docentes as $docente)
 
@@ -302,6 +302,40 @@
 						$(".select-docente").hide();
 					}
 				});
+
+				$('#select2-docente').select2({
+                    minimumInputLength: 2,
+                    ajax: {
+                        dataType: 'json',
+                        url: '{{ route('panel.usuarios.dataDocente') }}',
+                        delay: 250,
+                        data: function(params) {
+                            return {
+                                term: params.term
+                            }
+                        },
+                        processResults: function(data, page) {
+                            return {
+                                results: data
+                            };
+                        },
+                        cache: true
+                    }
+                });
+                $(document).on('change', '#select2-docente', function(e) {
+                    // Livewire.emit('resetear');
+                    var data = $('#select2-docente').select2("val");
+                    data = $.trim(data);
+                    if (data === "" || 0 === data.length) {
+                        console.log('esta vacio '+data);
+                        data = [];
+                    } else {
+                        console.log('no esta vacio '+data);
+                        if (data != '0') {
+                            @this.set('user_id', data);
+                        }
+                    }
+                });
 			});
 		</script>
 	@endsection
