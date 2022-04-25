@@ -152,6 +152,8 @@ Route::prefix('panel')->name('panel.')->group(function () {
 		Route::get('editar-configuracion/{id}', [SeccionesController::class,'editar_config'])->name('editar_config')->middleware(['role_or_permission:secciones.configurar']);
 
         Route::get('acta-de-califiaciones/{seccion}', [SeccionesController::class,'acta'])->name('acta');
+
+        Route::get('abrir/{relacion}', [SeccionesController::class,'abrir'])->name('abrir');
     });
 
 	Route::prefix('estadisticas')->name('estadisticas.')->group(function () {

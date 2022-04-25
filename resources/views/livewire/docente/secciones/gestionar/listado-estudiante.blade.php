@@ -3,8 +3,26 @@
     {{-- <a href="{{ route('panel.docente.secciones.gestion.lista_estudiantes',['seccion' => $relacion->seccion_id, 'desasignatura' => $relacion->des_asignatura_id]) }}" role="button" class="">IMPRIMIR</a> --}}
     <form wire:submit.prevent="store">
 		@php
-			$cerrado = false;
+			$actual = \Carbon\Carbon::now();
+			$fin_a = \Carbon\Carbon::create(2022, 04, 22, 12, 00, 00);
+			if ($actual->greaterThanOrEqualTo($fin_a) == true){
+				$cerrado = true;
+			}else{
+				$cerrado = false;
+			}
+
 		@endphp
+		@if ($cerrado == true)
+		<div class="mb-3 -m-2 text-center ">
+
+				<div class="p-2">
+					<div class="inline-flex items-center w-1/2 p-2 text-sm leading-none text-yellow-600 bg-white rounded-full shadow text-teal">
+						<span class="inline-flex items-center justify-center h-6 px-3 text-white bg-yellow-600 rounded-full">Alerta</span>
+						<span class="inline-flex px-2">El proceso de carga de calificaciones se encuentra cerrado. </span>
+					</div>
+				</div>
+			</div>
+		@endif
 		<table class="min-w-full divide-y divide-gray-200 ">
 			<thead class="bg-gray-50">
 				<tr>
@@ -105,7 +123,7 @@
         </div>
         <div class="">
 			@php
-                $btn_cargar = true;
+                $btn_cargar = ($cerrado == true) ? false : true;
 				@endphp
             {{-- @switch($relacion->DesAsignatura->tri_semestre)
 			@case(1)

@@ -37,7 +37,7 @@
 @stop
 
 @section('content')
-
+	@include('alertas')
     <div class="card card-primary card-tabs">
         <div class="card-header p-0 pt-1">
             <ul class="nav nav-tabs" id="custom-tabs-two-tab" role="tablist">
@@ -105,6 +105,12 @@
                                     href="{{ route('panel.docente.secciones.gestion.acta', [@$unidad->id]) }}"
                                     type='button' class=" btn btn-info">
                                     Generar Acta de Calificaciones
+                                </a>
+
+                                <a
+                                    href="{{ route('panel.secciones.abrir', [@$unidad->id]) }}"
+                                    type='button' class=" btn btn-danger">
+                                    Aperturar Carga
                                 </a>
                             @endif
                         </div>

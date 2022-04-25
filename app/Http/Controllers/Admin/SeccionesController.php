@@ -292,4 +292,54 @@ class SeccionesController extends Controller
         // $dompdf->getCanvas()->page_text(500, 750, "Pág. {PAGE_NUM} de {PAGE_COUNT}", $font, 10, array(0,0,0));
         return $dompdf->stream('PLANIFICACION '.$pnf->nombre.'.pdf', array("Attachment" => false));
 	}
+
+	public function abrir($id_relacion)
+	{
+
+		try {
+			DB::beginTransaction();
+			$relacion = DesAsignaturaDocenteSeccion::where('id',$id_relacion)->with('inscritos')->first();
+			// return dd($relacion);
+			// $relacion = DesAsignaturaDocenteSeccion::with('inscritos')
+			// ->where('des_asignatura_id', $this->desasignatura_id)
+			// ->where('seccion_id',$this->seccion_id)->first();
+
+			// $desasignatura = DesAsignatura::find($this->desasignatura_id);
+			// $seccion = Seccion::find($this->seccion_id);
+			// return dd($relacion->Actividades);
+
+			foreach ($relacion->Actividades as  $actividad) {
+				$actividad->Notas()->update([
+					'estatus' => 'CARGADO'
+				]);
+			}
+			$cargada = CargaNota::where('periodo',$relacion->Seccion->Periodo->nombre)
+			->where('seccion',$relacion->Seccion->nombre)
+			->where('cedula_docente',$relacion->Docente->cedula)
+			->where('cod_desasignatura',$relacion->DesAsignatura->codigo)
+			->first();
+
+			$cargada->delete();
+			// CargaNota::updateOrCreate(
+			// 	// ['departure' => 'Oakland', 'destination' => 'San Diego'],
+			// 	[
+			// 		'periodo' => $relacion->Seccion->Periodo->nombre,
+			// 		'seccion' => $relacion->Seccion->nombre,
+			// 		'cedula_docente' => $relacion->Docente->cedula,
+			// 		'docente' => $relacion->Docente->nombre_completo,
+			// 		'cod_desasignatura' => $relacion->DesAsignatura->codigo,
+			// 		'user_id' => Auth::user()->id],
+			// 	['fecha' => Carbon::now()],
+			// );
+
+
+
+			DB::commit();
+			return redirect()->back()->with('mensaje', 'Sección aperturada Exitosamente');
+		} catch (\Throwable $th) {
+			DB::rollback();
+			return back()->with('error', $th->getMessage());
+			// return vbak()
+		}
+	}
 }
