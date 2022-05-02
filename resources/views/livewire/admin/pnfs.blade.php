@@ -69,6 +69,11 @@
 					 <a class="btn btn-warning btn-sm" type="button" role="button" target="_blank" href="{{ route('panel.secciones.planificacion',[$pnf->id]) }}">
 					   <i class="fa fa-file">
 					   </i>
+					@can('secciones.cerrar_carga')
+					<a class="btn btn-danger btn-sm" type="button" role="button" href="{{ route('panel.secciones.cerrar_carga',[$pnf->id]) }}">
+						<i class="fas fa-eye">
+						</i>
+					@endcan
                   </td>
 				 </a>
                </tr>

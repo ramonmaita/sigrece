@@ -133,7 +133,7 @@ Route::prefix('panel')->name('panel.')->group(function () {
 
 	Route::prefix('secciones')->name('secciones.')->group(function () {
 		Route::get('planificacion/{id}',[SeccionesController::class,'planificacion'])->name('planificacion')->middleware(['role_or_permission:secciones.index']);
-
+		Route::get('cerrar-cargar/{id}',[SeccionesController::class, 'cerrar_carga'])->name('cerrar_carga')->middleware(['role_or_permission:secciones.cerrar_carga|Admin']);
 		Route::view('/','panel.admin.secciones.index')->name('index')->middleware(['role_or_permission:secciones.index']);
 		Route::get('{seccion}/ver',[SeccionesController::class,'ver_seccion'])->name('show')->middleware(['role_or_permission:secciones.index']);
 		Route::get('listado_de_estudiantes/{seccion}/{desasignatura}',[SeccionesController::class,'lista_esudiantes'])->name('lista_estudiantes')->middleware(['role_or_permission:secciones.index']);
@@ -154,6 +154,7 @@ Route::prefix('panel')->name('panel.')->group(function () {
         Route::get('acta-de-califiaciones/{seccion}', [SeccionesController::class,'acta'])->name('acta');
 
         Route::get('abrir/{relacion}', [SeccionesController::class,'abrir'])->name('abrir');
+        Route::get('cerrar/{relacion}', [SeccionesController::class,'cerrar'])->name('cerrar');
     });
 
 	Route::prefix('estadisticas')->name('estadisticas.')->group(function () {

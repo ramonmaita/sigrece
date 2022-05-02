@@ -16,7 +16,7 @@
 
 		}
    		header { position: fixed; top: -80px; left: 0px; right: 0px;  height: auto; background-size: 80%; font-size: 10pt; font-family: 'Times New Roman'; }
-    	footer { position: fixed; bottom: 0px; left: 0px; right: 0px;/* background-color: lightblue;*/ height: 50px;  }
+    	footer { position: fixed; bottom: 0px; left: 0px; right: 0px;/* background-color: lightblue;*/ height: {{ ($fecha->docente == 'SIGRECE') ? '65px' : '50px'}};  }
     	@page :first{
     		margin-top: 50px;
 			margin-bottom: 60px;
@@ -57,8 +57,14 @@
 	</header>
 	<footer>
 		<div style="bottom: 5px;">
-			<table  border="1" style="width: 100%;font-size:10pt;font-family:'Times New Roman', serif;margin-top-15px;" align="center" cellspacing="0" cellpadding="0" >
-
+			<table  border="1" style="width: 100%;font-size:10pt;font-family:'Times New Roman', serif;margin-top-10px;" align="center" cellspacing="0" cellpadding="0" >
+				@if ($fecha->docente == 'SIGRECE')
+				<tr>
+					<td colspan="2" style="background:red" align="center">
+						<b style="color:white;">CERRADO POR SIGRECE</b>
+					</td>
+				</tr>
+				@endif
 				<tr>
 					<td width="50%">
 						DOCENTE: {{ (empty($detalles->Docente->nombre)) ? $detalles->docente : $detalles->Docente->nombres }}
@@ -83,7 +89,9 @@
 		</div>
 	</footer>
 	<main style="margin-bottom: 130px; margin-top: -50px;">
+		<div id="watermark">
 
+        </div>
 		<img src="{{ asset('/img/cintillo.png') }}" style='width:100%;'>
 		<h5 align="center">CALIFICACIONES DEFINITIVAS <br>PROGRAMA NACIONAL DE FORMACIÓN <br> PERÍODO ACADÉMICO: <u>{{ $detalles->periodo }}</u> </h5>
 

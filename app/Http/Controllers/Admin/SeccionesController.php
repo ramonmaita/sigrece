@@ -17,7 +17,9 @@ use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB as DB;
+use Illuminate\Support\Facades\Hash;
 
 class SeccionesController extends Controller
 {
@@ -342,4 +344,79 @@ class SeccionesController extends Controller
 			// return vbak()
 		}
 	}
+
+	public function cerrar_carga($id)
+	{
+		$pnf = Pnf::find($id);
+		return view('panel.admin.secciones.cerrar_carga',['pnf' => $pnf]);
+	}
+
+	public function cerrar($id_relacion)
+	{
+
+		try {
+			DB::beginTransaction();
+			$relacion = DesAsignaturaDocenteSeccion::where('id',$id_relacion)->with('inscritos')->first();
+			// return dd($relacion);
+			// $relacion = DesAsignaturaDocenteSeccion::with('inscritos')
+			// ->where('des_asignatura_id', $this->desasignatura_id)
+			// ->where('seccion_id',$this->seccion_id)->first();
+
+			// $desasignatura = DesAsignatura::find($this->desasignatura_id);
+			// $seccion = Seccion::find($this->seccion_id);
+			// return dd($relacion->Actividades);
+			foreach($relacion->Inscritos as $inscritos){
+				$nota = $inscritos->Alumno->Escala($inscritos->Alumno->NotasActividades($relacion->Actividades->pluck('id')));
+
+
+				HistoricoNota::updateOrCreate(
+					[
+						'periodo' => $relacion->Seccion->Periodo->nombre,
+						'nro_periodo' =>  $relacion->Seccion->Periodo->nro,
+						'cedula_estudiante' => $inscritos->Alumno->cedula,
+						'cod_desasignatura' => $relacion->DesAsignatura->codigo,
+						'cod_asignatura' => $relacion->DesAsignatura->Asignatura->codigo,
+						'nombre_asignatura' => $relacion->DesAsignatura->nombre,
+						'observacion' => 'POR CERRAR',
+						'seccion' => $relacion->Seccion->nombre,
+						'especialidad' => $relacion->Seccion->Pnf->codigo,
+						'tipo' => ($relacion->DesAsignatura->Asignatura->aprueba == 1) ? 'PROYECTO' : 'NORMAL',
+						'estatus' => 1
+					],
+					[
+						'nota' => $nota,
+						'cedula_docente' => $relacion->Docente->cedula,
+						'docente' => $relacion->Docente->nombres.' '.$relacion->Docente->apellidos,
+					]
+				);
+			}
+
+			foreach ($relacion->Actividades as  $actividad) {
+				$actividad->Notas()->update([
+					'estatus' => 'CERRADO'
+				]);
+			}
+
+			CargaNota::updateOrCreate(
+				[
+					'periodo' => $relacion->Seccion->Periodo->nombre,
+					'seccion' => $relacion->Seccion->nombre,
+					'cedula_docente' => 1,
+					'docente' => 'SIGRECE',
+					'cod_desasignatura' => $relacion->DesAsignatura->codigo,
+					'user_id' => Auth::user()->id],
+				['fecha' => Carbon::now()],
+			);
+
+
+
+			DB::commit();
+			return redirect()->back()->with('mensaje', 'Sección Cerrada Exitosamente');
+		} catch (\Throwable $th) {
+			DB::rollback();
+			return back()->with('error', $th->getMessage());
+			// return vbak()
+		}
+	}
+
 }

@@ -79,12 +79,18 @@
                                     CERRADO
                                 </div>
                             </div>
-                        @else
-                            <div class="ribbon-wrapper ribbon-lg">
-                                <div class="ribbon bg-secondary text-lg">
-                                    POR CERRAR
-                                </div>
-                            </div>
+						@elseif( $unidad->Seccion->Docente($unidad->DesAsignatura->id)->NotasActividades()->count() > 0)
+							<div class="ribbon-wrapper ribbon-lg">
+								<div class="ribbon bg-secondary text-lg">
+									POR CERRAR
+								</div>
+							</div>
+						@else
+							<div class="ribbon-wrapper ribbon-lg">
+								<div class="ribbon bg-danger text-lg">
+									POR CARGAR
+								</div>
+							</div>
                         @endif
 
                         {{ $unidad->DesAsignatura->nombre }} <br>

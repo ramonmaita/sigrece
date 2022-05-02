@@ -287,6 +287,11 @@ return [
 					'route'  => 'panel.secciones.lista',
                     'can' => 'secciones.lista',
                 ],
+				// [
+				// 	'text' => 'Cerrar Carga',
+				// 	'route' => 'panel.secciones.cerrar_carga',
+				// 	'can' => 'secciones.cerrar_carga'
+				// ]
             ],
         ],
         [

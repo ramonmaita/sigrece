@@ -56,7 +56,11 @@
 									</td>
 									<td>
 										@if($uc->estatus_carga($seccion->nombre,$seccion->Periodo->nombre))
-											<span style="color:green"> CARGADA POR: <b>{{ $uc->estatus_carga($seccion->nombre,$seccion->Periodo->nombre)->User->nombre }} {{ $uc->estatus_carga($seccion->nombre,$seccion->Periodo->nombre)->User->apellido }} </b></span>
+											@if ($uc->estatus_carga($seccion->nombre,$seccion->Periodo->nombre)->docente == 'SIGRECE')
+											<span style="color:green"> CERRADA POR: <b>{{ $uc->estatus_carga($seccion->nombre,$seccion->Periodo->nombre)->docente }}</b></span>
+											@else
+												<span style="color:green"> CARGADA POR: <b>{{ $uc->estatus_carga($seccion->nombre,$seccion->Periodo->nombre)->User->nombre }} {{ $uc->estatus_carga($seccion->nombre,$seccion->Periodo->nombre)->User->apellido }} </b></span>
+											@endif
 
 										@elseif( $seccion->Docente($uc->id)->NotasActividades()->count() > 0)
 											<b style="color:blue">POR CERRAR</b>

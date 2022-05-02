@@ -21,4 +21,9 @@ class Pnf extends Model implements Auditable
     {
     	return $this->hasMany(Plan::class);
     }
+
+	public function Secciones()
+	{
+		return $this->hasMany(Seccion::class);
+	}
 }

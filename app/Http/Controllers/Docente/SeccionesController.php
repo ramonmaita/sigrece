@@ -249,7 +249,7 @@ class SeccionesController extends Controller
 		// return dd($notas);
 		$fecha = CargaNota::where('periodo', $seccion->Periodo->nombre)
 			->where('cod_desasignatura',$relacion->DesAsignatura->codigo)
-			->where('cedula_docente',$relacion->Docente->cedula)
+			// ->where('cedula_docente',$relacion->Docente->cedula)
 			->where('seccion',$relacion->Seccion->nombre)
 			->first();
 
