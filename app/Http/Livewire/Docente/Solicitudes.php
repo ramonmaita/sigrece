@@ -2,19 +2,28 @@
 
 namespace App\Http\Livewire\Docente;
 
+use App\Models\Actividad;
 use App\Models\Alumno;
+use App\Models\Coordinador;
 use App\Models\DesAsignatura;
+use App\Models\DesAsignaturaDocenteSeccion;
 use App\Models\Solicitud;
 use App\Models\HistoricoNota;
 use App\Models\Periodo;
+use App\Models\Seccion;
+use App\Models\SolicitudCorreccion;
+use App\Models\SolicitudCorreccionDetalle;
 use App\Models\SolicitudDetalle;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Laravel\Jetstream\ConfirmsPasswords;
 use Illuminate\Validation\ValidationException;
+use App\Mail\SolicitudCorreccion as MailSolicitudCorreccion;
 
 class Solicitudes extends Component
 {
@@ -25,8 +34,9 @@ class Solicitudes extends Component
 	public $estudiantes = [];
 	public $estudiantes_add = [];
 	public $ts;
-	public $correcciones = [];
+	public $correcciones = [], $nota = [];
 	public $confirmingPass = false;
+	public $relacion;
 
 	public function mount()
 	{
@@ -45,8 +55,8 @@ class Solicitudes extends Component
 			// $estatus = ($this->tipo_solicitud == 'CORRECCION') ? ['0'] : ['1'] ;
 			switch ($this->tipo_solicitud) {
 				case 'CORRECCION':
-					$estatus = 0;
-					$this->periodos = HistoricoNota::where('estatus',$estatus)->where('cedula_docente',Auth::user()->cedula)->groupBy('periodo')->orderBy('nro_periodo','asc')->get();
+					$estatus = [0,1];
+					$this->periodos = HistoricoNota::whereIn('estatus',$estatus)->where('cedula_docente',Auth::user()->cedula)->groupBy('periodo')->orderBy('nro_periodo','asc')->get();
 				break;
 				case 'RESET':
 					$estatus = 0;
@@ -69,7 +79,18 @@ class Solicitudes extends Component
 						if($this->tipo_solicitud == 'CORRECCION'){
 							// $estudiantes = HistoricoNota::where('cedula_docente',Auth::user()->cedula)->where('periodo',$this->periodo)->where('cod_desasignatura',$this->uc)->where('seccion',$this->seccion)->groupBy('cedula_estudiante')->orderBy('cedula_estudiante','asc')->get();
 							if(!empty($this->estudiante)){
+								$desasignatura = DesAsignatura::where('codigo',$this->uc)->first();
+								$periodo = Periodo::where('nombre',$this->periodo)->first();
+								$seccion = Seccion::where('nombre',$this->seccion)->where('periodo_id',$periodo->id)->first();
+								$this->relacion = DesAsignaturaDocenteSeccion::where('docente_id',Auth::user()->Docente->id)->where('seccion_id',$seccion->id)->where('des_asignatura_id',$desasignatura->id)->first();
 								$this->estudiantes_add = HistoricoNota::whereIn('cedula_estudiante',$this->estudiante)->where('cedula_docente',Auth::user()->cedula)->where('periodo',$this->periodo)->where('cod_desasignatura',$this->uc)->where('seccion',$this->seccion)->groupBy('cedula_estudiante')->orderBy('cedula_estudiante','asc')->get();
+								$actividades = Actividad::with('notas')->where('seccion_id',$seccion->id)->where('desasignatura_id',$desasignatura->id)->get();
+								$alumnos = Alumno::whereIn('cedula',$this->estudiante)->pluck('id');
+								foreach ($actividades as $key => $actividad) {
+									foreach ($actividad->Notas->whereIn('alumno_id',$alumnos) as $key => $notas) {
+										$this->nota[$notas->alumno_id][$notas->actividad_id]  = $notas->nota ;
+									}
+								}
 							}else{
 								$cis = HistoricoNota::where('cedula_docente',Auth::user()->cedula)
 																->where('periodo',$this->periodo)
@@ -80,7 +101,7 @@ class Solicitudes extends Component
 
 								$plan = DesAsignatura::where('codigo',$this->uc)->first()->Asignatura->Plan;
 								$this->estudiantes  = Alumno::whereIn('cedula',$cis)->where('plan_id',$plan->id)->get();
-								$this->reset(['estudiantes_add']);
+								$this->reset(['estudiantes_add','nota']);
 
 							}
 						}elseif($this->tipo_solicitud == 'RESET'){
@@ -92,7 +113,7 @@ class Solicitudes extends Component
 							if(!empty($this->estudiante)){
 								$this->estudiantes_add = Alumno::whereIn('cedula',$this->estudiante)->where('plan_id',$plan->id)->get();
 							}else{
-								$this->reset(['estudiantes_add']);
+								$this->reset(['estudiantes_add','nota']);
 							}
 						}
 					}
@@ -139,8 +160,8 @@ class Solicitudes extends Component
 				'motivo' => 'required',
 				'uc' => 'required',
 				'estudiante' => 'required|array|min:1',
-				'correcciones' => 'required|array|min:1',
-				'correcciones.*' => 'required|numeric|min:1|max:20|digits_between:1,2',
+				// 'correcciones' => 'required|array|min:1',
+				// 'correcciones.*' => 'required|numeric|min:1|max:20|digits_between:1,2',
 			],
 				[
 					'uc.required' => 'El campo :attribute es obligatorio.'
@@ -148,7 +169,7 @@ class Solicitudes extends Component
 				[
 					'uc' => 'unidad curricular',
 					'tipo_solicitud' => 'tipo de solicitud',
-					'correcciones.*' => 'correccion'
+					// 'correcciones.*' => 'correccion'
 				]
 			);
 		}elseif($this->tipo_solicitud == 'RESET'){
@@ -189,32 +210,65 @@ class Solicitudes extends Component
 		try {
 			DB::beginTransaction();
 			$desasignatura = DesAsignatura::where('codigo',$this->uc)->first();
-			$solicitud = Solicitud::create([
-				'solicitante_id' => Auth::user()->id,
-				'admin_id' => 0,
-				'desasignatura_id' => $desasignatura->id,
-				'periodo' => $this->periodo,
-				'seccion' => $this->seccion,
-				'tipo' => $this->tipo_solicitud,
-				'estatus' => 'EN ESPERA',
-				'motivo' => $this->motivo,
-				'observacion' => null,
-				'fecha' => Carbon::now(),
-			]);
+			$jefe = Coordinador::where('pnf_id',$desasignatura->Asignatura->pnf_id)->first();
+			if($this->tipo_solicitud == 'CORRECCION'){
+				$solicitud = SolicitudCorreccion::create([
+					'solicitante_id' => Auth::user()->id,
+					'admin_id' => 0,
+					'jefe_id' => $jefe->user_id,
+					'desasignatura_id' => $desasignatura->id,
+					'periodo' => $this->periodo,
+					'seccion' => $this->seccion,
+					'estatus_jefe' => 'EN ESPERA',
+					'estatus_admin' => 'EN ESPERA',
+					'motivo' => $this->motivo,
+					'observacion' => null,
+					'fecha' => Carbon::now(),
+				]);
+			}else{
+				$solicitud = Solicitud::create([
+					'solicitante_id' => Auth::user()->id,
+					'admin_id' => 0,
+					'desasignatura_id' => $desasignatura->id,
+					'periodo' => $this->periodo,
+					'seccion' => $this->seccion,
+					'tipo' => $this->tipo_solicitud,
+					'estatus' => 'EN ESPERA',
+					'motivo' => $this->motivo,
+					'observacion' => null,
+					'fecha' => Carbon::now(),
+				]);
+			}
 
 			if($this->tipo_solicitud != 'RESET'){
 				foreach ($this->estudiante as $key => $estudiante) {
 					if($this->tipo_solicitud == 'CORRECCION'){
 						$alumno = Alumno::where('cedula',$estudiante)->first();
-						$detalleSolicitud = SolicitudDetalle::create([
-							'solicitud_id' => $solicitud->id,
-							'alumno_id' => $alumno->id,
-							'admin_id' => 0,
-							'nota_e' =>  $alumno->NotaUc(Auth::user()->cedula, $this->periodo, $this->seccion, $this->uc)->nota,
-							'nota' => $this->correcciones[$alumno->cedula],
-							'estatus' => 'EN ESPERA',
-							'observacion' => null
-						]);
+						// $detalleSolicitud = SolicitudDetalle::create([
+						// 	'solicitud_id' => $solicitud->id,
+						// 	'alumno_id' => $alumno->id,
+						// 	'admin_id' => 0,
+						// 	'nota_e' =>  $alumno->NotaUc(Auth::user()->cedula, $this->periodo, $this->seccion, $this->uc)->nota,
+						// 	'nota' => $this->correcciones[$alumno->cedula],
+						// 	'estatus' => 'EN ESPERA',
+						// 	'observacion' => null
+						// ]);
+						foreach($this->relacion->Actividades as $unidad){
+							// return dd($alumno->id);
+							// return dd($unidad->Nota($alumno->id));
+							if(array_key_exists($unidad->id,$this->nota[$alumno->id])){
+
+								SolicitudCorreccionDetalle::create([
+									'solicitud_correccion_id' => $solicitud->id,
+									'alumno_id' => $alumno->id,
+									'actividad_id' => $unidad->id,
+									'nota_anterior' => ($unidad->Nota($alumno->id)) ? $unidad->Nota($alumno->id)->nota : 0,
+									'nota_nueva' => $this->nota[$alumno->id][$unidad->id],
+									'estatus_jefe' => 'EN ESPERA',
+									'estatus_admin' => 'EN ESPERA',
+								]);
+							}
+						}
 					}else{
 						$alumno = Alumno::where('cedula',$estudiante)->first();
 						$detalleSolicitud = SolicitudDetalle::create([
@@ -231,6 +285,13 @@ class Solicitudes extends Component
 			}
 
 			DB::commit();
+
+			if($this->tipo_solicitud == 'CORRECCION'){
+				$usuario = User::find($solicitud->Jefe->id);
+				// $usuario->roles()->sync([3]);
+				// return dd($solicitud->Jefe);
+				Mail::to($usuario->email)->cc('uptebolivarcontrole20@gmail.com')->send(new MailSolicitudCorreccion($usuario,$solicitud));
+			}
 			session()->flash('jet_mensaje', 'Solicitud genrada con exito.');
 			return redirect()->route('panel.docente.solicitudes.index');
 		} catch (\Throwable $th) {

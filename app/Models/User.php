@@ -97,4 +97,8 @@ class User extends Authenticatable implements Auditable
 	{
 		return $this->hasOne(Alumno::class,'cedula','cedula');
 	}
+	public function Docente()
+	{
+		return $this->hasOne(Docente::class,'cedula','cedula');
+	}
 }

@@ -106,6 +106,11 @@
                 'route' => route('panel.coordinador.planificacion'),
                 'active' => request()->routeIs('panel.coordinador.planificacion'),
             ],
+			[
+                'nombre' => 'Solicitudes',
+                'route' => route('panel.coordinador.solicitudes.index'),
+                'active' => request()->routeIs('panel.coordinador.solicitudes.index'),
+            ],
         ];
     }
 @endphp

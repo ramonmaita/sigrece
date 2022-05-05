@@ -35,7 +35,7 @@ Route::prefix('panel/docente')->name('panel.docente.')->group(function () {
     	Route::get('/', [SolicitudesController::class,'index'])->name('index')->middleware(['role:Docente']);
     	Route::get('/nueva-solicitud', [SolicitudesController::class,'create'])->name('create')->middleware(['role:Docente']);
     	Route::get('/pdf/{solicitud}', [SolicitudesController::class,'pdf'])->name('pdf')->middleware(['role:Docente']);
-
+		Route::get('{solicitud}/ver',[SolicitudesController::class,'show'])->name('show')->middleware(['role:Docente']);
 	});
 
 

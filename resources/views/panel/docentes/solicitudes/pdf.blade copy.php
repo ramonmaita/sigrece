@@ -15,7 +15,6 @@
 			$tipo =  'INCORPORACION A LA UNIDAD CURRICULAR';
 			break;
 	}
-	$tipo =  'CORRECCION DE CALIFICACION';
 @endphp
 <!DOCTYPE html>
 <html lang="es">
@@ -107,14 +106,14 @@
 		<h3 align="center" style="{{ ($solicitud->tipo == 'RESET') ? 'margin-top:60px' : '' }}">
 			SOLICITUD DE {{ $tipo }}
 		</h3>
-		{{-- @if ($solicitud->tipo == 'CORRECCION') --}}
+		@if ($solicitud->tipo == 'CORRECCION')
 			<p style="text-align: justify">
 				Yo <u>{{$solicitud->Solicitante->nombre }}  {{$solicitud->Solicitante->apellido }}</u> portador de la cédula de identidad N° <u>{{$solicitud->Solicitante->cedula }}</u>,
 				por mediante de la presente solicito a la Dirección De Registro Y
 				Control De Actividades Académicas la corrección de calificación de los estudiantes abajo descritos,
 				quienes cursaron la Unidad Curricular <u>{{ $solicitud->DesAsignatura->nombre }} </u> del Trayecto <u>{{  $solicitud->DesAsignatura->Asignatura->Trayecto->nombre }}</u> Trimestre <u>{{ $solicitud->DesAsignatura->tri_semestre }}</u> impartida por mí en el periodo <u>{{ $solicitud->periodo }}</u> en la sección <u>{{ $solicitud->seccion }}</u>, por motivo <u>{{ $solicitud->motivo }}</u>
 			</p>
-		{{-- @elseif ($solicitud->tipo == 'RESET')
+		@elseif ($solicitud->tipo == 'RESET')
 			<p style="text-align: justify; line-height: 2; margin-top:80px">
 				Yo <u>{{$solicitud->Solicitante->nombre }}  {{$solicitud->Solicitante->apellido }}</u> portador de la cédula de identidad N° <u>{{$solicitud->Solicitante->cedula }}</u>,
 				por mediante de la presente solicito a la Dirección De Registro Y
@@ -127,7 +126,7 @@
 				Control De Actividades Académicas sean incorporados los estudiantes abajo descritos
 				a la Unidad Curricular <u>{{ $solicitud->DesAsignatura->nombre }} </u> del Trayecto <u>{{  $solicitud->DesAsignatura->Asignatura->Trayecto->nombre }}</u> Trimestre <u>{{ $solicitud->DesAsignatura->tri_semestre }}</u> impartida por mí en el periodo <u>{{ $solicitud->periodo }}</u> en la sección <u>{{ $solicitud->seccion }}</u>, por motivo <u>{{ $solicitud->motivo }}</u>
 			</p>
-		@endif --}}
+		@endif
 		{{-- <table width="100%" border="0" cellspacing="0" cellpadding="3" class="asignaturas">
 			<thead style="border-top: 3px solid #000; border-bottom: 3px solid #000; margin-bottom: 10px;">
 
@@ -157,47 +156,28 @@
 					<tr>
 						<th width="8%" style="padding-top: 10px; padding-bottom: 10px;" >N°</th>
 						<th width="10%" style="padding-top: 10px; padding-bottom: 10px;" >CÉDULA</th>
-						<th width="40%" style="padding-top: 10px; padding-bottom: 10px;" >APELLIDOS Y NOMBRES</th>
-						<th>OBSERVACION</th>
-						@foreach ($relacion->Actividades as $actividad)
-							<th>{{ $actividad->actividad }} - {{ $actividad->porcentaje }}</th>
-						@endforeach
-						<th>1-100</th>
-						<th>1-20</th>
+						<th width="55%" style="padding-top: 10px; padding-bottom: 10px;" >APELLIDOS Y NOMBRES</th>
+						@if ($solicitud->tipo == 'CORRECCION')
+						<th width="15%" style="padding-top: 10px; padding-bottom: 10px;" >CALIFICACIÓN ERRONEA</th>
+						<th width="15%" style="padding-top: 10px; padding-bottom: 10px;" >CALIFICACIÓN CORRECTA</th>
+						@endif
 					</tr>
 				</thead>
 				<br>
 				<tbody style="margin-top: 100px !important;">
 					@php
 						$c = 0;
-						$nota_anterior = 0;
-						$nota_nueva = 0;
 					@endphp
 
-					@foreach ($solicitud->Detalles->groupBy('alumno_id') as $key => $detalles)
+					@foreach ($solicitud->Detalles as $key => $detalles)
 						<tr>
-							<td>{{ $c+1 }}</td>
-							<td>{{ $detalles->first()->Alumno->cedula }}</td>
-							<td>{{ $detalles->first()->Alumno->nombres }} {{ $detalles->first()->Alumno->apellidos }}</td>
-							<td style="font-size: 8pt !important;">
-								C. ERRONEA <br>
-								C. CORRECTA
-							</td>
-							@foreach ($solicitud->Detalles->where('alumno_id',$detalles->first()->alumno_id) as $nota)
-							<td align="center">{{ $nota->nota_anterior }}<br>{{ $nota->nota_nueva }}</td>
-							@php
-								$nota_anterior += $nota->nota_anterior;
-								$nota_nueva += $nota->nota_nueva;
-							@endphp
-							@endforeach
-							<td>
-								{{ $nota_anterior }} <br>
-								{{ $nota_nueva }}
-							</td>
-							<td>
-								{{ $detalles->first()->Alumno->Escala($nota_anterior) }} <br>
-								{{ $detalles->first()->Alumno->Escala($nota_nueva) }}
-							</td>
+							<td>{{ $key+1 }}</td>
+							<td>{{ $detalles->Alumno->cedula }}</td>
+							<td>{{ $detalles->Alumno->nombres }} {{ $detalles->Alumno->apellidos }}</td>
+							@if ($solicitud->tipo == 'CORRECCION')
+							<td align="center">{{ $detalles->nota_e }}</td>
+							<td align="center">{{ $detalles->nota }}</td>
+							@endif
 						</tr>
 					@endforeach
 					{{-- @foreach($estudiantes as $key => $estudiante)

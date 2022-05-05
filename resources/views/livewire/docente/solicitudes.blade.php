@@ -22,8 +22,8 @@
                             <x-select class="block w-full mt-1" name="tipo" id="tipo" wire:model="tipo_solicitud"  wire:loading.attr="disabled">
                                 <option value="">SELECCIONE</option>
                                 <option value="CORRECCION">CORRECCIÓN DE NOTA</option>
-                                <option value="INCORPORAR">AÑADIR A SECCIÓN</option>
-                                <option value="RESET">RESETEAR SECCIÓN</option>
+                                {{-- <option value="INCORPORAR">AÑADIR A SECCIÓN</option> --}}
+                                <option value="RESET" disabled>RESETEAR SECCIÓN</option>
                             </x-select>
                             <x-jet-input-error for="tipo_solicitud" />
                         </div>
@@ -35,7 +35,7 @@
                                 <option value="">Seleccione</option>
                                 @if (!is_null($tipo_solicitud))
                                     @foreach ($periodos as $periodo_p)
-                                        <option value="{{ $periodo_p->periodo }}">{{ $periodo_p->periodo }}</option>
+                                        <option value="{{ $periodo_p->periodo }}" {{ ($periodo_p->periodo != '2021') ? 'disabled' :'' }}>{{ $periodo_p->periodo }}</option>
                                     @endforeach
                                 @endif
                             </x-select>
@@ -106,7 +106,7 @@
                         </div>
                     </div>
 					@endif
-                    <div class="p-6">
+                    <div class="p-6  overflow-x-auto">
                         {{-- @dump( $correcciones ) --}}
                         {{-- @dump( $estudiantes_add ) --}}
                         {{-- {{ count($estudiantes_add) }} --}}
@@ -127,9 +127,23 @@
 										<th scope="col"
 											class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
 											data-priority="3">Apellidos</th>
+											@if($periodo == '2021' && !empty($uc) && !empty($seccion) && !empty($estudiantes_add))
+												@foreach ($relacion->Actividades as $actividad)
+												<th scope="col"
+											class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+											data-priority="4">{{ $actividad->actividad }} - {{ $actividad->porcentaje }}</th>
+												@endforeach
+												<th scope="col"
+											class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+											data-priority="4">1-100</th>
+												<th scope="col"
+											class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
+											data-priority="4">1-20</th>
+											@else
 										<th scope="col"
 											class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase"
 											data-priority="4">Acciones</th>
+											@endif
 									</tr>
 								</thead>
 								<tbody class="bg-white divide-y divide-gray-200">
@@ -137,6 +151,43 @@
 
 										@foreach ($estudiantes_add as $key => $estudiante_a)
 											@if ($tipo_solicitud == 'CORRECCION')
+												@if($periodo == '2021' && !empty($uc) && !empty($seccion) && !empty($estudiantes_add))
+												<tr>
+													<td class="px-6 py-4 whitespace-nowrap">{{ $key + 1 }}</td>
+													<td class="px-6 py-4 whitespace-nowrap">
+														{{ $estudiante_a->Alumno->cedula }}</td>
+													<td class="px-6 py-4 whitespace-nowrap">
+														{{ $estudiante_a->Alumno->nombres }}</td>
+													<td class="px-6 py-4 whitespace-nowrap">
+														{{ $estudiante_a->Alumno->apellidos }}</td>
+														@forelse (@$relacion->Actividades as $unidad)
+													<td class="px-6 py-4 whitespace-nowrap">
+														{{-- {{ ($unidad->Nota($estudiante_a->Alumno->id)) ? $unidad->Nota($estudiante_a->Alumno->id)->nota : 0}} --}}
+														<x-jet-input id="nota.{{ $estudiante_a->Alumno->id }}.{{ $unidad->id }}"
+															class="block w-full mt-1 SoloNumeros" type="number" name="porcentaje" min="1"
+															max="{{ $unidad->porcentaje }}" :value="@$unidad->Nota($estudiante_a->Alumno->id)->nota"
+															wire:model.defer="nota.{{ $estudiante_a->Alumno->id }}.{{ $unidad->id }}"
+															wire:loading.attr="disabled" size="4" />
+															<x-jet-input-error for="nota.{{$estudiante_a->Alumno->id}}.{{$unidad->id}}"
+																:disabled="(!empty($nota[$estudiante_a->Alumno->id][$unidad->id])) ? true : true" />
+															@error('nota.{{$estudiante_a->Alumno->id}}.{{$unidad->id}}')
+                                {{ $message }}
+								@enderror
+								{{-- <input type="text" size="4"> --}}
+													</td>
+
+													@empty
+
+													@endforelse
+													<td>
+
+														{{ $nota = $estudiante_a->Alumno->NotasActividades($relacion->Actividades->pluck('id')) }}
+													</td>
+													<td>
+														{{ $estudiante_a->Alumno->Escala($nota) }}
+													</td>
+												</tr>
+												@else
 												<tr>
 													<td class="px-6 py-4 whitespace-nowrap">{{ $key + 1 }}</td>
 													<td class="px-6 py-4 whitespace-nowrap">
@@ -172,6 +223,7 @@
 														</div>
 													</td>
 												</tr>
+												@endif
 											@else
 												<tr>
 													<td class="px-6 py-4 whitespace-nowrap">{{ $key + 1 }}</td>

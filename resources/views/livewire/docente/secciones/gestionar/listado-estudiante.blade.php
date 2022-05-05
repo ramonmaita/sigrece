@@ -5,7 +5,9 @@
 		@php
 			$actual = \Carbon\Carbon::now();
 			$fin_a = \Carbon\Carbon::create(2022, 04, 22, 12, 00, 00);
-			if ($actual->greaterThanOrEqualTo($fin_a) == true){
+			if (Auth::user()->id == 109) {
+				$cerrado = false;
+			}elseif ($actual->greaterThanOrEqualTo($fin_a) == true){
 				$cerrado = true;
 			}else{
 				$cerrado = false;

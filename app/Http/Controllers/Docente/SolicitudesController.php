@@ -3,7 +3,12 @@
 namespace App\Http\Controllers\Docente;
 
 use App\Http\Controllers\Controller;
+use App\Models\DesAsignaturaDocenteSeccion;
+use App\Models\Periodo;
+use App\Models\Seccion;
 use App\Models\Solicitud;
+use App\Models\SolicitudCorreccion;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
@@ -20,7 +25,7 @@ class SolicitudesController extends Controller
      */
     public function index()
     {
-		$solicitudes = Solicitud::where('solicitante_id',Auth::user()->id)->get();
+		$solicitudes = SolicitudCorreccion::where('solicitante_id',Auth::user()->id)->get();
         return view('panel.docentes.solicitudes.index',['solicitudes' => $solicitudes]);
     }
 
@@ -51,9 +56,12 @@ class SolicitudesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(SolicitudCorreccion $solicitud)
     {
-        //
+		$periodo = Periodo::where('nombre',$solicitud->periodo)->first();
+		$seccion = Seccion::where('nombre',$solicitud->seccion)->where('periodo_id',$periodo->id)->first();
+		$relacion = DesAsignaturaDocenteSeccion::where('docente_id',$solicitud->Solicitante->Docente->id)->where('seccion_id',$seccion->id)->where('des_asignatura_id',$solicitud->desasignatura_id)->first();
+		return view('panel.docentes.solicitudes.show',['solicitud' => $solicitud,'relacion' => $relacion]);
     }
 
     /**
@@ -90,7 +98,7 @@ class SolicitudesController extends Controller
         //
     }
 
-	public function pdf(Solicitud $solicitud)
+	public function pdf(SolicitudCorreccion $solicitud)
 	{
 		// if($seccion->cedula_docente != Auth::user()->cedula){
 		// 	return abort(403);
@@ -111,13 +119,16 @@ class SolicitudesController extends Controller
 		// 	->where('cedula_docente',$seccion->cedula_docente)
 		// 	->where('seccion',$seccion->seccion)
 		// 	->first();
-
-		$html = view('panel.docentes.solicitudes.pdf', ['solicitud' => $solicitud]);
+		$periodo = Periodo::where('nombre',$solicitud->periodo)->first();
+		$seccion = Seccion::where('nombre',$solicitud->seccion)->where('periodo_id',$periodo->id)->first();
+		$usuario = User::find($solicitud->solicitante_id);
+		$relacion = DesAsignaturaDocenteSeccion::where('docente_id',$usuario->Docente->id)->where('seccion_id',$seccion->id)->where('des_asignatura_id',$solicitud->desasignatura_id)->first();
+		$html = view('panel.docentes.solicitudes.pdf', ['solicitud' => $solicitud,'relacion' => $relacion]);
 		$options = new Options();
 		$options->setIsRemoteEnabled(true);
 		$dompdf = new Dompdf($options);
         $dompdf->loadHtml($html);
-        $dompdf->setPaper('letter');
+        $dompdf->setPaper('letter','landscape');
         $dompdf->render();
         $font = $dompdf->getFontMetrics()->get_font("helvetica");
                                         //ancho alto

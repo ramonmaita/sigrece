@@ -13,7 +13,7 @@ class Solicitud extends Model implements Auditable
  	use \OwenIt\Auditing\Auditable;
 	use SoftDeletes;
 
-    protected $fillable = ['solicitante_id','admin_id','desasignatura_id', 'periodo','seccion','tipo', 'estatus','motivo','observacion','fecha'];
+    protected $fillable = ['solicitante_id','admin_id','jefe_id','desasignatura_id', 'periodo','seccion','tipo', 'estatus','motivo','observacion','fecha'];
 	protected $dates = ['deleted_at']; //Registramos la nueva columna
 
 	public function Detalles()
@@ -29,6 +29,10 @@ class Solicitud extends Model implements Auditable
 	public function Solicitante()
 	{
 		return $this->hasOne(User::class,'id','solicitante_id');
+	}
+	public function Jefe()
+	{
+		return $this->hasOne(User::class,'id','jefe_id');
 	}
 
 	public function DesAsignatura()
