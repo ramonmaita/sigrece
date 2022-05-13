@@ -63,14 +63,16 @@ class Update extends Component
 				]);
 				$solicitud->update([
 					'estatus_jefe' => ($this->estatus_jefe == 'APROBADO') ? 'PROCESADO' : 'RECHAZADO',
-					'estatus_admin' => ($this->estatus_jefe == 'RECHAZADO') ? 'RECHAZADO' : $solicitud->estatus_admin
+					'estatus_admin' => ($this->estatus_jefe == 'RECHAZADO') ? 'RECHAZADO' : $solicitud->estatus_admin,
+					'observacion' => ($this->observacion == null) ? null : $this->observacion
 				]);
 			}elseif ($this->estatus_jefe == 'PROCESADO') {
 				$solicitud->Detalles()->update([
 					'estatus_jefe' => ($this->estatus_alumno == 'APROBADO') ? 'PROCESADO' : 'RECHAZADO'
 				]);
 				$solicitud->update([
-					'estatus_jefe' => 'PROCESADO'
+					'estatus_jefe' => 'PROCESADO',
+					'observacion' => ($this->observacion == null) ? null : $this->observacion
 				]);
 			}
 

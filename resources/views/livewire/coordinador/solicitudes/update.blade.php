@@ -105,6 +105,7 @@
 										$c = 0;
 										$nota_anterior = 0;
 										$nota_nueva = 0;
+										$contador = 0;
 									@endphp
 
 									@foreach ($solicitud->Detalles->groupBy('alumno_id') as $key => $detalles)

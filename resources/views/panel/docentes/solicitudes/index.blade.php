@@ -1,4 +1,16 @@
 <x-app-layout>
+	@php
+		$actual = \Carbon\Carbon::now();
+		$fin_a = \Carbon\Carbon::create(2022, 05, 13, 12, 00, 00);
+		if (Auth::user()->id == 1) {
+			$cerrado = false;
+		}elseif ($actual->greaterThanOrEqualTo($fin_a) == true){
+			$cerrado = true;
+		}else{
+			$cerrado = false;
+		}
+
+	@endphp
     <x-slot name="header">
     	<div class="grid grid-cols-2 md:grid-cols-2">
 
@@ -25,9 +37,11 @@
             <div class="grid overflow-hidden bg-white shadow-xl sm:rounded-lg">
                 {{-- <x-jet-welcome /> --}}
 				<div class="grid-cols-1 p-6 bg-gray-200 bg-opacity-25">
-					<x-link class="float-right" href="{{ route('panel.docente.solicitudes.create') }}" :disabled="false" color="gray" intensidad="900">
-						Nueva Solicitud
-					</x-link>
+					@if ($cerrado == false)
+						<x-link class="float-right" href="{{ route('panel.docente.solicitudes.create') }}" :disabled="false" color="gray" intensidad="900">
+							Nueva Solicitud
+						</x-link>
+					@endif
 				</div>
                 <div class="grid-cols-1 bg-gray-200 bg-opacity-25 md:grid-cols-1">
 				    <div class="p-6">

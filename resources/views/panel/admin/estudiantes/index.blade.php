@@ -3,7 +3,7 @@
 
 @section('content_header')
 <div class="container-fluid">
-   <div class="row mb-2">
+   <div class="mb-2 row">
       <div class="col-sm-6">
          <h1>
             Estudiantes
@@ -27,9 +27,18 @@
 
 @section('content')
 
-      @livewire('admin.alumnos')
-      
-    
+	<livewire:admin.alumnos.table model="App\Models\Alumno"
+	with="pnf"
+	sort="cedula|asc"
+	{{-- include="id, motivo, solicitante.nombre|User" --}}
+	searchable="cedula, p_nombre, s_nombre, p_apellido, s_apellido, pnf.nombre"
+
+	{{-- hideable="select" --}}
+	 />
+
+      {{-- @livewire('admin.alumnos') --}}
+
+
 @stop
 
 @section('css')

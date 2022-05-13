@@ -29,7 +29,7 @@
 	  <div class="preloader flex-column justify-content-center align-items-center">
 		<img class="animation__shake" src="{{ asset('img/logo.png') }}" alt="AdminLTELogo" height="100" width="100">
 		<br>
-		<h2 class="animation__shake">
+		<h2 class="text-xl font-semibold animation__shake">
 			@yield('title', config('adminlte.title', 'AdminLTE 3'))
 		</h2>
 		<small class="animation__shake text-info text-capitalize">cargando por favor espere...</small>

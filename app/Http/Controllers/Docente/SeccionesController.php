@@ -189,6 +189,7 @@ class SeccionesController extends Controller
 
 	public function avance_notas($relacion)
 	{
+		ini_set('max_execution_time', 6200);
 		// if($seccion->cedula_docente != Auth::user()->cedula){
 		// 	return abort(403);
 		// }
@@ -219,7 +220,8 @@ class SeccionesController extends Controller
         $font = $dompdf->getFontMetrics()->get_font("helvetica");
                                         //ancho alto
         $dompdf->getCanvas()->page_text(700, 580, "Pág. {PAGE_NUM} de {PAGE_COUNT}", $font, 10, array(0,0,0));
-        return $dompdf->stream(@$seccion->seccion.'('.@$detalles->DesAsignatura->tri_semestre.') - '.@$detalles->DesAsignatura->nombre.' - '.@$detalles->docente.'.pdf', array("Attachment" => false));
+        return $dompdf->stream('AVANCE DE NOTAS.pdf', array("Attachment" => true));
+        // return $dompdf->stream(@$relacion->first()->Seccion->seccion.'('.@$relacion->first()->DesAsignatura->tri_semestre.') - '.@$relacion->first()->DesAsignatura->nombre.' - '.@$relacion->first()->Docente->nombres.' '.@$relacion->first()->Docente->apellidos.'.pdf', array("Attachment" => false));
 		// $pdf = PDF::loadView('panel.docentes.secciones.acta_notas', ['estudiantes' => $notas, 'detalles' => $detalles]);
 
 		// return $pdf->stream();
@@ -228,6 +230,7 @@ class SeccionesController extends Controller
 
 	public function actanueva(DesAsignaturaDocenteSeccion $relacion)
 	{
+		ini_set('max_execution_time', 4200);
 		// if($seccion->cedula_docente != Auth::user()->cedula){
 		// 	return abort(403);
 		// }
@@ -242,7 +245,7 @@ class SeccionesController extends Controller
 		->where('cod_desasignatura',$relacion->DesAsignatura->codigo)
 		->where('cedula_docente',$relacion->Docente->cedula)
 		->where('especialidad', $relacion->Seccion->Pnf->codigo)
-		->where('estatus', 1)
+		->whereIn('estatus', [1,0])
 		->groupBy('cedula_estudiante')
 		->orderBy('cedula_estudiante', 'asc')
 		->get();

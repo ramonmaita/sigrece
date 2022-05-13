@@ -399,6 +399,12 @@ return [
             'icon' => 'fas fa-tools fa-fw',
             'can' => 'comandos.index',
         ],
+        [
+            'text' => 'Respaldo de BD',
+            'route'  => 'panel.respaldos.index',
+            'icon' => 'fas fa-database fa-fw',
+            'can' => 'respaldos.index',
+        ],
 
         // ['header' => 'account_settings'],
         // [
@@ -655,5 +661,5 @@ return [
     | https://github.com/jeroennoten/Laravel-AdminLTE/wiki/9.-Other-Configuration
     */
 
-    'livewire' => false,
+    'livewire' => true,
 ];

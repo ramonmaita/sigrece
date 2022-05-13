@@ -110,9 +110,11 @@
     @livewireScripts
     {{-- Custom Scripts --}}
     @yield('adminlte_js')
-
+	<link rel="stylesheet" href="{{ mix('css/app.css') }}">
+	<!-- Scripts -->
+	<script src="{{ mix('js/app.js') }}" defer></script>
 	 <!--Datatables -->
-	 <script src="{{ asset('js/app.js') }}"></script>
+	 {{-- <script src="{{ asset('js/app.js') }}"></script> --}}
 	 {{-- <script src="{{ asset('datatables/js/jquery.dataTables.min.js') }}"></script>
 	 <script src="{{ asset('datatables/js/dataTables.bootstrap4.min.js') }}"></script>
 	 <script src="{{ asset('datatables/js/dataTables.responsive.min.js') }}"></script> --}}

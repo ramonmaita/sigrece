@@ -27,7 +27,33 @@
 
 @section('content')
 
-      @livewire('admin.solicitudes')
+      {{-- @livewire('admin.solicitudes') --}}
+	  {{-- <div class="card card-primary card-outline">
+        <div class="card-header">
+            <h3 class="card-title">Inicio</h3>
+            <div class="card-tools">
+                <!-- Buttons, labels, and many other things can be placed here! -->
+                <!-- Here is a label for example -->
+            </div>
+            <!-- /.card-tools -->
+        </div>
+        <!-- /.card-header --> --}}
+        @include('alertas')
+        {{-- <div class="card-body"> --}}
+			{{-- <livewire:datatable model="App\Models\SolicitudCorreccion" name="as" /> --}}
+			<livewire:admin.solicitudes.correcciones.table model="App\Models\SolicitudCorreccion"
+			with="solicitante, desasignatura"
+			sort="seccion|asc"
+			{{-- include="id, motivo, solicitante.nombre|User" --}}
+			searchable="seccion, solicitante.nombre, solicitante.apellido, desasignatura.nombre, estatus_jefe, estatus_admin"
+
+			{{-- hideable="select" --}}
+			exportable />
+			{{-- </div>
+			<!-- /.card-body -->
+
+		</div> --}}
+    <!-- /.card -->
 
 
 @stop

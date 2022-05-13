@@ -29,5 +29,16 @@
     "Before proceeding, please check your email for a verification link.": "Antes de poder continuar, por favor, confirma tu correo electrónico con el enlace que te hemos enviado.",
     "If you did not receive the email": "Si no has recibido el email",
     "click here to request another": "pulsa aquí para que te enviemos otro",
-    "All rights reserved.":  "Todos los derechos reservados."
+    "All rights reserved.":  "Todos los derechos reservados.",
+    "Search in" : "Buscar en",
+    "There's Nothing to show at the moment" : "No hay nada que mostrar en este momento",
+    "All" : "Todos",
+    "Results" : "Resultados del",
+    "of" : "de",
+    "to" : "al",
+    "Export" : "Exportar",
+    "Email" : "Correo Electronico",
+    "Already registered?" : "¿Ya estas registrado?",
+    "Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one." : "¿Olvidaste tu contraseña? No hay problema. Simplemente díganos su dirección de correo electrónico y le enviaremos un enlace para restablecer la contraseña que le permitirá elegir una nueva.",
+    "Email Password Reset Link" : "Enviar Correo electrónico con Enlace de restablecimiento de contraseña"
 }

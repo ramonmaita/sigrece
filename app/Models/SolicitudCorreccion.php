@@ -20,6 +20,7 @@ class SolicitudCorreccion extends Model
 		'estatus_admin',
 		'motivo',
 		'observacion',
+		'observacion_admin',
 		'fecha',
 	];
 

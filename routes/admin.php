@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 // use App\Http\Livewire\Admin\PeriodosComponet;
 
@@ -170,8 +171,8 @@ Route::prefix('panel')->name('panel.')->group(function () {
     });
 
 	Route::prefix('solicitudes')->name('solicitudes.')->group(function () {
-		Route::get('/', [SolicitudesController::class, 'index'])->middleware(['role_or_permission:Admin'])->name('index');
-
+		Route::get('/', [SolicitudesController::class, 'index'])->middleware(['role_or_permission:Admin|solicitudes.index'])->name('index');
+		Route::get('{solicitud}/ver', [SolicitudesController::class, 'show'])->middleware(['role_or_permission:Admin|solicitudes.index'])->name('show');
     });
 
 	Route::prefix('retiro-de-uc-inscritas')->name('retiros.')->group(function () {
@@ -249,12 +250,34 @@ Route::prefix('panel')->name('panel.')->group(function () {
             return redirect()->route('panel.comandos.index')->with('mensaje','Cola procesada con exito.');
         })->name('jobs')->middleware(['role_or_permission:SuperAdmin|comandos.ejecutar']);
 
+        Route::get('/jobs-retry', function () {
+
+            Artisan::call('queue:retry all');
+            return redirect()->route('panel.comandos.index')->with('mensaje','Cola procesada con exito.');
+        })->name('jobs-retry')->middleware(['role_or_permission:SuperAdmin|comandos.ejecutar']);
+
 		Route::get('/respaldar-db', function () {
 
             Artisan::call('db:dump');
-            return redirect()->route('panel.comandos.index')->with('mensaje','Respaldo de base de datos realizado con exito.');
+            return redirect()-back()->with('mensaje','Respaldo de base de datos realizado con exito.');
         })->name('respaldar-db')->middleware(['role_or_permission:SuperAdmin|comandos.ejecutar']);
     });
 
-// });
+	Route::prefix('respaldos')->name('respaldos.')->group(function () {
+
+		Route::get('/', function () {
+			$files = Storage::disk('database')->allFiles();
+			return view('panel.admin.respaldos_bd.index',['files' => $files]);
+		})->name('index');
+
+		Route::get('descargar/{archivo}', function ($archivo) {
+			$archivo = ($archivo == 'schema.sql') ? 'schemas/schema.sql' : $archivo;
+			return Storage::disk('database')->download($archivo);
+		})->name('descargar');
+		Route::get('borrar/{archivo}', function ($archivo) {
+			Storage::disk('database')->delete($archivo);
+			return back()->with('mensaje','Archivo eliminado exitosamente.');
+		})->name('borrar');
+
+	});
 });

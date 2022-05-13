@@ -84,7 +84,7 @@
                     <div class="px-3">
                         <div class="" wire::ignore>
 
-                            {{-- @dump( $estudiante ) --}}
+
                             <x-jet-label for="estudiante" value="{{ __('estudiante') }}"
                                 class="block font-bold tracking-wide capitalize" />
                             <x-select class="block w-full mt-1 select2" name="estudiante" id="select2-alumnos"
@@ -148,7 +148,6 @@
 								</thead>
 								<tbody class="bg-white divide-y divide-gray-200">
 									@if (!$errors->first('estudiante'))
-
 										@foreach ($estudiantes_add as $key => $estudiante_a)
 											@if ($tipo_solicitud == 'CORRECCION')
 												@if($periodo == '2021' && !empty($uc) && !empty($seccion) && !empty($estudiantes_add))
@@ -165,8 +164,8 @@
 														{{-- {{ ($unidad->Nota($estudiante_a->Alumno->id)) ? $unidad->Nota($estudiante_a->Alumno->id)->nota : 0}} --}}
 														<x-jet-input id="nota.{{ $estudiante_a->Alumno->id }}.{{ $unidad->id }}"
 															class="block w-full mt-1 SoloNumeros" type="number" name="porcentaje" min="1"
-															max="{{ $unidad->porcentaje }}" :value="@$unidad->Nota($estudiante_a->Alumno->id)->nota"
-															wire:model.defer="nota.{{ $estudiante_a->Alumno->id }}.{{ $unidad->id }}"
+															max="{{ $unidad->porcentaje }}"
+															wire:model.lazy="nota.{{$estudiante_a->Alumno->id}}.{{$unidad->id}}"
 															wire:loading.attr="disabled" size="4" />
 															<x-jet-input-error for="nota.{{$estudiante_a->Alumno->id}}.{{$unidad->id}}"
 																:disabled="(!empty($nota[$estudiante_a->Alumno->id][$unidad->id])) ? true : true" />
@@ -181,7 +180,7 @@
 													@endforelse
 													<td>
 
-														{{ $nota = $estudiante_a->Alumno->NotasActividades($relacion->Actividades->pluck('id')) }}
+														{{ $nota = @$estudiante_a->Alumno->NotasActividades(@$relacion->Actividades->pluck('id')) }}
 													</td>
 													<td>
 														{{ $estudiante_a->Alumno->Escala($nota) }}

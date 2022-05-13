@@ -52,6 +52,11 @@
                 'route' =>  route('panel.comandos.jobs')
             ],
             [
+                'comando' => 'queue:retry all',
+                'funcion' => 'Ejecutar cola de procesos fallida',
+                'route' =>  route('panel.comandos.jobs-retry')
+            ],
+            [
                 'comando' => 'livewire:discover',
                 'funcion' => 'Descubrir componetes livewire',
                 'route' =>  route('panel.comandos.livewire-discover')

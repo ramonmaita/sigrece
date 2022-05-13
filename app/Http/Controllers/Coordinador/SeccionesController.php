@@ -150,7 +150,7 @@ class SeccionesController extends Controller
 		->where('cod_desasignatura',$relacion->DesAsignatura->codigo)
 		->where('cedula_docente',$relacion->Docente->cedula)
 		->where('especialidad', $relacion->Seccion->Pnf->codigo)
-		->where('estatus', 1)
+		->whereIn('estatus',[1,0])
 		->groupBy('cedula_estudiante')
 		->orderBy('cedula_estudiante', 'asc')
 		->get();

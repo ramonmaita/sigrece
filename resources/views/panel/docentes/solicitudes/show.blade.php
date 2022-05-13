@@ -155,6 +155,14 @@
 													<td></td>
 												@endforelse
 											@endforeach
+												{{-- @if ($contador < $relacion->Actividades->count())
+
+													@for ($i = $contador; $i <= $relacion->Actividades->count() - $contador; $i++)
+														<td></td>
+													@endfor
+
+												@endif --}}
+
 												<td class="text-center">
 													{{ $nota_anterior }} <br>
 													{{ $nota_nueva }}

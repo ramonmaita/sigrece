@@ -6,6 +6,7 @@ use App\Models\Actividad;
 use App\Models\Alumno;
 use App\Models\Coordinador;
 use App\Models\DesAsignatura;
+use App\Models\Asignatura;
 use App\Models\DesAsignaturaDocenteSeccion;
 use App\Models\Solicitud;
 use App\Models\HistoricoNota;
@@ -77,20 +78,22 @@ class Solicitudes extends Component
 					$this->secciones = HistoricoNota::where('cedula_docente',Auth::user()->cedula)->where('periodo',$this->periodo)->where('cod_desasignatura',$this->uc)->groupBy('seccion')->orderBy('seccion','asc')->get();
 					if(!empty($this->seccion)){
 						if($this->tipo_solicitud == 'CORRECCION'){
-							// $estudiantes = HistoricoNota::where('cedula_docente',Auth::user()->cedula)->where('periodo',$this->periodo)->where('cod_desasignatura',$this->uc)->where('seccion',$this->seccion)->groupBy('cedula_estudiante')->orderBy('cedula_estudiante','asc')->get();
+				// 			$estudiantes = HistoricoNota::where('cedula_docente',Auth::user()->cedula)->where('periodo',$this->periodo)->where('cod_desasignatura',$this->uc)->where('seccion',$this->seccion)->groupBy('cedula_estudiante')->orderBy('cedula_estudiante','asc')->get();
 							if(!empty($this->estudiante)){
-								$desasignatura = DesAsignatura::where('codigo',$this->uc)->first();
-								$periodo = Periodo::where('nombre',$this->periodo)->first();
-								$seccion = Seccion::where('nombre',$this->seccion)->where('periodo_id',$periodo->id)->first();
-								$this->relacion = DesAsignaturaDocenteSeccion::where('docente_id',Auth::user()->Docente->id)->where('seccion_id',$seccion->id)->where('des_asignatura_id',$desasignatura->id)->first();
+								// $desasignatura = DesAsignatura::where('codigo',$this->uc)->first();
+								// $periodo = Periodo::where('nombre',$this->periodo)->first();
+								// $seccion = Seccion::where('nombre',$this->seccion)->where('periodo_id',$periodo->id)->first();
+								// $this->relacion = DesAsignaturaDocenteSeccion::where('docente_id',Auth::user()->Docente->id)->where('seccion_id',$seccion->id)->where('des_asignatura_id',$desasignatura->id)->first();
 								$this->estudiantes_add = HistoricoNota::whereIn('cedula_estudiante',$this->estudiante)->where('cedula_docente',Auth::user()->cedula)->where('periodo',$this->periodo)->where('cod_desasignatura',$this->uc)->where('seccion',$this->seccion)->groupBy('cedula_estudiante')->orderBy('cedula_estudiante','asc')->get();
-								$actividades = Actividad::with('notas')->where('seccion_id',$seccion->id)->where('desasignatura_id',$desasignatura->id)->get();
-								$alumnos = Alumno::whereIn('cedula',$this->estudiante)->pluck('id');
-								foreach ($actividades as $key => $actividad) {
-									foreach ($actividad->Notas->whereIn('alumno_id',$alumnos) as $key => $notas) {
-										$this->nota[$notas->alumno_id][$notas->actividad_id]  = $notas->nota ;
-									}
-								}
+								// $actividades = Actividad::with('notas')->where('seccion_id',$seccion->id)->where('desasignatura_id',$desasignatura->id)->get();
+								// $alumnos = Alumno::whereIn('cedula',$this->estudiante)->pluck('id');
+								// foreach ($actividades as $key => $actividad) {
+								// 	foreach ($actividad->Notas->whereIn('alumno_id',$alumnos) as $key => $notas) {
+								// 		$this->nota[$notas->alumno_id][$notas->actividad_id]  = $notas->nota ;
+								// 	}
+								// }
+
+
 							}else{
 								$cis = HistoricoNota::where('cedula_docente',Auth::user()->cedula)
 																->where('periodo',$this->periodo)
@@ -99,19 +102,27 @@ class Solicitudes extends Component
 																->groupBy('cedula_estudiante')
 																->orderBy('cedula_estudiante','asc')->pluck('cedula_estudiante');
 
+                                 $periodo = Periodo::where('nombre',$this->periodo)->first();
+							$seccion = Seccion::where('nombre',$this->seccion)->where('periodo_id',$periodo->id)->first();
+				// 			$plan = DesAsignatura::where('codigo',$this->uc)->first()->Asignatura->Plan;
+							$plan_id = $seccion->plan_id;
+
 								$plan = DesAsignatura::where('codigo',$this->uc)->first()->Asignatura->Plan;
-								$this->estudiantes  = Alumno::whereIn('cedula',$cis)->where('plan_id',$plan->id)->get();
+								$this->estudiantes  = Alumno::whereIn('cedula',$cis)->where('plan_id',$plan_id)->get();
 								$this->reset(['estudiantes_add','nota']);
 
 							}
 						}elseif($this->tipo_solicitud == 'RESET'){
 
 						}else{
-							$plan = DesAsignatura::where('codigo',$this->uc)->first()->Asignatura->Plan;
+						    $periodo = Periodo::where('nombre',$this->periodo)->first();
+							$seccion = Seccion::where('nombre',$this->seccion)->where('periodo_id',$periodo->id)->first();
+				// 			$plan = DesAsignatura::where('codigo',$this->uc)->first()->Asignatura->Plan;
+							$plan = $seccion->plan_id;
 							// $estudiantes = Alumno::where('plan_id',$plan->id)->take(5)->get();
-							$this->estudiantes = Alumno::where('plan_id',$plan->id)->get();
+							$this->estudiantes = Alumno::where('plan_id',$plan)->get();
 							if(!empty($this->estudiante)){
-								$this->estudiantes_add = Alumno::whereIn('cedula',$this->estudiante)->where('plan_id',$plan->id)->get();
+								$this->estudiantes_add = Alumno::whereIn('cedula',$this->estudiante)->where('plan_id',$plan)->get();
 							}else{
 								$this->reset(['estudiantes_add','nota']);
 							}
@@ -128,6 +139,29 @@ class Solicitudes extends Component
 		]);
     }
 
+    public function updated($name){
+        if($name == 'estudiante'){
+            if(!empty($this->estudiante)){
+
+			$periodo = Periodo::where('nombre',$this->periodo)->first();
+			$seccion = Seccion::where('nombre',$this->seccion)->where('periodo_id',$periodo->id)->first();
+
+			$desasignatura = DesAsignatura::where('codigo',$this->uc)->first();
+			$asigp = Asignatura::find($desasignatura->asignatura_id);
+			$asignatura = Asignatura::where('codigo',$asigp->codigo)->where('plan_id',$seccion->plan_id)->first();
+			$desasignatura = $asignatura->DesAsignaturas->where('codigo',$this->uc)->first();
+			$this->relacion = DesAsignaturaDocenteSeccion::where('docente_id',Auth::user()->Docente->id)->where('seccion_id',$seccion->id)->where('des_asignatura_id',$desasignatura->id)->first();
+			$this->estudiantes_add = HistoricoNota::whereIn('cedula_estudiante',$this->estudiante)->where('cedula_docente',Auth::user()->cedula)->where('periodo',$this->periodo)->where('cod_desasignatura',$this->uc)->where('seccion',$this->seccion)->groupBy('cedula_estudiante')->orderBy('cedula_estudiante','asc')->get();
+			$actividades = Actividad::with('notas')->where('seccion_id',$seccion->id)->where('desasignatura_id',$desasignatura->id)->get();
+			$alumnos = Alumno::whereIn('cedula',$this->estudiante)->pluck('id');
+			foreach ($actividades as $key => $actividad) {
+				foreach ($actividad->Notas->whereIn('alumno_id',$alumnos) as $key => $notas) {
+					$this->nota[$notas->alumno_id][$notas->actividad_id]  = $notas->nota ;
+				}
+			}
+        }
+        }
+    }
 
 	public function store()
 	{
@@ -209,7 +243,14 @@ class Solicitudes extends Component
 		}
 		try {
 			DB::beginTransaction();
+			$periodo = Periodo::where('nombre',$this->periodo)->first();
+			$seccion = Seccion::where('nombre',$this->seccion)->where('periodo_id',$periodo->id)->first();
+
 			$desasignatura = DesAsignatura::where('codigo',$this->uc)->first();
+			$asigp = Asignatura::find($desasignatura->asignatura_id);
+			$asignatura = Asignatura::where('codigo',$asigp->codigo)->where('plan_id',$seccion->plan_id)->first();
+			$desasignatura = $asignatura->DesAsignaturas->where('codigo',$this->uc)->first();
+// 			$desasignatura = DesAsignatura::where('codigo',$this->uc)->first();
 			$jefe = Coordinador::where('pnf_id',$desasignatura->Asignatura->pnf_id)->first();
 			if($this->tipo_solicitud == 'CORRECCION'){
 				$solicitud = SolicitudCorreccion::create([
