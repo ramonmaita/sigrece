@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Docente;
 
 use App\Http\Controllers\Controller;
 use App\Models\DesAsignaturaDocenteSeccion;
+use App\Models\Evento;
 use App\Models\Periodo;
 use App\Models\Seccion;
 use App\Models\Solicitud;
@@ -36,7 +37,28 @@ class SolicitudesController extends Controller
      */
     public function create()
     {
-        return view('panel.docentes.solicitudes.create');
+		$actual = Carbon::now()->toDateTimeString();
+		$cerrado = true;
+		$evento_solicitud_correccion = Evento::where('tipo','SOLICITUD DE CORRECCION')
+		->where('evento_padre',0)
+		->where('inicio','<=',$actual)
+		->where('fin','>=',$actual)
+		->orderBy('id','desc')
+		->first();
+		if($evento_solicitud_correccion){
+			$aplicable = json_decode($evento_solicitud_correccion->aplicable);
+			if ($evento_solicitud_correccion->aplicar == 'TODOS') {
+				$cerrado = false;
+			}elseif ($evento_solicitud_correccion->aplicar == 'ESPECIFICO' && array_search(Auth::user()->cedula,$aplicable[1]) !== false) {
+				$cerrado = false;
+			}
+		}
+
+		if($cerrado == false){
+			return view('panel.docentes.solicitudes.create');
+		}else{
+			return abort(404);
+		}
     }
 
     /**

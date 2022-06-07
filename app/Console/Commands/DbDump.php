@@ -44,6 +44,11 @@ class DbDump extends Command
 		$database = env('DB_DATABASE');
 		$path = database_path('backups' . $ds);
 		$file = 'bd' . date('_Y-m-d-H-i-s') . '.sql';
+
+		$host = ($host == "") ? '127.0.0.1' : $host;
+		$username = ($username == "") ? 'uptb0l1v' : $username;
+		$password = ($password == "") ? '99HF8O!chn1n@D' : $password;
+		$database = ($database == "") ? 'uptb0l1v_sigrece' : $database;
 		if (!is_dir($path)) {
 				mkdir($path, 0755, true);
 		}
@@ -65,6 +70,7 @@ class DbDump extends Command
 			$command .= sprintf('--password="%s" ', $password);
 		}
 		$command .= sprintf('%s > "%s"', $database, $path . $file);
+		// \Log::info($command);
 		$this->line('<fg=green>CMD: </><fg=yellow;bg=black>'. $command . '</>');
 		exec($command, $output, $return);
 		if ($return) {
@@ -72,6 +78,7 @@ class DbDump extends Command
 			if (file_exists($path . $ds . $file)) {
 				unlink($path . $ds . $file);
 			}
+			\Log::error('Error al intentar generar el Backup');
 			return; // error
 		}
 		// Comprimiendo el archivo:
@@ -108,6 +115,7 @@ class DbDump extends Command
 			if (file_exists($path . $ds . $file)) {
 				unlink($path . $ds . $file);
 			}
+			\Log::error('Error al intentar generar el Schema');
 			return; // error
 		}
 

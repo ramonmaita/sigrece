@@ -79,7 +79,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="inicio">Inicio</label>
                                 <input type="datetime-local" class="form-control @error('inicio')is-invalid @enderror"
@@ -89,16 +89,19 @@
                                 @enderror
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 <label for="fin">Fin</label>
                                 <input type="datetime-local" class="form-control @error('fin')is-invalid @enderror"
-                                    wire:model="fin" id="fin" aria-describedby="" placeholder="">
+                                    wire:model="fin" id="fin" min="{{$inicio}}" aria-describedby="" placeholder="">
                                 @error('fin')
                                     <small class="text-danger">{{ $message }}</small>
                                 @enderror
                             </div>
                         </div>
+					</div>
+
+					<div class="row">
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label for="tipo">Tipo</label>
@@ -108,6 +111,8 @@
                                     <option value="GRADUACION">GRADUACION</option>
                                     <option value="INSCRIPCION">INSCRIPCION</option>
                                     <option value="CARGA DE CALIFICACIONES">CARGA DE CALIFICACIONES</option>
+                                    <option value="SOLICITUD DE CORRECCION">SOLICITUD DE CORRECCION</option>
+                                    <option value="ACTUALIZACION DE DATOS">ACTUALIZACION DE DATOS</option>
                                 </select>
                                 @error('tipo')
                                     <small class="text-danger">{{ $message }}</small>
@@ -116,7 +121,7 @@
 						</div>
 						<div class="col-md-3">
                             <div class="form-group">
-                                <label for="aplicar">aplicar</label>
+                                <label for="aplicar">Aplicar</label>
                                 <select class="form-control @error('aplicar')is-invalid @enderror" name="aplicar"
                                     id="aplicar" wire:model='aplicar'>
                                     <option>SELECCIONE</option>
@@ -139,6 +144,19 @@
                                             <option value="NUEVO INGRESO">NUEVO INGRESO</option>
                                             <option value="CIU">CIU</option>
                                             <option value="PER">PER</option>
+											<option value="ESPECIFICO">ESPECIFICO</option>
+                                        </optgroup>
+                                    @endif
+                                    @if ($tipo == 'SOLICITUD DE CORRECCION')
+                                        <optgroup label="SOLICITUD DE CORRECCION">
+                                            <option value="TODOS">TODOS</option>
+                                            <option value="ESPECIFICO">ESPECIFICO</option>
+                                        </optgroup>
+                                    @endif
+                                    @if ($tipo == 'ACTUALIZACION DE DATOS')
+                                        <optgroup label="ACTUALIZACION DE DATOS">
+                                            <option value="TODOS">TODOS</option>
+                                            <option value="ESPECIFICO">ESPECIFICO</option>
                                         </optgroup>
                                     @endif
                                 </select>
@@ -147,6 +165,23 @@
                                 @enderror
                             </div>
                         </div>
+						<div class="col-md-6" @if($tipo == 'SOLICITUD DE CORRECCION' && $aplicar == 'ESPECIFICO' || $tipo == 'CARGA DE CALIFICACIONES' && $aplicar == 'ESPECIFICO') style="display: block;" @else style="display: none;" @endif>
+							<div class="form-group"  wire:ignore  >
+								<label for="aplicable">Aplicable</label>
+								<br>
+								<select class="block w-full select2-usuarios form-control @error('aplicable')is-invalid @enderror " wire:model="aplicable"
+									id="select2-usuarios" multiple>
+									@forelse ($usuarios as $usuario)
+										<option value="{{ $usuario->cedula }}">{{ $usuario->cedula }} {{ $usuario->nombre_completo }}</option>
+									@empty
+									@endforelse
+								</select>
+								@error('aplicable')
+									<small class="text-danger">{{ $message }}</small>
+								@enderror
+							</div>
+						</div>
+
                     </div>
 
                 </div>
@@ -163,5 +198,39 @@
             </div>
         </div>
     </div>
+	@push('css')
+		<style>
+			.select2{
+				width: 100% !important;
+			}
+		</style>
+	@endpush
+	@push('js')
+	<script>
+		// $('#select2-usuarios').select2({})
+		$(document).on('change', '#select2-usuarios', function(e) {
+			var data = $('#select2-usuarios').select2("val");
+			// data = $.trim(data);
+			// if (data ==="" || 0 === data.length) {
+			// 	console.log('esta vacio '+data);
+			// 	data = [];
+			// }else{
+			// 	console.log('no esta vacio '+data);
+			// }
+			@this.set('aplicable', data);
+		});
+		$(document).on('change', '#select2-pnfs', function(e) {
+			var data = $('#select2-pnfs').select2("val");
+			// data = $.trim(data);
+			// if (data ==="" || 0 === data.length) {
+			// 	console.log('esta vacio '+data);
+			// 	data = [];
+			// }else{
+			// 	console.log('no esta vacio '+data);
+			// }
+			@this.set('aplicable', data);
+		});
 
+	</script>
+	@endpush
 </div>

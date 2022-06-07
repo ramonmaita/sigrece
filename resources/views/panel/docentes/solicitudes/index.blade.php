@@ -1,13 +1,23 @@
 <x-app-layout>
 	@php
-		$actual = \Carbon\Carbon::now();
-		$fin_a = \Carbon\Carbon::create(2022, 05, 13, 12, 00, 00);
-		if (Auth::user()->id == 1) {
-			$cerrado = false;
-		}elseif ($actual->greaterThanOrEqualTo($fin_a) == true){
-			$cerrado = true;
-		}else{
-			$cerrado = false;
+		$actual = \Carbon\Carbon::now()->toDateTimeString();
+		// $actual = date('Y-m-d H:i:s', strtotime(\Carbon\Carbon::now()));
+		// return dd($actual);
+		$cerrado = true;
+		$evento_solicitud_correccion = \App\Models\Evento::where('tipo','SOLICITUD DE CORRECCION')
+		->where('evento_padre',0)
+		->where('inicio','<=',$actual)
+		->where('fin','>=',$actual)
+		->orderBy('id','desc')
+		->first();
+		// return dd($evento_solicitud_correccion);
+		if($evento_solicitud_correccion){
+			$aplicable = json_decode($evento_solicitud_correccion->aplicable);
+			if ($evento_solicitud_correccion->aplicar == 'TODOS') {
+				$cerrado = false;
+			}elseif ($evento_solicitud_correccion->aplicar == 'ESPECIFICO' && array_search(Auth::user()->cedula,$aplicable[1]) !== false) {
+				$cerrado = false;
+			}
 		}
 
 	@endphp

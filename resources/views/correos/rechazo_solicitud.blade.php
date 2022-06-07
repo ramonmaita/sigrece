@@ -1,6 +1,6 @@
 @component('mail::message')
 Estimando {{ $usuario->nombre }} {{ $usuario->apellido }} su solicitud de corrección de califiaciones de fecha {{ \Carbon\Carbon::parse($solicitud->fecha)->format('d-m-Y h:i:s A') }} fue rechazada
- @if($solicitud->observacion_admin != null) por el siguiente motivo: {{ $solicitud->observacion_admin }}
+ @if($solicitud->observacion_admin != null) por el siguiente motivo: {{ $solicitud->observacion_admin }} @endif
 
 
 <table border="1" width="100%" cellspacing="0" cellpadding="0">

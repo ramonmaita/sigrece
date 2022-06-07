@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AlumnosController;
 use App\Http\Controllers\Admin\CambiosController;
+use App\Http\Controllers\Admin\CertificacionesController;
 use App\Http\Controllers\Admin\CorreccionesController as AdminCorreccionesController;
 use App\Http\Controllers\Admin\DocentesController;
 use App\Http\Controllers\Admin\EventosController;
@@ -30,6 +31,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 // use App\Http\Livewire\Admin\PeriodosComponet;
@@ -61,7 +63,8 @@ Route::prefix('panel')->name('panel.')->group(function () {
 
     Route::prefix('usuarios')->name('usuarios.')->group(function () {
 		Route::get('generar', [UsuariosController::class,'generar_usuarios'])->name('generar')->middleware(['role_or_permission:SuperAdmin']);
-		Route::get('/data-docentes', [UsuariosController::class, 'dataDocente'])->middleware(['role_or_permission:Admin'])->name('dataDocente');
+		Route::get('/data-docentes', [UsuariosController::class, 'dataDocente'])->middleware(['role_or_permission:SuperAdmin'])->name('dataDocente');
+		Route::put('asignar-permisos/{usuario}',[UsuariosController::class,'permisos'])->middleware(['role_or_permission:SuperAdmin'])->name('asignar_permisos');
     });
 
     Route::resource('usuarios', UsuariosController::class)->middleware(['role_or_permission:SuperAdmin|usuarios.index']);
@@ -118,6 +121,7 @@ Route::prefix('panel')->name('panel.')->group(function () {
 
 	Route::prefix('eventos')->name('eventos.')->group(function () {
 		Route::get('/',[EventosController::class,'index'])->name('index')->middleware(['role_or_permission:eventos.index']);
+		Route::get('/data',[EventosController::class,'data'])->name('data');
 	});
 
 	Route::resource('eventos', EventosController::class);
@@ -142,7 +146,7 @@ Route::prefix('panel')->name('panel.')->group(function () {
 
 		Route::get('configurar/{id}', [SeccionesController::class,'configurar'])->name('config')->middleware(['role_or_permission:secciones.configurar']);
 		Route::get('lista', [SeccionesController::class,'secciones_activas'])->name('lista')->middleware(['role_or_permission:secciones.lista']);
-		Route::get('ver/{periodo}/{seccion}/{pnf}', [SeccionesController::class,'show'])->name('ver-uc')->middleware(['role_or_permission:secciones.ver-uc']);
+		// Route::get('ver/{periodo}/{seccion}/{pnf}', [SeccionesController::class,'show'])->name('ver-uc')->middleware(['role_or_permission:secciones.ver-uc']);
 		Route::get('asignar-docente/{periodo}/{seccion}/{pnf}/{desasignatura}', [SeccionesController::class,'asignar_docente'])->name('asignar-docente')->middleware(['role_or_permission:secciones.asignar-docente']);
 		Route::get('listado-de-estudiantes/{seccion}', [SeccionesController::class,'listado_estudiantes'])->name('listado-estudiantes')->middleware(['role_or_permission:secciones.listado-estudiante']);
 
@@ -168,6 +172,10 @@ Route::prefix('panel')->name('panel.')->group(function () {
 			Route::get('ver-seccion/{seccion}/{periodo}', [EstadisticasController::class, 'show_secciones'])->name('show')->middleware(['role_or_permission:estadisticas.index']);
 			Route::get('/data', [EstadisticasController::class, 'data'])->middleware(['role_or_permission:estadisticas.index'])->name('data');
 		});
+		Route::prefix('aprobados-y-reprobados')->name('aprobados-reprobados.')->group(function () {
+			Route::get('/', [EstadisticasController::class, 'index_aprobados_reprobados'])->middleware(['role_or_permission:estadisticas.index'])->name('index');
+			// Route::get('ver-seccion/{seccion}/{periodo}', [EstadisticasController::class, 'show_secciones'])->name('show')->middleware(['role_or_permission:estadisticas.index']);
+		});
     });
 
 	Route::prefix('solicitudes')->name('solicitudes.')->group(function () {
@@ -187,6 +195,11 @@ Route::prefix('panel')->name('panel.')->group(function () {
 		Route::get('/', [InscripcionesController::class, 'index'])->middleware(['role_or_permission:Admin'])->name('index');
 		Route::prefix('nuevo-ingreso')->name('nuevos.')->group(function () {
 
+		});
+
+		Route::prefix('ciu')->name('ciu.')->group(function () {
+			Route::get('/', [InscripcionesController::class, 'index_ciu'])->middleware(['role_or_permission:inscripciones.ciu.index'])->name('index');
+			Route::post('/uc', [InscripcionesController::class, 'uc_incribir'])->middleware(['role_or_permission:inscripciones.ciu.index'])->name('uc');
 		});
 
 		Route::prefix('regulares')->name('regulares.')->group(function () {
@@ -215,6 +228,28 @@ Route::prefix('panel')->name('panel.')->group(function () {
 		Route::get('/nueva-solicitud', [AdminCorreccionesController::class, 'create'])->middleware(['role_or_permission:correcciones.create'])->name('create');
     });
 
+	Route::prefix('carnet')->name('carnet.')->group(function(){
+        Route::view('/','panel.admin.carnets.index')->name('index')->middleware(['role_or_permission:SuperAdmin|carnets.index']);
+	});
+
+	Route::prefix('documentos')->name('documentos.')->group(function(){
+        // Route::view('/','panel.admin.documentos.index')->name('index')->middleware(['role_or_permission:SuperAdmin|documentos.index']);
+
+		Route::prefix('simples')->name('simples.')->group(function(){
+			Route::view('/','panel.admin.documentos.simples.index')->name('index')->middleware(['role_or_permission:SuperAdmin|documentos.simples.index']);
+		});
+
+		Route::prefix('certificados')->name('certificados.')->group(function(){
+			Route::view('/','panel.admin.documentos.certificados.index')->name('index')->middleware(['role_or_permission:SuperAdmin|documentos.certificados.index']);
+			Route::post('buscar',[CertificacionesController::class,'buscar'])->name('buscar');
+			Route::get('graduando/{graduando}',[CertificacionesController::class,'show'])->name('show')->middleware(['role_or_permission:graduacion.index']);
+
+			Route::get('autenticacion/{graduando}',[CertificacionesController::class,'autenticacion'])->name('autenticacion')->middleware(['role_or_permission:graduacion.index']);
+			Route::get('emision/{graduando}',[CertificacionesController::class,'emision'])->name('emision')->middleware(['role_or_permission:graduacion.index']);
+			Route::get('certificacion/{especialidad}',[CertificacionesController::class,'certificacion'])->name('certificacion')->middleware(['role_or_permission:graduacion.index']);
+		});
+	});
+
     Route::prefix('comandos')->name('comandos.')->group(function () {
         Route::view('/','panel.admin.comandos.index')->name('index')->middleware(['role_or_permission:SuperAdmin|comandos.index']);
         Route::get('/limpiar-cache', function () {
@@ -223,7 +258,7 @@ Route::prefix('panel')->name('panel.')->group(function () {
             Artisan::call('view:clear');
             Artisan::call('config:cache');
             Artisan::call('config:clear');
-            Artisan::call('optimize:clear');
+            Artisan::call('optimize');
 
             return redirect()->route('panel.comandos.index')->with('mensaje','Cache borrada con exito.');
         })->name('limpiar-cache')->middleware(['role_or_permission:SuperAdmin|comandos.ejecutar']);
@@ -259,8 +294,21 @@ Route::prefix('panel')->name('panel.')->group(function () {
 		Route::get('/respaldar-db', function () {
 
             Artisan::call('db:dump');
-            return redirect()-back()->with('mensaje','Respaldo de base de datos realizado con exito.');
+			\Log::info('SE EJECUTO EL COMANDO DE RESPALDO');
+            return redirect()->back()->with('mensaje','Respaldo de base de datos realizado con exito.');
         })->name('respaldar-db')->middleware(['role_or_permission:SuperAdmin|comandos.ejecutar']);
+
+		Route::get('/modo-mantenimiento-activo', function () {
+
+            Artisan::call('down --secret="sigrece-147"');
+            return redirect('/sigrece-147')->with('jet_mensaje','Modo manteniento activo');
+        })->name('modo-mantenimiento-activo')->middleware(['role_or_permission:SuperAdmin|comandos.ejecutar']);
+
+		Route::get('/modo-mantenimiento-inactivo', function () {
+
+            Artisan::call('up');
+            return redirect()->back()->with('mensaje','Modo manteniento Desactivado');
+        })->name('modo-mantenimiento-inactivo')->middleware(['role_or_permission:SuperAdmin|comandos.ejecutar']);
     });
 
 	Route::prefix('respaldos')->name('respaldos.')->group(function () {

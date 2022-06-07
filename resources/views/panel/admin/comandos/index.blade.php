@@ -61,6 +61,16 @@
                 'funcion' => 'Descubrir componetes livewire',
                 'route' =>  route('panel.comandos.livewire-discover')
             ],
+            [
+                'comando' => 'down:sigrece-147',
+                'funcion' => 'Activar Modo Mantenimiento',
+                'route' =>  route('panel.comandos.modo-mantenimiento-activo')
+            ],
+            [
+                'comando' => 'up',
+                'funcion' => 'Desactivar Modo Mantenimiento',
+                'route' =>  route('panel.comandos.modo-mantenimiento-inactivo')
+            ],
         ];
     @endphp
     <div class="card card-primary card-outline">

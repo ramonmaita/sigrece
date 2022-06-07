@@ -77,6 +77,7 @@ Route::get('/panel', function () {
 
 Route::get('/limpiar-cache', function () {
 
+	Artisan::call('optimize');
 	Artisan::call('cache:clear');
 	Artisan::call('config:clear');
 	Artisan::call('config:cache');

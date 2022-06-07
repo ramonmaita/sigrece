@@ -127,9 +127,12 @@
                 style=" "><b>{{ @$trayecto }}</b></u>,
             durante el periodo académico <u
                 style=" "><b>{{ $year }}</b></u>,
-            desde <u style=" "><b>Mayo
+            desde <u style=" "><b>Junio
                     del {{ $year }}
-			hasta Marzo {{ $year+1 }}.</b></u>
+			hasta Agosto {{ $year }}.</b></u>
+				{{-- <b>Mayo
+                    del {{ $year }}
+			hasta Marzo {{ $year+1 }}.</b></u> --}}
             {{-- @if ($trayecto == 0)
 			@if (Carbon::parse($inscrito->fecha)->format('m') > 07)
 				Septiembre del 2018 hasta Diciembre 2018.

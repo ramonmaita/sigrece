@@ -4,8 +4,8 @@
 	$evento_inscripcion_activo = false;
 	$evento_inscripcion = \App\Models\Evento::where('tipo','INSCRIPCION')
 	->where('evento_padre',0)
-	->where('inicio','<=',$actual)
-	->whereDate('fin','>=',$actual)
+	// ->where('inicio','<=',$actual)
+	// ->whereDate('fin','>=',$actual)
 	->orderBy('id','desc')
 	->first();
 	// dd($actual);
@@ -13,9 +13,9 @@
 	if($evento_inscripcion){
 		$evento_inscripcion_activo = true;
 		if(Auth::user()->Alumno->IngresoActual()){
-			$inscripcion_ruta = ($evento_inscripcion->aplicar == 'NUEVO INGRESO' && Auth::user()->Alumno->IngresoActual()->tipo != 'REINGRESO') ? 'panel.estudiante.inscripciones.nuevo-ingreso.index' : 'panel.estudiante.inscripciones.regulares.index' ;
-		}else{
 			$inscripcion_ruta = ($evento_inscripcion->aplicar == 'NUEVO INGRESO' ) ? 'panel.estudiante.inscripciones.regulares.index' :'panel.estudiante.inscripciones.nuevo-ingreso.index'  ;
+		}else{
+			$inscripcion_ruta = ($evento_inscripcion->aplicar == 'NUEVO INGRESO' && Auth::user()->Alumno->IngresoActual()->tipo != 'REINGRESO') ? 'panel.estudiante.inscripciones.nuevo-ingreso.index' : 'panel.estudiante.inscripciones.regulares.index' ;
 		}
 	}else{
 		$fin = \Carbon\Carbon::create(2021, 10, 15, 23, 59, 00);
@@ -28,10 +28,10 @@
 			->first();
 			$evento_inscripcion_activo = true;
 			if(Auth::user()->Alumno->IngresoActual()){
-			$inscripcion_ruta = ($evento_inscripcion->aplicar == 'NUEVO INGRESO' && Auth::user()->Alumno->IngresoActual()->tipo != 'REINGRESO') ? 'panel.estudiante.inscripciones.nuevo-ingreso.index' : 'panel.estudiante.inscripciones.regulares.index' ;
-		}else{
-			$inscripcion_ruta = ($evento_inscripcion->aplicar == 'NUEVO INGRESO' ) ? 'panel.estudiante.inscripciones.regulares.index' :'panel.estudiante.inscripciones.nuevo-ingreso.index'  ;
-		}
+				$inscripcion_ruta = ($evento_inscripcion->aplicar == 'NUEVO INGRESO' && Auth::user()->Alumno->IngresoActual()->tipo != 'REINGRESO') ? 'panel.estudiante.inscripciones.nuevo-ingreso.index' : 'panel.estudiante.inscripciones.regulares.index' ;
+			}else{
+				$inscripcion_ruta = ($evento_inscripcion->aplicar == 'NUEVO INGRESO' ) ? 'panel.estudiante.inscripciones.regulares.index' :'panel.estudiante.inscripciones.nuevo-ingreso.index'  ;
+			}
 		}
 	}
 	// $inicio = \Carbon\ Carbon::create(2021, 4, 8, 8, 30, 00);

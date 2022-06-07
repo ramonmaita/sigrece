@@ -69,6 +69,43 @@
 
     </div>
     <!-- /.card -->
+    <div class="card card-outline card-primary">
+        <div class="card-header">
+            <h3 class="card-title">Permisos</h3>
+            <div class="card-tools">
+                <!-- Buttons, labels, and many other things can be placed here! -->
+                <!-- Here is a label for example -->
+            </div>
+            <!-- /.card-tools -->
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+            <p class="form-control" style="text-transform: capitalize">{{ $usuario->nombre }} {{ $usuario->apellido }}
+            </p>
+            {{-- {{ dd($usuario->roles()) }} --}}
+
+            <form action="{{ route('panel.usuarios.asignar_permisos', ['usuario' => $usuario]) }}" method="POST">
+                @method('PUT')
+                @csrf
+                <div class="form-group">
+                    @forelse ($permisos as $permiso)
+
+                        <label>
+                            <input type="checkbox" name="permisos[]" value="{{ $permiso->id }}" @if ($usuario->hasPermissionTo($permiso->name)) checked="true" @endif
+                                class="mr-2">
+                            {{ $permiso->name }}
+                        </label>
+                    @empty
+                        no hay permisos
+                    @endforelse
+                </div>
+                <button type="submit" class="btn btn-primary">Asignar Permisos</button>
+            </form>
+        </div>
+        <!-- /.card-body -->
+
+    </div>
+    <!-- /.card -->
 	<div class="card card-outline card-primary">
         <div class="card-header">
             <h3 class="card-title">Inicio de sesión</h3>

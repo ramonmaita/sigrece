@@ -19,7 +19,8 @@ class SolicitudesController extends Controller
      */
     public function index()
     {
-		$solicitudes = SolicitudCorreccion::where('jefe_id', Auth::user()->Coordinador->id)->get();
+		$solicitudes = SolicitudCorreccion::where('jefe_id', Auth::user()->Coordinador->user_id)->get();
+		
         return view('panel.coordinador.solicitudes.index',['solicitudes' => $solicitudes]);
     }
 

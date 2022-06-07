@@ -101,4 +101,8 @@ class User extends Authenticatable implements Auditable
 	{
 		return $this->hasOne(Docente::class,'cedula','cedula');
 	}
+	public function getNombreCompletoAttribute()
+	{
+	    return $this->nombre . ' ' . $this->apellido;
+	}
 }

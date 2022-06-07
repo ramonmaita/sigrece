@@ -22,6 +22,10 @@ class Asignatura extends Model
     {
     	return $this->belongsTo(Pnf::class);
     }
+	public function Seccion()
+    {
+    	return $this->belongsTo(Seccion::class);
+    }
 
     public function DesAsignaturas()
     {
@@ -35,7 +39,12 @@ class Asignatura extends Model
 
 	public function RelacionSeccionDocente()
 	{
-		return DesAsignaturaDocenteSeccion::whereIn('des_asignatura_id', $this->DesAsignaturas->pluck('id'))->groupBy('seccion_id')->get();
+		$periodo = Periodo::where('estatus',0)->first();
+		return DesAsignaturaDocenteSeccion::whereIn('des_asignatura_id', $this->DesAsignaturas->pluck('id'))
+		->join('seccions','desasignatura_docente_seccion.seccion_id','=','seccions.id')
+		->where('seccions.periodo_id',$periodo->id)
+		->groupBy('seccion_id')
+		->get();
 	}
 
 	public function letras($nota)

@@ -50,6 +50,49 @@
 	$creditos = 0;
 	$creditos_totales = 0;
 	$nota_promedio = 0;
+
+	switch ($alumno->pnf_id) {
+		case 1:
+			$plan_piu = 27;
+			break;
+		case 2:
+			$plan_piu = 28;
+			break;
+		case 3:
+			$plan_piu = 29;
+			break;
+		case 4:
+			$plan_piu = 30;
+			break;
+		case 5:
+			$plan_piu = 31;
+			break;
+		case 6:
+			$plan_piu = 32;
+			break;
+		case 7:
+			$plan_piu = 33;
+			break;
+		case 12:
+			$plan_piu = 34;
+			break;
+		case 13:
+			$plan_piu = 35;
+			break;
+		case 14:
+			$plan_piu = 36;
+			break;
+		case 15:
+			$plan_piu = 37;
+			break;
+		case 16:
+			$plan_piu = 38;
+			break;
+
+		default:
+			# code...
+			break;
+	}
 @endphp
 <!DOCTYPE html>
 <html lang="es">
@@ -291,7 +334,7 @@
 
 				@foreach ($alumno->Historico->where('estatus',0)->groupBy('cod_asignatura') as $key => $asig)
 
-					@if($asig->first()->Asignatura->Plan->id == $alumno->plan_id)
+					{{-- @if($asig->first()->AsignaturaYPIU->Plan->id == $alumno->plan_id) --}}
 						<tr>
 							<td>{{ $alumno->ultimo_periodo($asig->first()->cod_asignatura)->periodo }}</td>
 							<td align="center">{{@$asig->first()->Asignatura->Trayecto->nombre}}</td>
@@ -397,7 +440,7 @@
 						@php
 							$nota_final_a = 0;
 						@endphp
-					@endif
+					{{-- @endif --}}
 				@endforeach
 			</tbody>
 		</table>

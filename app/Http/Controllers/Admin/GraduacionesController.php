@@ -33,7 +33,7 @@ class GraduacionesController extends Controller
 			'cedula' => 'required|numeric|digits_between:6,9'
 		]);
 		$graduando = Graduando::where('cedula', $request->cedula)->orderBy('id', 'desc')->first();
-		if ($graduando->count() > 0) {
+		if ($graduando) {
 			return redirect()->route('panel.graduacion.show', ['graduando' => $graduando]);
 		} else {
 			return back()->with('error', "No se encotraron resultados para la cédula $request->cedula");

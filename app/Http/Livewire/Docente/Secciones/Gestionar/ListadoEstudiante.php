@@ -23,12 +23,14 @@ class ListadoEstudiante extends Component
 	public $relacion = [], $nota = [], $actividad_id, $alumno_id, $desasignatura_id, $seccion_id;
 	public $password;
 	public $confirmingPass = false;
+	public $alumnos_inscritos = [];
 	public function mount($desasignatura_id, $seccion_id)
 	{
 		$this->relacion = DesAsignaturaDocenteSeccion::with('inscritos')
 		->where('des_asignatura_id', $desasignatura_id)
 		->where('seccion_id',$seccion_id)->first();
-
+		$this->alumnos_inscritos = Alumno::whereIn('id',$this->relacion->Inscritos->pluck('alumno_id'))->orderBy('cedula')->get();
+		// return dd($this->relacion->Inscritos->pluck('alumno_id'));
 		// $actividades = Actividad::with('notas')->where('seccion_id',$seccion_id)->where('desasignatura_id',$desasignatura_id)->get();
 
 		// foreach ($actividades as $key => $actividad) {

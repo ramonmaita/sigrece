@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Evento;
 use Illuminate\Http\Request;
 
 class EventosController extends Controller
@@ -82,4 +83,13 @@ class EventosController extends Controller
     {
         //
     }
+
+	public function data()
+	{
+		$eventos = Evento::all();
+
+		return response()->json([
+			'eventos' => $eventos
+		]);
+	}
 }

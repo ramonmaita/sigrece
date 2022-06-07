@@ -112,18 +112,32 @@ class EstadisticasController extends Controller
 			$fin =  Carbon::parse($evento_inscripcion->fin);
 			$dia = Carbon::parse($evento_inscripcion->inicio); //TODO: CAMBIAR POR LA FECHA 2021-04-08
 		}
-
+		$dias = $inicio->diffInDays($fin);
+		// TODO: ACTUALIZACION DE DATOS
+		$evento_actualizacion = Evento::where('tipo','ACTUALIZACION DE DATOS')
+			->where('evento_padre',0)
+			->orderBy('id','desc')
+			->first();
+			// return dd($evento_actualizacion);
+		if($evento_actualizacion){
+			$inicio_actualizacion = Carbon::parse($evento_actualizacion->inicio);
+			$fin_actualizacion =  Carbon::parse($evento_actualizacion->fin);
+			$dia_actualizacion = Carbon::parse($evento_actualizacion->inicio);
+			$dias_actualizacion = $inicio_actualizacion->diffInDays($fin_actualizacion);
+		}else{
+			$dia_actualizacion = $dia;
+			$dias_actualizacion = $dias;
+		}
 		$datos = [];
 		$label = [];
 		$cantidad = 0;
-		$dias = $inicio->diffInDays($fin);
 
-		for ($i=0; $i <= $dias; $i++) {
-			$dia_buscar = $dia;
+		for ($i=0; $i <= $dias_actualizacion; $i++) {
+			$dia_buscar = $dia_actualizacion;
 			$dia_buscar = $dia_buscar->format('Y-m-d');
 			$cantidad = ActualizacionDato::whereDate('updated_at','LIKE',"%$dia_buscar%")->count();
-			array_push($label,Carbon::parse($dia)->format('d-m-Y'));
-			$dia->addDay();
+			array_push($label,Carbon::parse($dia_actualizacion)->format('d-m-Y'));
+			$dia_actualizacion->addDay();
 			array_push($datos, $cantidad);
 		}
 
@@ -182,6 +196,11 @@ class EstadisticasController extends Controller
 			'data_inscritos_pnf' => $data,
 			'dias' => $dias
 		]);
+	}
+
+	public function index_aprobados_reprobados()
+	{
+		return view('panel.admin.estadisticas.aprobados_reprobados.index');
 	}
 
 }

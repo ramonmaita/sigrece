@@ -17,7 +17,8 @@ class Table extends LivewireDatatable
     {
 		$solicitudes = SolicitudCorreccion::query();
 		if($solicitudes){
-			$solicitudes = $solicitudes->where('estatus_jefe','PROCESADO')->whereIn('estatus_admin',['EN ESPERA', 'EN REVISION']);
+			// $solicitudes = $solicitudes->where('estatus_jefe','PROCESADO')->whereIn('estatus_admin',['EN ESPERA', 'EN REVISION']);
+			//$solicitudes = $solicitudes->where('estatus_jefe','PROCESADO');
 		}
         return $solicitudes;
 		// ->leftJoin('users as user', 'solicitante_id', 'user.id');
@@ -31,7 +32,7 @@ class Table extends LivewireDatatable
             //     ->linkTo('job', 4),
 			DateColumn::name('fecha')
 				->label('fecha')
-				// ->editable(true)
+				->format('d/m/Y h:i A')
 				->defaultSort('desc')
 				->searchable(),
 			Column::name('seccion')
@@ -69,12 +70,13 @@ class Table extends LivewireDatatable
 			Column::name('estatus_jefe')
                 ->label('estatus pnf')
                 // ->editable(true)
+				->filterable(['EN ESPERA','EN REVISION', 'RECHAZADA','PROCESADO'])
                 ->defaultSort('desc')
                 ->searchable(),
 
 			Column::name('estatus_admin')
                 ->label('estatus drcaa')
-                // ->editable(true)
+                ->filterable(['EN ESPERA','EN REVISION', 'RECHAZADA','PROCESADO'])
                 ->defaultSort('desc')
                 ->searchable(),
 

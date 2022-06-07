@@ -30,7 +30,7 @@
     </x-slot>
 
     <div class="py-12">
-		<style>
+        <style>
             /* .body{background-color:white !important;} */
 
             .tab {
@@ -58,82 +58,118 @@
 
         </style>
         @include('alertas')
+        @php
+            $actual = \Carbon\Carbon::now()->toDateTimeString();
+            // $actual = date('Y-m-d H:i:s', strtotime(\Carbon\Carbon::now()));
+            // return dd($actual);
+            $cerrado = true;
+            $evento_solicitud_correccion = \App\Models\Evento::where('tipo', 'CARGA DE CALIFICACIONES')
+                ->where('evento_padre', 0)
+                ->where('inicio', '<=', $actual)
+                ->where('fin', '>=', $actual)
+                ->orderBy('id', 'desc')
+                ->first();
+            // return dd($evento_solicitud_correccion);
+            if ($evento_solicitud_correccion) {
+                $aplicable = json_decode($evento_solicitud_correccion->aplicable);
+                if ($evento_solicitud_correccion->aplicar == 'TODOS') {
+                    $cerrado = false;
+                } elseif ($evento_solicitud_correccion->aplicar == 'ESPECIFICO' && array_search(Auth::user()->cedula, $aplicable[1]) !== false) {
+                    $cerrado = false;
+                }
+            }
+
+        @endphp
         <div class="max-w-full mx-auto sm:px-6 lg:px-8">
-			@livewire('docente.alertas')
+            @livewire('docente.alertas')
 
-			<div class="m-10 mx-auto text-blue-800 tabs" >
-				<div class="flex overflow-hidden text-gray-100 top rounded-t-md">
-					<div class="w-full p-2 px-3 font-semibold uppercase bg-blue-800 header">
-						{{ $unidades->first()->DesAsignatura->Asignatura->nombre }}
-						<span class="float-right ">{{ $unidades->first()->DesAsignatura->Asignatura->Plan->cohorte }}:</span>
-					</div>
-					<div class="flex my-auto ml-auto buttons">
+            <div class="m-10 mx-auto text-blue-800 tabs">
+                <div class="flex overflow-hidden text-gray-100 top rounded-t-md">
+                    <div class="w-full p-2 px-3 font-semibold uppercase bg-blue-800 header">
+                        {{ $unidades->first()->DesAsignatura->Asignatura->nombre }}
+                        <span
+                            class="float-right ">{{ $unidades->first()->DesAsignatura->Asignatura->Plan->cohorte }}:</span>
+                    </div>
+                    <div class="flex my-auto ml-auto buttons">
 
-						@foreach ($unidades as $key => $unidad)
-							@if ($loop->first)
-								{{-- This is the first iteration --}}
-								<span tab="{{ $key+1 }}" class="p-2 px-6 bg-blue-800 cursor-pointer btn active-button">{{ $unidad->DesAsignatura->tri_semestre }}</span>
-							@else
-								<span tab="{{ $key+1 }}" class="p-2 px-6 bg-blue-800 cursor-pointer btn">{{ $unidad->DesAsignatura->tri_semestre }}</span>
-							@endif
+                        @foreach ($unidades as $key => $unidad)
+                            @if ($loop->first)
+                                {{-- This is the first iteration --}}
+                                <span tab="{{ $key + 1 }}"
+                                    class="p-2 px-6 bg-blue-800 cursor-pointer btn active-button">{{ $unidad->DesAsignatura->tri_semestre }}</span>
+                            @else
+                                <span tab="{{ $key + 1 }}"
+                                    class="p-2 px-6 bg-blue-800 cursor-pointer btn">{{ $unidad->DesAsignatura->tri_semestre }}</span>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+                <div class="relative text-gray-800 center">
+                    <!-- tab start -->
+                    @foreach ($unidades as $key => $unidad)
+                        <div
+                            class="absolute top-0 w-full bg-white border border-t-0 tab rounded-b-md @if ($loop->first) active-tab @endif">
+                            <p class="p-3 px-5 text-xl font-semibold">{{ $unidad->DesAsignatura->nombre }}
+                                {{ $unidad->DesAsignatura->Asignatura->Plan->cohorte }}:
+                                {{ $unidad->DesAsignatura->tri_semestre }}</p>
+                            <div class=" p-3 grid grid-cols-4 gap-2">
 
-						@endforeach
-					</div>
-				</div>
-				<div class="relative text-gray-800 center">
-					<!-- tab start -->
-					@foreach ($unidades as $key => $unidad)
-						<div class="absolute top-0 w-full bg-white border border-t-0 tab rounded-b-md @if ($loop->first) active-tab @endif">
-							<p class="p-3 px-5 text-xl font-semibold">{{ $unidad->DesAsignatura->nombre }} {{ $unidad->DesAsignatura->Asignatura->Plan->cohorte }}: {{ $unidad->DesAsignatura->tri_semestre }}</p>
-							<div class=" p-3 grid grid-cols-4 gap-2">
+								@if($cerrado == false)
+                                <x-jet-button class="justify-center float-right w-full create-actividad"
+                                    data-id="{{ $key }}">
+                                    Agregar Actividad
+                                </x-jet-button>
 
-								<x-jet-button class="justify-center float-right w-full create-actividad" data-id="{{ $key }}">
-									Agregar Actividad
-								</x-jet-button>
-
-								<x-jet-button class="justify-center float-right w-full edit-actividad"  data-id="{{ $key }}">
-									Editar Actividad
-								</x-jet-button>
-								@if ($unidad->Actividades->count() > 0)
-									<a target="_blank" href="{{ route('panel.docente.secciones.gestion.avance',[$unidad->id]) }}" type= 'button' class=" justify-center float-right w-full text-center items-center px-4 py-2 bg-gray-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-400  active:bg-gray-600 focus:outline-none focus:border-gray-600 focus:shadow-outline-$color disabled:opacity-25 transition ease-in-out duration-150">
-										Generar Avance de Calificaciones
-									</a>
-
-									@if (@$unidad->Actividades->first()->Notas->where('estatus','CERRADO')->count() > 0 )
-
-									{{-- {{ (@$unidad->Nota($inscritos->Alumno->id)->nota) ? @$unidad->Nota($inscritos->Alumno->id)->nota : 0}} --}}
-										<a target="_blank" href="{{ route('panel.docente.secciones.gestion.acta',[$unidad->id]) }}" type= 'button' class=" justify-center float-right w-full text-center items-center px-4 py-2 bg-gray-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-400  active:bg-gray-600 focus:outline-none focus:border-gray-600 focus:shadow-outline-$color disabled:opacity-25 transition ease-in-out duration-150">
-											Generar Acta de Calificaciones
-										</a>
-									@else
-										{{-- abierto --}}
-									@endif
+                                <x-jet-button class="justify-center float-right w-full edit-actividad"
+                                    data-id="{{ $key }}">
+                                    Editar Actividad
+                                </x-jet-button>
 								@endif
-								{{-- <x-link  color="gray" target="_blank" intensidad="500" href="{{ route('panel.docente.secciones.gestion.avance',[$unidad->id]) }}" class="justify-center float-right w-full edit-actividad"  data-id="{{ $key }}">
+                                @if ($unidad->Actividades->count() > 0)
+                                    <a target="_blank"
+                                        href="{{ route('panel.docente.secciones.gestion.avance', [$unidad->id]) }}"
+                                        type='button'
+                                        class=" justify-center float-right w-full text-center items-center px-4 py-2 bg-gray-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-400  active:bg-gray-600 focus:outline-none focus:border-gray-600 focus:shadow-outline-$color disabled:opacity-25 transition ease-in-out duration-150">
+                                        Generar Avance de Calificaciones
+                                    </a>
+
+                                    @if (@$unidad->Actividades->first()->Notas->where('estatus', 'CERRADO')->count() > 0)
+                                        {{-- {{ (@$unidad->Nota($inscritos->Alumno->id)->nota) ? @$unidad->Nota($inscritos->Alumno->id)->nota : 0}} --}}
+                                        <a target="_blank"
+                                            href="{{ route('panel.docente.secciones.gestion.acta', [$unidad->id]) }}"
+                                            type='button'
+                                            class=" justify-center float-right w-full text-center items-center px-4 py-2 bg-gray-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-400  active:bg-gray-600 focus:outline-none focus:border-gray-600 focus:shadow-outline-$color disabled:opacity-25 transition ease-in-out duration-150">
+                                            Generar Acta de Calificaciones
+                                        </a>
+                                    @else
+                                        {{-- abierto --}}
+                                    @endif
+                                @endif
+                                {{-- <x-link  color="gray" target="_blank" intensidad="500" href="{{ route('panel.docente.secciones.gestion.avance',[$unidad->id]) }}" class="justify-center float-right w-full edit-actividad"  data-id="{{ $key }}">
 									Generar Avance de Calificaciones
 								</x-link> --}}
-							</div>
-							<div id="create-{{ $key }}" class="actividades" style="display: none;">
-								@livewire('docente.secciones.gestionar.actividades.create',['relacion_id' => $unidad->id,'desasignatura_id' => $unidad->DesAsignatura->id, 'seccion_id' => $unidad->Seccion->id])
-							</div>
-							<div id="edit-{{ $key }}" class="actividades" style="display: none;">
-								@livewire('docente.secciones.gestionar.actividades.edit',['relacion_id' => $unidad->id,'desasignatura_id' => $unidad->DesAsignatura->id, 'seccion_id' => $unidad->Seccion->id])
-							</div>
+                            </div>
+                            <div id="create-{{ $key }}" class="actividades" style="display: none;">
+                                @livewire('docente.secciones.gestionar.actividades.create', ['relacion_id' => $unidad->id, 'desasignatura_id' => $unidad->DesAsignatura->id, 'seccion_id' => $unidad->Seccion->id])
+                            </div>
+                            <div id="edit-{{ $key }}" class="actividades" style="display: none;">
+                                @livewire('docente.secciones.gestionar.actividades.edit', ['relacion_id' => $unidad->id, 'desasignatura_id' => $unidad->DesAsignatura->id, 'seccion_id' => $unidad->Seccion->id])
+                            </div>
 
-							<div class="p-3 px-5">
-								{{-- <livewire:docente.secciones.gestionar.lista-estudiante params="1" searchable="name, id" model="App\Models\User"/> --}}
-								{{-- @livewire('docente.secciones.gestionar.lista-estudiante',['params'=>  [ 'desasignatura_id' => $unidad->DesAsignatura->id , 'seccion_id' => $unidad->Seccion->id] ]) --}}
-								@livewire('docente.secciones.gestionar.listado-estudiante',[ 'desasignatura_id' => $unidad->DesAsignatura->id , 'seccion_id' => $unidad->Seccion->id])
+                            <div class="p-3 px-5">
+                                {{-- <livewire:docente.secciones.gestionar.lista-estudiante params="1" searchable="name, id" model="App\Models\User"/> --}}
+                                {{-- @livewire('docente.secciones.gestionar.lista-estudiante',['params'=>  [ 'desasignatura_id' => $unidad->DesAsignatura->id , 'seccion_id' => $unidad->Seccion->id] ]) --}}
+                                @livewire('docente.secciones.gestionar.listado-estudiante', ['desasignatura_id' => $unidad->DesAsignatura->id, 'seccion_id' => $unidad->Seccion->id])
 
-							</div>
+                            </div>
 
-						</div>
-					@endforeach
+                        </div>
+                    @endforeach
 
 
 
-				</div>
-			</div>
+                </div>
+            </div>
 
         </div>
 
@@ -158,40 +194,38 @@
                     btns[val - 1].classList.add("active-button");
                 }
             }
-
-
         </script>
     </div>
 
 
-@section('scripts')
-	<script>
-		// $('.actividades').hide();
+    @section('scripts')
+        <script>
+            // $('.actividades').hide();
 
-		$(function () {
-			$('.create-actividad').click(function (e) {
-				e.preventDefault();
-				var id = $(this).data('id');
-				$('#edit-'+id).hide(function () {
-					$('#create-'+id).show();
-				});
-				// alert('asa')
-			});
-			$('.edit-actividad').click(function (e) {
-				e.preventDefault();
-				var id = $(this).data('id');
-				$('#create-'+id).hide(function () {
-					$('#edit-'+id).show();
-				});
-				// alert('asa')
-			});
-		});
+            $(function() {
+                $('.create-actividad').click(function(e) {
+                    e.preventDefault();
+                    var id = $(this).data('id');
+                    $('#edit-' + id).hide(function() {
+                        $('#create-' + id).show();
+                    });
+                    // alert('asa')
+                });
+                $('.edit-actividad').click(function(e) {
+                    e.preventDefault();
+                    var id = $(this).data('id');
+                    $('#create-' + id).hide(function() {
+                        $('#edit-' + id).show();
+                    });
+                    // alert('asa')
+                });
+            });
 
-		Livewire.on('recargar_pagina', () => {
-			setTimeout(() => {
-				window.location.reload();
-			}, 1500);
-		})
-	</script>
-@endsection
+            Livewire.on('recargar_pagina', () => {
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            })
+        </script>
+    @endsection
 </x-app-layout>

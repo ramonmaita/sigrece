@@ -11,7 +11,7 @@
          @endcan
       </div>
       <div class="card-body table-responsive">
-         <div class="float-right mb-2 card-tools ">
+         {{-- <div class="float-right mb-2 card-tools ">
             <div class="input-group input-group-sm" style="width: 200px;">
                <input class="float-right form-control" placeholder="Buscar" type="text" wire:model="search"/>
                @if ($search != '')
@@ -97,7 +97,12 @@
                   </td>
                </tr>
             </tfoot>
-         </table>
+         </table> --}}
+
+		 <livewire:admin.secciones.table
+		 	with="pnf,nucleo,desasignaturas"
+
+		 >
       </div>
       <!-- /.card-body -->
    </div>
@@ -260,7 +265,7 @@
                   <div class="col-sm-6">
                      <div class="form-group">
                         <label for="">
-                           Turno {{ $turno }}
+                           Turno
                         </label>
                         <select class="form-control" id="" name="" wire:model="turno">
                            <option value="MAÑANA">
@@ -306,7 +311,7 @@
                   <div class="col-sm-12">
                      <div class="form-group">
                         <label for="">
-                           Estatus {{ $estatus }}
+                           Estatus
                         </label>
                         <select class="form-control @error('estatus') is-invalid @enderror" id="" name="" wire:model="estatus">
                            <option value="ACTIVA">

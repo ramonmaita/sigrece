@@ -15,6 +15,8 @@ class Secciones extends Component
 {
 	use WithPagination; //paginacion
 
+	protected $listeners = ['edit'];
+
     protected $paginationTheme = 'bootstrap';
     public $search;
     public $perPage = 10;
@@ -93,6 +95,7 @@ class Secciones extends Component
     	// $pnfs = Pnf::all();
     	$trayectos = Trayecto::all();
     	$secciones = Seccion::where('nombre','like', "%$this->search%")
+							->where('periodo_id',$periodo_activo->id)
 					    	->orWhere('turno','like', "%$this->search%")
 					    	->orWhere('cupos','like', "%$this->search%")
 					    	->orWhere('observacion','like', "%$this->search%")
@@ -154,6 +157,8 @@ class Secciones extends Component
     		DB::commit();
     		$this->resetInputs();
     		$this->emit('cerrar_modal'); // Close model to using to jquery
+			$this->emit('refreshLivewireDatatable');
+
     		session()->flash('mensaje', 'Seccion creada correctamente.');
     	} catch (\Exception $e) {
     		DB::rollBack();
@@ -213,6 +218,8 @@ class Secciones extends Component
     		DB::commit();
             $this->resetInputs();
     		$this->emit('cerrar_modal'); // Close model to using to jquery
+			$this->emit('refreshLivewireDatatable');
+
     		session()->flash('mensaje', 'Seccion actualizada correctamente.');
     	} catch (\Exception $e) {
     		DB::rollBack();

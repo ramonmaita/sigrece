@@ -43,6 +43,54 @@ class HistoricoNota extends Model implements Auditable
       return $this->belongsTo(Asignatura::class,'cod_asignatura','codigo');
     }
 
+	public function AsignaturaYPIU()
+    {
+		switch ($this->Alumno->pnf_id) {
+			case 1:
+				$plan_piu = 27;
+				break;
+			case 2:
+				$plan_piu = 28;
+				break;
+			case 3:
+				$plan_piu = 29;
+				break;
+			case 4:
+				$plan_piu = 30;
+				break;
+			case 5:
+				$plan_piu = 31;
+				break;
+			case 6:
+				$plan_piu = 32;
+				break;
+			case 7:
+				$plan_piu = 33;
+				break;
+			case 12:
+				$plan_piu = 34;
+				break;
+			case 13:
+				$plan_piu = 35;
+				break;
+			case 14:
+				$plan_piu = 36;
+				break;
+			case 15:
+				$plan_piu = 37;
+				break;
+			case 16:
+				$plan_piu = 38;
+				break;
+
+			default:
+				# code...
+				break;
+		}
+		$plan =	($this->Alumno->PIU->count() > 0) ?[$this->Alumno->plan_id,$plan_piu] : [$this->Alumno->plan_id] ;
+      	return $this->belongsTo(Asignatura::class,'cod_asignatura','codigo')->whereIn('plan_id',$plan);
+    }
+
     public function Alumno()
     {
     	return $this->belongsTo(Alumno::class,'cedula_estudiante','cedula');

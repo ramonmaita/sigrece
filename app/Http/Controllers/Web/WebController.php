@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ActualizacionDato;
 use App\Models\Alumno;
 use App\Models\Asignado;
+use App\Models\Evento;
 use App\Models\Graduando;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -36,12 +37,18 @@ class WebController extends Controller
 	}
     public function index_estudiante_actualizar()
 	{
-		$actual = Carbon::now();
-		// $inicio = Carbon::create(2021, 4, 7, 8, 30, 00);
-		$inicio = Carbon::create(2021, 9, 29, 23, 59, 00);
-		$fin = Carbon::create(2021, 10, 9, 23, 59, 00);
-		// $fin = Carbon::create(2021, 4, 23, 23, 59, 00);
-		if($actual->greaterThanOrEqualTo($inicio) == true && $actual->lessThanOrEqualTo($fin) || Auth::user()->hasRole('Admin')){
+		$actual = \Carbon\Carbon::now()->toDateTimeString();
+		$evento_actualizacion_datos_activo = false;
+		$evento_actualizacion_datos = Evento::where('tipo','ACTUALIZACION DE DATOS')
+		->where('evento_padre',0)
+		->where('inicio','<=',$actual)
+		->where('fin','>=',$actual)
+		->orderBy('id','desc')
+		->first();
+		if($evento_actualizacion_datos){
+			$evento_actualizacion_datos_activo = true;
+		}
+		if($evento_actualizacion_datos_activo){
 			return view('web.estudiantes.index');
 		}else{
 			abort(404);
@@ -54,8 +61,20 @@ class WebController extends Controller
 			'nacionalidad' => 'required',
 			'cedula' => 'required|numeric|digits_between:6,9'
 		]);
+		$actual = \Carbon\Carbon::now()->toDateTimeString();
+		$evento_actualizacion_datos_activo = false;
+		$evento_actualizacion_datos = Evento::where('tipo','ACTUALIZACION DE DATOS')
+		->where('evento_padre',0)
+		->where('inicio','<=',$actual)
+		->where('fin','>=',$actual)
+		->orderBy('id','desc')
+		->first();
+		if($evento_actualizacion_datos){
+			$evento_actualizacion_datos_activo = true;
+		}
+
 		$alumno  = Alumno::where('cedula',$request->cedula)->where('nacionalidad',$request->nacionalidad)->first();
-		$actulaizo_datos = ActualizacionDato::where('alumno_id',$alumno->id)->where('estatus','ACTUALIZADO')->first();
+		$actulaizo_datos = ActualizacionDato::where('alumno_id',$alumno->id)->where('estatus','ACTUALIZADO')->where('updated_at','>=',$evento_actualizacion_datos->inicio)->first();
 		if($actulaizo_datos){
 			return back()->with('jet_error','Ya realizó la actualización de datos. Inicie sesión para mas opciones.');
 		}
@@ -103,15 +122,22 @@ class WebController extends Controller
 			// 		# code...
 			// 		break;
 			// }
-			$actual = Carbon::now();
-			// $fin = Carbon::create(2021, 4, 23, 0, 0, 0);
-			$inicio = Carbon::create(2021, 9, 29, 23, 59, 00);
-			$fin = Carbon::create(2021, 10, 15, 23, 59, 00);
-			if($actual->greaterThanOrEqualTo($inicio) == true && $actual->lessThanOrEqualTo($fin) || Auth::user()->hasRole('Admin')){
+			$actual = \Carbon\Carbon::now()->toDateTimeString();
+			$evento_actualizacion_datos_activo = false;
+			$evento_actualizacion_datos = Evento::where('tipo','ACTUALIZACION DE DATOS')
+			->where('evento_padre',0)
+			->where('inicio','<=',$actual)
+			->where('fin','>=',$actual)
+			->orderBy('id','desc')
+			->first();
+			if($evento_actualizacion_datos){
+				$evento_actualizacion_datos_activo = true;
+			}
+			if($evento_actualizacion_datos_activo == true){
 				$id_encriptado = encrypt($alumno->id);
 				return redirect()->route('actualizar-datos.show-form',['id_encriptado' => $id_encriptado]);
 			}else{
-				$inicio = Carbon::parse($inicio)->diffForHumans();
+				$inicio = Carbon::parse($evento_actualizacion_datos->inicio)->diffForHumans();
 				$mensaje = "El sistema aperturará  $inicio para el PNF en ".$alumno->Pnf->nombre;
 				return back()->with('jet_error',$mensaje);
 			}

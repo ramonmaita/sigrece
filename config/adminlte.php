@@ -272,28 +272,34 @@ return [
             'icon' => 'fas fa-fw fa-chalkboard-teacher',
             'can'  => 'docentes.index',
         ],
-		[
-            'text'    => 'Secciones',
-            'icon'    => 'fas fa-fw fa-chalkboard-teacher',
-			'can' => 'secciones.index',
-            'submenu' => [
-                [
-                    'text' => '2021',
-                    'route'  => 'panel.secciones.index',
-					'can' => 'secciones.index',
-                ],
-                [
-                    'text' => '2020',
-					'route'  => 'panel.secciones.lista',
-                    'can' => 'secciones.lista',
-                ],
-				// [
-				// 	'text' => 'Cerrar Carga',
-				// 	'route' => 'panel.secciones.cerrar_carga',
-				// 	'can' => 'secciones.cerrar_carga'
-				// ]
-            ],
+        [
+            'text' => 'Secciones',
+            'route'  => 'panel.secciones.index',
+            'icon' => 'fas fa-fw fa-chalkboard-teacher',
+            'can'  => 'secciones.index',
         ],
+		// [
+        //     'text'    => 'Secciones',
+        //     'icon'    => 'fas fa-fw fa-chalkboard-teacher',
+		// 	'can' => 'secciones.index',
+        //     'submenu' => [
+        //         [
+        //             'text' => '2021',
+        //             'route'  => 'panel.secciones.index',
+		// 			'can' => 'secciones.index',
+        //         ],
+        //         [
+        //             'text' => '2020',
+		// 			'route'  => 'panel.secciones.lista',
+        //             'can' => 'secciones.lista',
+        //         ],
+		// 		// [
+		// 		// 	'text' => 'Cerrar Carga',
+		// 		// 	'route' => 'panel.secciones.cerrar_carga',
+		// 		// 	'can' => 'secciones.cerrar_carga'
+		// 		// ]
+        //     ],
+        // ],
         [
             'text' => 'Estudiantes',
             'route'  => 'panel.estudiantes.index',
@@ -310,6 +316,11 @@ return [
 					'route'  => 'panel.inscripciones.regulares.index',
 					'can'  => 'inscripciones.regulares.index',
 				],
+                [
+					'text' => 'CIU-PERN',
+					'route'  => 'panel.inscripciones.ciu.index',
+					'can'  => 'inscripciones.ciu.index',
+				],
 				[
 					'text' => 'Retiro de UC',
 					'route'  => 'panel.retiros.index',
@@ -322,6 +333,23 @@ return [
             'route'  => 'panel.graduacion.index',
             'icon' => 'fas fa-fw fa-graduation-cap',
             'can'  => 'graduacion.index',
+        ],
+		[
+            'text'    => 'Documentos',
+            'icon' => 'fas fa-fw fa-file',
+			'can' => 'documentos.index',
+            'submenu' => [
+                [
+					'text' => 'Simples',
+					'route'  => 'panel.documentos.simples.index',
+					'can'  => 'documentos.simples.index',
+				],
+                [
+					'text' => 'Certificados',
+					'route'  => 'panel.documentos.certificados.index',
+					'can'  => 'documentos.certificados.index',
+				],
+            ],
         ],
 		[
             'text' => 'Cambios',
@@ -390,6 +418,11 @@ return [
                     'text' => 'Actualiación e Inscripción',
 					'route'  => 'panel.estadisticas.actualizacion-de-datos.index',
                     'can' => 'estadisticas.actualizacion-de-datos.index',
+                ],
+                [
+                    'text' => 'Aprobados y Reprobados',
+					'route'  => 'panel.estadisticas.aprobados-reprobados.index',
+                    'can' => 'estadisticas.aprobados-reprobados.index',
                 ],
             ],
         ],

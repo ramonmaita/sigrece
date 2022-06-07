@@ -102,13 +102,16 @@
 								</thead>
 								<tbody>
 									@php
+
 										$c = 0;
+									@endphp
+
+									@foreach ($solicitud->Detalles->groupBy('alumno_id') as $key => $detalles)
+									@php
 										$nota_anterior = 0;
 										$nota_nueva = 0;
 										$contador = 0;
 									@endphp
-
-									@foreach ($solicitud->Detalles->groupBy('alumno_id') as $key => $detalles)
 										<tr>
 											<td class="text-center">{{ $c+1 }}</td>
 											<td>{{ $detalles->first()->Alumno->cedula }}</td>

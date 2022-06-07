@@ -9,5 +9,10 @@ class Evento extends Model
 {
     use HasFactory;
 
-	protected $fillable = ['periodo_id','evento_padre','nombre','descripcion','inicio','fin','tipo','aplicar','pnf' ];
+	protected $fillable = ['periodo_id','evento_padre','nombre','descripcion','inicio','fin','tipo','aplicar','aplicable' ];
+
+	public function Periodo()
+	{
+		return $this->belongsTo(Periodo::class);
+	}
 }

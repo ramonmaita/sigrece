@@ -45,7 +45,7 @@
 			with="solicitante, desasignatura"
 			sort="seccion|asc"
 			{{-- include="id, motivo, solicitante.nombre|User" --}}
-			searchable="seccion, solicitante.nombre, solicitante.apellido, desasignatura.nombre, estatus_jefe, estatus_admin"
+			searchable="seccion, solicitante.nombre, solicitante.apellido, desasignatura.nombre, estatus_jefe, estatus_admin, fecha"
 
 			{{-- hideable="select" --}}
 			exportable />

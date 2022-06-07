@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Permission;
 
 class UsuariosController extends Controller
 {
@@ -72,7 +73,7 @@ class UsuariosController extends Controller
      */
     public function show(User $usuario)
     {
-        return view('panel.admin.usuarios.show',['usuario' => $usuario, 'roles' => Role::all()]);
+        return view('panel.admin.usuarios.show',['usuario' => $usuario, 'roles' => Role::all(),'permisos' => Permission::all()]);
 
     }
 
@@ -105,6 +106,20 @@ class UsuariosController extends Controller
             DB::commit();
 
             return redirect()->route('panel.usuarios.index')->with('mensaje', 'Roles Asigandos Correctamente');
+        } catch (\Throwable $th) {
+            //throw $th;
+            DB::rollback();
+            return back()->with('error',$th->getMessage());
+        }
+    }
+    public function permisos(Request $request, User $usuario)
+    {
+        try {
+            DB::beginTransaction();
+                $usuario->permissions()->sync($request->permisos);
+            DB::commit();
+
+            return redirect()->route('panel.usuarios.index')->with('mensaje', 'Permisos Asigandos Correctamente');
         } catch (\Throwable $th) {
             //throw $th;
             DB::rollback();

@@ -368,7 +368,19 @@ class SeccionesController extends Controller
 			foreach($relacion->Inscritos as $inscritos){
 				$nota = $inscritos->Alumno->Escala($inscritos->Alumno->NotasActividades($relacion->Actividades->pluck('id')));
 
-
+				// $nota_guardar = HistoricoNota::where('seccion', $relacion->Seccion->nombre)
+				// 		->where('cedula_estudiante', $inscritos->Alumno->cedula)
+				// 		->where('periodo', $relacion->Seccion->Periodo->nombre)
+				// 		->where('cod_desasignatura',$relacion->DesAsignatura->codigo)
+				// 		->where('cedula_docente',$relacion->Docente->cedula)
+				// 		// ->where('seccion',$nombre_seccion)
+				// 		->where('docente',$relacion->Docente->nombres.' '.$relacion->Docente->apellidos)
+				// 		->where('especialidad',)
+				// 		->where('estatus', 1)->update([
+				// 		'nota' => ($nota == 0 || !$nota) ? 1 : $nota,
+				// 		'observacion' => 'CERRADA',
+				// 		'estatus' => 0
+				// 	]);
 				HistoricoNota::updateOrCreate(
 					[
 						'periodo' => $relacion->Seccion->Periodo->nombre,
@@ -377,13 +389,13 @@ class SeccionesController extends Controller
 						'cod_desasignatura' => $relacion->DesAsignatura->codigo,
 						'cod_asignatura' => $relacion->DesAsignatura->Asignatura->codigo,
 						'nombre_asignatura' => $relacion->DesAsignatura->nombre,
-						'observacion' => 'POR CERRAR',
 						'seccion' => $relacion->Seccion->nombre,
 						'especialidad' => $relacion->Seccion->Pnf->codigo,
 						'tipo' => ($relacion->DesAsignatura->Asignatura->aprueba == 1) ? 'PROYECTO' : 'NORMAL',
-						'estatus' => 1
 					],
 					[
+						'observacion' => 'POR CERRAR',
+						'estatus' => 1,
 						'nota' => $nota,
 						'cedula_docente' => $relacion->Docente->cedula,
 						'docente' => $relacion->Docente->nombres.' '.$relacion->Docente->apellidos,

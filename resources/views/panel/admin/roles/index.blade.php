@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'SIGRECO')
+{{-- @section('title', 'SIGRECO') --}}
 
 @section('content_header')
 <div class="container-fluid">
@@ -33,7 +33,7 @@
 @stop
 
 @section('css')
-  
+
 @stop
 
 @section('js')

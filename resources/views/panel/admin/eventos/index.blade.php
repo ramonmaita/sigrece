@@ -28,6 +28,7 @@
 @section('content')
 
 	@include('alertas')
+	@livewire('admin.alertas')
 	<div class="card card-primary card-outline">
 		<div class="card-header">
 			<div class="float-right">
@@ -38,31 +39,9 @@
 			</div>
 		</div>
 		<div class="card-body table-responsive">
-			<table class="table table-striped table-inverse datatables">
-				<thead class="thead-inverse">
-					<tr>
-						<th data-priority="3">Periodo</th>
-						<th data-priority="1">Cedula</th>
-						<th data-priority="2">Nombres y Apellidos</th>
-						<th data-priority="4">Acciones</th>
-					</tr>
-					</thead>
-					<tbody>
-						{{-- @foreach ($eventos as $evento)
-							<tr>
-								<td scope="row">{{ $evento->periodo }}</td>
-								<td>{{$evento->Solicitante->cedula }}</td>
-								<td>{{$evento->Solicitante->nombre }} {{$evento->Solicitante->apellido }}</td>
-								<td>
-									<a class="btn btn-primary" href="{{ route('panel.eventos.show', [$evento]) }}" role="button">
-										<i class="fas fa-eye"></i>
-									</a>
-								</td>
-							</tr>
-						@endforeach --}}
-					</tbody>
-			</table>
+			<livewire:admin.eventos.table model="App\Models\Evento" with="periodo">
 		</div>
+		@livewire('admin.eventos.edit')
 	</div>
 @stop
 
@@ -70,7 +49,7 @@
 
 @stop
 
-@section('js')
+@push('js')
 <script>
 	$(document).ready(function() {
 
@@ -89,9 +68,14 @@
 
 </script>
 <script type="text/javascript">
+
 	$(".select2").select2({});
-   window.livewire.on('cerrar_modal', () => {
-        $('#exampleModal').modal('hide');
+	$(".select2-usuarios").select2({});
+   window.livewire.on('cerrar_modal', (modal) => {
+        $(modal).modal('hide');
+    });
+   window.livewire.on('abrir_modal', (modal) => {
+        $(modal).modal('show');
     });
 	window.livewire.on('open_modal_confirm', () => {
         $('#modalConfirm').modal('show');
@@ -100,4 +84,6 @@
         $('#modalConfirm').modal('hide');
     });
 </script>
-@stop
+
+
+@endpush

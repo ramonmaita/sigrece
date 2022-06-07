@@ -220,7 +220,7 @@ class SeccionesController extends Controller
         $font = $dompdf->getFontMetrics()->get_font("helvetica");
                                         //ancho alto
         $dompdf->getCanvas()->page_text(700, 580, "Pág. {PAGE_NUM} de {PAGE_COUNT}", $font, 10, array(0,0,0));
-        return $dompdf->stream('AVANCE DE NOTAS.pdf', array("Attachment" => true));
+        return $dompdf->stream('AVANCE DE NOTAS.pdf', array("Attachment" => false));
         // return $dompdf->stream(@$relacion->first()->Seccion->seccion.'('.@$relacion->first()->DesAsignatura->tri_semestre.') - '.@$relacion->first()->DesAsignatura->nombre.' - '.@$relacion->first()->Docente->nombres.' '.@$relacion->first()->Docente->apellidos.'.pdf', array("Attachment" => false));
 		// $pdf = PDF::loadView('panel.docentes.secciones.acta_notas', ['estudiantes' => $notas, 'detalles' => $detalles]);
 
