@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('register', function () {
 	return redirect('/');
 });
+
 Route::get('/offline', function () {
 	return view('vendor/laravelpwa/offline');
 });
@@ -28,6 +29,9 @@ Route::get('/dashboard', function () {
 })->name('dashboard');
 
 Route::get('/cambiar-rol/{rol}', [WebController::class, 'cambiar_rol'])->name('cambiar-rol');
+
+Route::get('/cambiar-sistema/{sistema}', [WebController::class, 'cambiar_sistema'])->name('cambiar-sistema');
+
 
 Route::get('/', function () {
 	return view('auth.login');

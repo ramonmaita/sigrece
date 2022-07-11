@@ -35,6 +35,18 @@ class WebController extends Controller
 		}
 		// return redirect()->route('panel.'.$panel.'.index');
 	}
+
+	/**
+	 * Cambia las caracteristicas del sistema
+	 *
+	 * @param String
+	 * @return view
+	 */
+	public function cambiar_sistema($sistema)
+	{
+		return redirect()->route("panel.sistema.$sistema");
+	}
+
     public function index_estudiante_actualizar()
 	{
 		$actual = \Carbon\Carbon::now()->toDateTimeString();

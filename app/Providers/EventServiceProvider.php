@@ -11,6 +11,9 @@ use App\Listeners\Login;
 
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
+use JeroenNoten\LaravelAdminLte\Events\BuildingMenu;
+// Listeners
+use App\Listeners\BuildMenu;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -26,6 +29,9 @@ class EventServiceProvider extends ServiceProvider
         Login::class => [
             LoginExitoso::class,
         ],
+		BuildingMenu::class => [
+			BuildMenu::class
+		]
     ];
 
     /**
@@ -35,6 +41,13 @@ class EventServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+/* 		Event::listen(BuildingMenu::class, function (BuildingMenu $event) {
+            // Add some items to the menu...
+            $event->menu->add('MAIN NAVIGATION');
+            $event->menu->add([
+                'text' => 'Blog',
+                'url' => 'admin/blog',
+            ]);
+        }); */
     }
 }

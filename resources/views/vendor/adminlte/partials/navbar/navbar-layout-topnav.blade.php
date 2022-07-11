@@ -2,7 +2,7 @@
     {{ config('adminlte.classes_topnav_nav', 'navbar-expand-md') }}
     {{ config('adminlte.classes_topnav', 'navbar-white navbar-light') }}">
 
-    <div class="{{ config('adminlte.classes_topnav_container', 'container') }}">
+    <div class="{{ config('adminlte.classes_topnav_container', 'container') }} bg-red-800">
 
         {{-- Navbar brand logo --}}
         @if(config('adminlte.logo_img_xl'))

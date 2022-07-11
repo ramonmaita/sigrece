@@ -1,6 +1,6 @@
 <nav class="main-header navbar
     {{ config('adminlte.classes_topnav_nav', 'navbar-expand') }}
-    {{ config('adminlte.classes_topnav', 'navbar-white navbar-light') }}">
+    {{ (null !== session('color-topnav')) ? session('color-topnav') : 'navbar-lightblue navbar-dark'}}">
 
     {{-- Navbar left links --}}
     <ul class="navbar-nav">
@@ -18,7 +18,43 @@
     <ul class="ml-auto navbar-nav">
         {{-- Custom right links --}}
         @yield('content_top_nav_right')
-
+		@if (Auth::user())
+			<li class="nav-item dropdown">
+				<a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false">
+					<i class="fas fa-people-arrows"></i>
+					Sistema
+				</a>
+				<div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="left: inherit; right: 0px;">
+					<small class="dropdown-footer text-muted">Cambiar el sistema</small>
+						<div class="dropdown-divider"></div>
+						<a href="{{ route('cambiar-sistema', ['sistema' => 'PNFA']) }}" class="dropdown-item">
+							<!-- Message Start -->
+							<div class="media">
+								<div class="media-body">
+									<h3 class="dropdown-item-title">
+										<span class="float-right text-sm text-primary"><i class="fas fa-user"></i></span>
+										PNFA
+									</h3>
+								</div>
+							</div>
+							<!-- Message End -->
+						</a>
+						<div class="dropdown-divider"></div>
+						<a href="#" class="dropdown-item">
+							<!-- Message Start -->
+							<div class="media">
+								<div class="media-body">
+									<h3 class="dropdown-item-title">
+										<span class="float-right text-sm text-primary"><i class="fas fa-user"></i></span>
+										Misión Sucre
+									</h3>
+								</div>
+							</div>
+							<!-- Message End -->
+						</a>
+				</div>
+			</li>
+		@endif
         {{-- Configured right links --}}
 		@if (Auth::user()->getRoleNames()->count() >= 2)
 			<li class="nav-item dropdown">
