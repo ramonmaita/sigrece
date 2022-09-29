@@ -26,6 +26,7 @@
 				</a>
 				<div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" style="left: inherit; right: 0px;">
 					<small class="dropdown-footer text-muted">Cambiar el sistema</small>
+						@if (Str::upper(session('sistema')) != 'PNFA')
 						<div class="dropdown-divider"></div>
 						<a href="{{ route('cambiar-sistema', ['sistema' => 'PNFA']) }}" class="dropdown-item">
 							<!-- Message Start -->
@@ -39,8 +40,25 @@
 							</div>
 							<!-- Message End -->
 						</a>
+						@endif
+						@if (Str::upper(session('sistema')) != 'SIGRECE')
 						<div class="dropdown-divider"></div>
-						<a href="#" class="dropdown-item">
+						<a href="{{ route('cambiar-sistema', ['sistema' => 'SIGRECE']) }}" class="dropdown-item">
+							<!-- Message Start -->
+							<div class="media">
+								<div class="media-body">
+									<h3 class="dropdown-item-title">
+										<span class="float-right text-sm text-primary"><i class="fas fa-user"></i></span>
+										SIGRECE
+									</h3>
+								</div>
+							</div>
+							<!-- Message End -->
+						</a>
+						@endif
+						@if (Str::upper(session('sistema')) != 'MS')
+						<div class="dropdown-divider"></div>
+						<a href="{{ route('cambiar-sistema', ['sistema' => 'MS']) }}" class="dropdown-item">
 							<!-- Message Start -->
 							<div class="media">
 								<div class="media-body">
@@ -51,6 +69,9 @@
 								</div>
 							</div>
 							<!-- Message End -->
+						</a>
+						@endif
+						<!-- Message End -->
 						</a>
 				</div>
 			</li>

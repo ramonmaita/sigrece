@@ -10,9 +10,9 @@
 
 <a href="{{ $dashboard_url }}"
     @if($layoutHelper->isLayoutTopnavEnabled())
-        class="navbar-brand logo-switch {{ config('adminlte.classes_brand') }}"
+        class="navbar-brand logo-switch {{ config('adminlte.classes_brand', (session('color-brand') ? session('color-brand') : 'bg-lightblue')) }}"
     @else
-        class="brand-link logo-switch {{ config('adminlte.classes_brand') }}"
+        class="brand-link logo-switch {{ config('adminlte.classes_brand', (session('color-brand') ? session('color-brand') : 'bg-lightblue')) }}"
     @endif>
 
     {{-- Small brand logo --}}
