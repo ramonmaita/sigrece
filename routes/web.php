@@ -5,6 +5,9 @@ use App\Http\Controllers\Web\WebController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
+use App\Models\Pregunta;
+use App\Http\Controllers\PreguntasController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -16,6 +19,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 // Route::get('generar-usuarios', [UsuariosController::class,'generar_usuarios'])->name('generar');
+
+Route::get('/preguntas-frecuentes', [PreguntasController::class, 'index'])->name('preguntas-frecuentes');
+
+Route::middleware(['role:Admin'])->group(function () {
+	Route::resource('faqs', PreguntasController::class)->except([
+		'index', 'show'
+	]);
+});
+
 Route::get('register', function () {
 	return redirect('/');
 });

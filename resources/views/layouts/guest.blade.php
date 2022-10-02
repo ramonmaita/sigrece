@@ -207,6 +207,13 @@
                 </div>
             </div>
             <!-- end login -->
+			@if (!request()->routeIs('preguntas-frecuentes') )
+			<a href="{{ route('preguntas-frecuentes') }}"
+				class="ml-1 inline-block px-3 py-2 rounded-full border-2 border-transparent {{ $active_ni == true ? 'bg-blue-800 text-white  hover:bg-white hover:border-blue-800 hover:text-blue-800' : 'hover:border-blue-800 hover:text-blue-800' }} ">
+				<div class="relative flex items-center cursor-pointer whitespace-nowrap">Preguntas frecuentes
+				</div>
+			</a>
+			@endif
         </nav>
         {{ $slot }}
 
