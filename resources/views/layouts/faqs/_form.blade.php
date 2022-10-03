@@ -14,7 +14,7 @@
     Respuesta
 </label>
 <label class="text-xs text-red-600">
-    @error('resuesta')
+    @error('respuesta')
     {{ $message }}
     @enderror
 </label>
