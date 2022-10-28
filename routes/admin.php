@@ -27,6 +27,7 @@ use App\Models\Asignatura;
 use App\Models\DesAsignaturaDocenteSeccion;
 use App\Models\Docente;
 use App\Models\Seccion;
+use App\Http\Controllers\BecaController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Artisan;
@@ -85,6 +86,7 @@ Route::prefix('panel')->name('panel.')->group(function () {
 	Route::prefix('estudiantes')->name('estudiantes.')->group(function () {
 		Route::get('ver/{alumno}',[AlumnosController::class,'show'])->name('show')->middleware(['role_or_permission:estudiantes.show']);
 		Route::get('/periodos/corregir/{alumno}',[AlumnosController::class,'periodos'])->name('periodo.corregir')->middleware(['role_or_permission:periodo.corregir']);
+		Route::resource('becas', BecaController::class);
 	});
 
 	Route::prefix('documentos')->name('documentos.')->group(function () {

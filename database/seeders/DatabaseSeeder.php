@@ -29,10 +29,10 @@ class DatabaseSeeder extends Seeder
 
         $usuario = User::create([
             'cedula' => '11',
-            'nombre' => 'Ramón',
-            'apellido' => 'Maita',
+            'nombre' => 'Nestor',
+            'apellido' => 'Saavedra',
             'email' => 'admin@gmail.com',
-            'password' => bcrypt('maita123486')
+            'password' => bcrypt('password')
         ]);
 
         $usuario->roles()->sync([1,4]);
