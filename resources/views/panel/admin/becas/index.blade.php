@@ -26,17 +26,26 @@
 @stop
 
 @section('content')
+	@include('alertas')
+	<div class="card">
+		<div class="card-header">
+			@can('becas.create')
+				<div class="card-tools float-sm-right">
+					<a href="{{ route('panel.estudiantes.becas.create') }}" class="btn btn-primary">
+						Añadir Estudiante
+					</a>
+				</div>
+			@endcan
+		</div>
+		<div class="card-body">
+			<livewire:admin.becas.table model="App\Models\Alumno"
+				with="pnf"
+				with="alumno"
+				sort="cedula|asc"
+				/>
+		</div>
+	</div>
 
-	<livewire:admin.becas.table model="App\Models\Alumno"
-		with="pnf"
-		with="alumno"
-		sort="cedula|asc"
-	 />
-
-
-@stop
-
-@section('css')
 
 @stop
 

@@ -86,7 +86,7 @@ Route::prefix('panel')->name('panel.')->group(function () {
 	Route::prefix('estudiantes')->name('estudiantes.')->group(function () {
 		Route::get('ver/{alumno}',[AlumnosController::class,'show'])->name('show')->middleware(['role_or_permission:estudiantes.show']);
 		Route::get('/periodos/corregir/{alumno}',[AlumnosController::class,'periodos'])->name('periodo.corregir')->middleware(['role_or_permission:periodo.corregir']);
-		Route::resource('becas', BecaController::class);
+		Route::resource('becas', BecaController::class)->except(['show']);
 	});
 
 	Route::prefix('documentos')->name('documentos.')->group(function () {
