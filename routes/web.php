@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PreguntasController;
 use App\Http\Controllers\VerificarDocumentosController;
 
+use App\Models\Pregunta;
+use App\Http\Controllers\PreguntasController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -18,15 +21,25 @@ use App\Http\Controllers\VerificarDocumentosController;
 |
 */
 // Route::get('generar-usuarios', [UsuariosController::class,'generar_usuarios'])->name('generar');
+<<<<<<< HEAD
 Route::get('/preguntas-frecuentes', [PreguntasController::class, 'index'])->name('preguntas-frecuentes');
 
 Route::middleware(['role_or_permission:faqs.create'])->group(function () {
+=======
+
+Route::get('/preguntas-frecuentes', [PreguntasController::class, 'index'])->name('preguntas-frecuentes');
+
+Route::middleware(['role:Admin'])->group(function () {
+>>>>>>> 144500494a97cbd56b22b19a03afe9bab2731fdc
 	Route::resource('faqs', PreguntasController::class)->except([
 		'index', 'show'
 	]);
 });
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 144500494a97cbd56b22b19a03afe9bab2731fdc
 Route::get('register', function () {
 	return redirect('/');
 });

@@ -47,6 +47,11 @@ class Alumno extends Model
 		return $this->hasOne(ActualizacionDato::class);
 	}
 
+	public function beca()
+	{
+		return $this->hasOne(Beca::class);
+	}
+
 	public function Nucleo()
 	{
 		return $this->belongsTo(Nucleo::class,'nucleo_id','id');

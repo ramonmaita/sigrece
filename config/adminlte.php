@@ -307,6 +307,12 @@ return [
             'can'  => 'estudiantes.index',
         ],
 		[
+            'text' => 'Becados',
+            'route'  => 'panel.estudiantes.becas.index',
+            'icon' => 'fas fa-fw fa-user-friends',
+            'can'  => 'estudiantes.index',
+        ],
+		[
             'text'    => 'Inscripciones',
             'icon' => 'fas fa-fw fa-chalkboard',
 			'can' => 'inscripciones.index',
