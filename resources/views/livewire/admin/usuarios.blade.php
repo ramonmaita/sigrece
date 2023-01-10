@@ -165,7 +165,44 @@
                             </select>
                         </div>
 						@endif
-
+						@if($tipo == 'USUARIO')
+							<div class="form-group">
+								<label for="">
+									Cedula
+								</label>
+								<input class="form-control @error('cedula_usuario') is-invalid @enderror" maxlength="40"
+									minlength="2" type="numeric" wire:model.defer="cedula_usuario"  />
+								@error('cedula_usuario')
+									<small class="text-danger">
+										{{ $message }}
+									</small>
+								@enderror
+							</div>
+							<div class="form-group">
+								<label for="">
+									Nombres
+								</label>
+								<input class="form-control @error('nombres') is-invalid @enderror" maxlength="40"
+									minlength="3" type="text" wire:model.defer="nombres"  />
+								@error('nombres')
+									<small class="text-danger">
+										{{ $message }}
+									</small>
+								@enderror
+							</div>
+							<div class="form-group">
+								<label for="">
+									Apellidos
+								</label>
+								<input class="form-control @error('apellidos') is-invalid @enderror" maxlength="40"
+									minlength="3" type="text" wire:model.defer="apellidos"  />
+								@error('apellidos')
+									<small class="text-danger">
+										{{ $message }}
+									</small>
+								@enderror
+							</div>
+						@endif
 						<div class="form-group">
                             <label for="">
                                 Correo Electronico
@@ -178,6 +215,20 @@
                                 </small>
                             @enderror
                         </div>
+						@if($tipo == 'USUARIO')
+							<div class="form-group">
+								<label for="">
+									Contraseña
+								</label>
+								<input class="form-control @error('clave') is-invalid @enderror" maxlength="40"
+									minlength="6" type="password" wire:model.defer="clave"  />
+								@error('clave')
+									<small class="text-danger">
+										{{ $message }}
+									</small>
+								@enderror
+							</div>
+						@endif
                         {{-- <div class="form-group">
                             <label for="">
                                 Nombres

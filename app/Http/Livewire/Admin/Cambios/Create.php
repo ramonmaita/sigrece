@@ -16,7 +16,7 @@ class Create extends Component
 	protected $listeners = [
 		'resetear',
 	];
-	public $estudiante,$estudiante_actual,$seccion_id=[],$seccion=[],$trayecto_id = [], $cambio, $pnfs =[],$pnf_d, $nucleos = [], $nucleo_d,$plan_id;
+	public $estudiante,$estudiante_actual,$seccion_id=[],$seccion=[],$trayecto_id = [], $cambio, $pnfs =[], $plans =[], $pnf_d, $nucleos = [], $nucleo_d,$plan_id;
 
     public function render()
     {
@@ -49,9 +49,14 @@ class Create extends Component
 				$this->pnfs = Pnf::where('codigo','>=',40)->get();
 				if (!empty($this->pnf_d)) {
 					$pnf = Pnf::find($this->pnf_d);
-					$this->plan_id = Plan::where('pnf_id',$this->pnf_d)->orderBy('id','desc')->first()->id;
+					$this->plans = Plan::where('pnf_id',$this->pnf_d)->get();
+					// $this->plan_id = Plan::where('pnf_id',$this->pnf_d)->orderBy('id','desc')->first()->id;
 					$this->nucleos = $pnf->Nucleos;
 				}
+			}elseif ($this->cambio == 'CAMBIO DE PLAN') {
+				// if (!empty($this->pnf_d)) {
+					$this->plans = Plan::where('pnf_id',$alumno->pnf_id)->get();
+				// }
 			}
 
 		}
@@ -80,6 +85,29 @@ class Create extends Component
 			$alumno->update([
 				'pnf_id' => $this->pnf_d,
 				'nucleo_id' => $this->nucleo_d,
+				'plan_id' => $this->plan_id
+			]);
+			DB::commit();
+			$this->reset();
+			$this->resetear();
+			session()->flash('mensaje', 'Cambio realizado exitosamente');
+		} catch (\Throwable $th) {
+			DB::rollback();
+			session()->flash('error', $th->getMessage());
+		}
+
+	}
+	public function cambiar_plan()
+	{
+		$this->validate([
+			'plan_id' => 'required',
+		],[],[
+			'plan_id' => 'plan de estudio',
+		]);
+		$alumno = Alumno::find($this->estudiante);
+		try {
+			DB::beginTransaction();
+			$alumno->update([
 				'plan_id' => $this->plan_id
 			]);
 			DB::commit();

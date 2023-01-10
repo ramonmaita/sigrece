@@ -80,6 +80,7 @@ class Graduando extends Model
 				return 'VEINTIUNO';
 				break;
 			case 22:
+				return 'veintidós';
 				return 'VEINTIDÓS';
 				break;
 			case 23:

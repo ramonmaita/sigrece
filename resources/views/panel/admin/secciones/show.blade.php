@@ -64,7 +64,7 @@
 							<td>{{ $desasignatura->tri_semestre }}</td>
 							<td>{{ $desasignatura->Asignatura->nombre }}</td>
 							<td>{{ $desasignatura->nombre }}</td>
-							<td>{{ $seccion->Docentes[$key]->nacionalidad }}-{{ $seccion->Docentes[$key]->cedula }} {{ $seccion->Docentes[$key]->nombres }} {{ $seccion->Docentes[$key]->apellidos }}</td>
+							<td> {{ $seccion->ConsultarDocente($desasignatura->pivot->docente_id,$desasignatura->id)->Docente->nombre_completo }} </td>
 							{{-- <td></td> --}}
 							<td>
 								<a href="{{ route('panel.secciones.lista_estudiantes', ['seccion' => $seccion, 'desasignatura' => $desasignatura->id]) }}" class="btn btn-info">

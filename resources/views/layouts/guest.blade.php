@@ -21,7 +21,6 @@
         .min-h-screen-opc {
             min-height: 89vh;
         }
-
     </style>
 
     <style>
@@ -66,14 +65,121 @@
                 opacity: 0;
             }
         }
-
     </style>
 </head>
 
 <body class="min-h-screen bg-gray-100">
+	@php
+                        $actual = \Carbon\Carbon::now()->toDateTimeString();
+                        // $actual = date('Y-m-d H:i:s', strtotime(\Carbon\Carbon::now()));
+                        // return dd($actual);
+                        $evento_actualizacion_datos_activo = false;
+                        $evento_actualizacion_datos = \App\Models\Evento::where('tipo', 'ACTUALIZACION DE DATOS')
+                            ->where('evento_padre', 0)
+                            ->where('inicio', '<=', $actual)
+                            ->where('fin', '>=', $actual)
+                            ->orderBy('id', 'desc')
+                            ->first();
+                        // return dd($evento_actualizacion_datos);
+                        if ($evento_actualizacion_datos) {
+                            $evento_actualizacion_datos_activo = true;
+                        }
+
+                        $evento_inscripcion_nuevo_activo = false;
+                        $evento_inscripcion_nuevo = \App\Models\Evento::where('tipo', 'INSCRIPCION')
+                            ->where('evento_padre', 0)
+                            ->where('inicio', '<=', $actual)
+                            ->where('fin', '>=', $actual)
+                            ->where('aplicar', 'NUEVO INGRESO')
+                            ->orderBy('id', 'desc')
+                            ->first();
+                        if ($evento_inscripcion_nuevo) {
+                            $evento_inscripcion_nuevo_activo = true;
+                        }
+
+                        $active_ni = request()->routeIs('nuevo-ingreso.index') ? true : false;
+                        $active_ad = request()->routeIs('actualizar-datos.index') || request()->routeIs('actualizar-datos.show-form') ? true : false;
+                    @endphp
     <div class="font-sans antialiased text-gray-900">
         <!-- component -->
-        <nav class="relative flex items-center justify-between w-full h-20 px-8 mx-auto bg-white shadow-md overflow-x-auto">
+        <nav class="flex items-center justify-between flex-wrap bg-white shadow-md p-6 fixed w-full z-10 top-0">
+            <div class="flex items-center flex-shrink-0 text-white mr-6">
+                <a class="text-gray-800 no-underline hover:text-gray-900 hover:no-underline inline-flex" href="#">
+                    <img src="{{ asset('img/logo.png') }}" alt="logo" style="max-width: 50px">
+                    <span class="text-2xl pl-2 pt-2">UPTBolivar</span>
+                </a>
+            </div>
+
+            <div class="block lg:hidden">
+                <button id="nav-toggle"
+                    class="flex items-center px-3 py-2 border rounded text-blue-500 border-blue-600 hover:text-blue-800 hover:border-blue-800">
+                    <svg class="fill-current h-3 w-3" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <title>Menu</title>
+                        <path d="M0 3h20v2H0V3zm0 6h20v2H0V9zm0 6h20v2H0v-2z" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="w-full flex-grow lg:flex lg:items-center lg:w-auto hidden lg:block pt-6 lg:pt-0"
+                id="nav-content">
+                <ul class="list-reset lg:flex justify-end flex-1 items-center">
+					@if (!request()->routeIs('login') && !request()->routeIs('raiz'))
+                    <li class="mr-3">
+                        <a class="inline-block  no-underline hover:text-white hover:text-underline py-2 px-4 text-gray-800 hover:border-2 hover:border-blue-800 rounded-full hover:bg-blue-800"
+                            href="{{ route('login') }}">Iniciar Sesión</a>
+                    </li>
+					@endif
+					@if ($evento_actualizacion_datos_activo == true)
+                    <li class="mr-3">
+                        <a class="inline-block  no-underline hover:text-white hover:text-underline py-2 px-4 {{ $active_ad == true ? 'text-blue-800 no-underline border-2 border-blue-800 rounded-full hover:bg-blue-800 hover:text-white' : 'text-gray-800 hover:border-2 hover:border-blue-800 rounded-full hover:bg-blue-800' }} "
+                            href="{{ route('actualizar-datos.index') }}">Actualizar Datos</a>
+                    </li>
+					@endif
+					@if ($evento_inscripcion_nuevo_activo == true)
+                    <li class="mr-3">
+						<a class="inline-block  no-underline hover:text-white hover:text-underline py-2 px-4 {{ $active_ni == true ? 'text-blue-800 no-underline border-2 border-blue-800 rounded-full hover:bg-blue-800 hover:text-white' : 'text-gray-800 hover:border-2 hover:border-blue-800 rounded-full hover:bg-blue-800' }} "
+                            href="{{ route('nuevo-ingreso.index') }}">Nuevo Ingreso</a>
+                    </li>
+					@endif
+					 @if (!request()->routeIs('preguntas-frecuentes') )
+					 <li class="mr-3">
+        			<a href="{{ route('preguntas-frecuentes') }}"
+        				class="ml-1 inline-block px-3 py-2 rounded-full border-2 border-transparent {{ $active_ni == true ? 'bg-blue-800 text-white  hover:bg-white hover:border-blue-800 hover:text-blue-800' : 'hover:border-blue-800 hover:text-blue-800' }} ">
+        				<div class="relative flex items-center cursor-pointer whitespace-nowrap">Preguntas frecuentes
+        				</div>
+        			</a>
+        			</li>
+        			@endif
+                    {{-- <li class="mr-3">
+                        <a class="inline-block text-gray-800 no-underline hover:text-white hover:text-underline py-2 px-4 hover:border-2 hover:border-blue-800 rounded-full hover:bg-blue-800"
+                            href="#">link</a>
+                    </li> --}}
+                    <li class="mr-3">
+                        @if (Auth::check())
+                            <div class="block">
+                                <div class="relative inline">
+                                    <a href="{{ route('panel.index') }}" type="button"
+                                        class="relative inline-flex items-center px-2 border rounded-full hover:shadow-lg bg-blue-800 text-white">
+                                        <div class="flex-grow-0 flex-shrink-0 block w-12 h-10">
+                                            <img class="object-cover w-8 h-8 my-1 rounded-full"
+                                                src="{{ Auth::user()->profile_photo_url }}"
+                                                alt="{{ Auth::user()->nombre }} {{ Auth::user()->apellido }}" />
+                                        </div>
+
+                                        <h5 class="pr-1 font-semibold">{{ Auth::user()->nombre }}
+                                            {{ Auth::user()->apellido }}</h5>
+                                    </a>
+                                </div>
+                            </div>
+                        @endif
+
+                        {{-- <a class="inline-block text-gray-800 no-underline hover:text-white hover:text-underline py-2 px-4 hover:border-2 hover:border-blue-800 rounded-full hover:bg-blue-800" href="#">link</a> --}}
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <nav
+            class="relative flex items-center justify-between w-full h-20 px-8 mx-auto bg-white shadow-md overflow-x-auto">
             <!-- logo -->
             <div class="inline-flex">
                 <a class="_o6689fn" href="/">
@@ -117,35 +223,35 @@
                       </div>
                     </div> --}}
                     @php
-						$actual = \Carbon\Carbon::now()->toDateTimeString();
-						// $actual = date('Y-m-d H:i:s', strtotime(\Carbon\Carbon::now()));
-						// return dd($actual);
-						$evento_actualizacion_datos_activo = false;
-						$evento_actualizacion_datos = \App\Models\Evento::where('tipo','ACTUALIZACION DE DATOS')
-						->where('evento_padre',0)
-						->where('inicio','<=',$actual)
-						->where('fin','>=',$actual)
-						->orderBy('id','desc')
-						->first();
-						// return dd($evento_actualizacion_datos);
-						if($evento_actualizacion_datos){
-							$evento_actualizacion_datos_activo = true;
-						}
+                        $actual = \Carbon\Carbon::now()->toDateTimeString();
+                        // $actual = date('Y-m-d H:i:s', strtotime(\Carbon\Carbon::now()));
+                        // return dd($actual);
+                        $evento_actualizacion_datos_activo = false;
+                        $evento_actualizacion_datos = \App\Models\Evento::where('tipo', 'ACTUALIZACION DE DATOS')
+                            ->where('evento_padre', 0)
+                            ->where('inicio', '<=', $actual)
+                            ->where('fin', '>=', $actual)
+                            ->orderBy('id', 'desc')
+                            ->first();
+                        // return dd($evento_actualizacion_datos);
+                        if ($evento_actualizacion_datos) {
+                            $evento_actualizacion_datos_activo = true;
+                        }
 
-						$evento_inscripcion_nuevo_activo = false;
-						$evento_inscripcion_nuevo = \App\Models\Evento::where('tipo','INSCRIPCION')
-						->where('evento_padre',0)
-						->where('inicio','<=',$actual)
-						->where('fin','>=',$actual)
-						->where('aplicar','NUEVO INGRESO')
-						->orderBy('id','desc')
-						->first();
-						if($evento_inscripcion_nuevo){
-							$evento_inscripcion_nuevo_activo = true;
-						}
+                        $evento_inscripcion_nuevo_activo = false;
+                        $evento_inscripcion_nuevo = \App\Models\Evento::where('tipo', 'INSCRIPCION')
+                            ->where('evento_padre', 0)
+                            ->where('inicio', '<=', $actual)
+                            ->where('fin', '>=', $actual)
+                            ->where('aplicar', 'NUEVO INGRESO')
+                            ->orderBy('id', 'desc')
+                            ->first();
+                        if ($evento_inscripcion_nuevo) {
+                            $evento_inscripcion_nuevo_activo = true;
+                        }
 
                         $active_ni = request()->routeIs('nuevo-ingreso.index') ? true : false;
-                        $active_ad = request()->routeIs('actualizar-datos.index') ||  request()->routeIs('actualizar-datos.show-form')? true : false;
+                        $active_ad = request()->routeIs('actualizar-datos.index') || request()->routeIs('actualizar-datos.show-form') ? true : false;
                     @endphp
                     @if (Auth::check())
                         <div class="block">
@@ -163,7 +269,7 @@
                                 </a>
                             </div>
                         </div>
-						@if (Auth::user()->hasRole('Admin'))
+                        @if (Auth::user()->hasRole('Admin'))
                             <a href="{{ route('nuevo-ingreso.index') }}"
                                 class="ml-1 inline-block px-3 py-2 rounded-full border-2 border-transparent {{ $active_ni == true ? 'bg-blue-800 text-white  hover:bg-white hover:border-blue-800 hover:text-blue-800' : 'hover:border-blue-800 hover:text-blue-800' }} ">
                                 <div class="relative flex items-center cursor-pointer whitespace-nowrap">Nuevo Ingreso
@@ -176,7 +282,7 @@
 					@endif --}}
 
                         {{-- @dump( $actual->greaterThanOrEqualTo($inicio)) --}}
-                        @if (!request()->routeIs('login') && !request()->routeIs('raiz') )
+                        @if (!request()->routeIs('login') && !request()->routeIs('raiz'))
                             <a href="{{ route('login') }}"
                                 class="inline-block px-3 py-2 ml-1 border-2 border-transparent rounded-full hover:border-blue-800 hover:text-blue-800">
                                 <div class="relative flex items-center cursor-pointer whitespace-nowrap">Iniciar Sesión
@@ -184,28 +290,38 @@
                             </a>
                         @endif
 
-						@if ($evento_actualizacion_datos_activo == true)
-							{{-- @if ($actual->greaterThanOrEqualTo($inicio) == true && $actual->lessThanOrEqualTo($fin) == true) --}}
-								<a href="{{ route('actualizar-datos.index') }}"
-									class="inline-block px-3 py-2 ml-1 rounded-full border-2 border-transparent {{ $active_ad == true ? 'bg-blue-800 text-white  hover:bg-white hover:border-blue-800 hover:text-blue-800' : 'hover:border-blue-800 hover:text-blue-800' }} ">
-									<div class="relative flex items-center cursor-pointer whitespace-nowrap">Actualizar
-										Datos</div>
-								</a>
-							{{-- @endif --}}
-						@endif
+                        @if ($evento_actualizacion_datos_activo == true)
+                            {{-- @if ($actual->greaterThanOrEqualTo($inicio) == true && $actual->lessThanOrEqualTo($fin) == true) --}}
+                            <a href="{{ route('actualizar-datos.index') }}"
+                                class="inline-block px-3 py-2 ml-1 rounded-full border-2 border-transparent {{ $active_ad == true ? 'bg-blue-800 text-white  hover:bg-white hover:border-blue-800 hover:text-blue-800' : 'hover:border-blue-800 hover:text-blue-800' }} ">
+                                <div class="relative flex items-center cursor-pointer whitespace-nowrap">Actualizar
+                                    Datos</div>
+                            </a>
+                            {{-- @endif --}}
+                        @endif
 
                         @if ($evento_inscripcion_nuevo_activo == true)
-							{{-- @if ($actual->greaterThanOrEqualTo($inicio) == true && $actual->lessThanOrEqualTo($fin) == true) --}}
-								<a href="{{ route('nuevo-ingreso.index') }}"
-									class="ml-1 inline-block px-3 py-2 rounded-full border-2 border-transparent {{ $active_ni == true ? 'bg-blue-800 text-white  hover:bg-white hover:border-blue-800 hover:text-blue-800' : 'hover:border-blue-800 hover:text-blue-800' }} ">
-									<div class="relative flex items-center cursor-pointer whitespace-nowrap">Nuevo Ingreso
-									</div>
-								</a>
-							{{-- @endif --}}
-						@endif
+                            {{-- @if ($actual->greaterThanOrEqualTo($inicio) == true && $actual->lessThanOrEqualTo($fin) == true) --}}
+                            <a href="{{ route('nuevo-ingreso.index') }}"
+                                class="ml-1 inline-block px-3 py-2 rounded-full border-2 border-transparent {{ $active_ni == true ? 'bg-blue-800 text-white  hover:bg-white hover:border-blue-800 hover:text-blue-800' : 'hover:border-blue-800 hover:text-blue-800' }} ">
+                                <div class="relative flex items-center cursor-pointer whitespace-nowrap">Nuevo Ingreso
+                                </div>
+                            </a>
+                            {{-- @endif --}}
+                        @endif
                     @endif
+                    
+                     
+			<a href="{{ route('preguntas-frecuentes') }}"
+				class="ml-1 inline-block px-3 py-2 rounded-full border-2 border-transparent {{ $active_ni == true ? 'bg-blue-800 text-white  hover:bg-white hover:border-blue-800 hover:text-blue-800' : 'hover:border-blue-800 hover:text-blue-800' }} ">
+				<div class="relative flex items-center cursor-pointer whitespace-nowrap">Preguntas frecuentes
+				</div>
+			</a>
+			
                 </div>
             </div>
+            
+           
             <!-- end login -->
         </nav>
         {{ $slot }}
@@ -319,7 +435,12 @@
                     if (event.target == modal) modalClose();
                 }
             }
-
+        </script>
+        <script>
+            //Javascript to toggle the menu
+            document.getElementById('nav-toggle').onclick = function() {
+                document.getElementById("nav-content").classList.toggle("hidden");
+            }
         </script>
     </div>
 

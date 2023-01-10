@@ -88,8 +88,12 @@ class GraduacionesController extends Controller
 		// return view('panel.graduacion.pdf.titulo', ['graduando' => $graduando]);
 
 		if ($alumno) {
-			if (\Carbon\Carbon::parse($graduando->egreso)->format('d-m-Y') < \Carbon\Carbon::parse('01-06-2020')->format('d-m-Y')) {
-				$html = view('panel.graduacion.pdf.titulo-iuteb', ['graduando' => $graduando, 'alumno' => $alumno]);
+			$egreso = \Carbon\Carbon::parse($graduando->egreso);
+			$inicio_upt = \Carbon\Carbon::create(2020,06,01);
+
+			// if ($egreso->greaterThanOrEqualTo($inicio) == false) {
+			if ($egreso->lessThanOrEqualTo($inicio_upt) == true) {
+				$html = view('panel.admin.graduaciones.pdf.titulo-iuteb', ['graduando' => $graduando, 'alumno' => $alumno]);
 			} else {
 				$html = view('panel.admin.graduaciones.pdf.titulo', ['graduando' => $graduando, 'alumno' => $alumno]);
 			}
@@ -314,7 +318,8 @@ class GraduacionesController extends Controller
 
 	        // LA LINEA SIGUIENTE GENERA TODOS LOS TITULOS PERO ESTA CAMENTADO PARA QUE FUNCIONE DEBERA DE BORRAR LOS // Y COLOCARLOS EN LA LINEA DE MAS ABAJO
 			// return $titulo;
-	        $graduandos = Graduando::where('pnf',$pnf)->where('titulo',$titulo)->where('periodo',$periodo)->skip(80)->take(20)->get();
+	        $graduandos = Graduando::where('pnf',$pnf)->where('titulo',$titulo)->where('periodo',$periodo)->get();
+	        // $graduandos = Graduando::where('pnf',$pnf)->where('titulo',$titulo)->where('periodo',$periodo)->skip(80)->take(20)->get();
 
 	        // LA SIGUIENTE LINEA SOLO GENERA 40 TITULOS POR DOCUMENTOS SI QUIERE QUE GENERE MAS O MENOS PUEDE CAMBIAR EL VALOR DE take(40) EL VALOR DE skip ES LA CANTIDAD DE REGISTROS QUE VA A OMITIR LA CONSULTA PARA LA PRIMERA GENERADA DE LOS TITULO HAY QUE DEJARLO EN 0 PARA GENERAR LA SIGUIENTE PARTE SE COLOCAN 40 EL VALOR DE skip QUE FUERON LOS PRIMEROS 40 QUE SE GENERARON EN EL LOTE ANTERIOR
             // $graduandos = Graduando::where('pnf',$pnf)->where('titulo',$titulo)->where('periodo',$periodo)->skip(45)->take(45)->get();
@@ -369,5 +374,105 @@ class GraduacionesController extends Controller
         $dompdf->render();
 		$t = ($titulo == 2) ? 'ING' : 'TSU';
         return $dompdf->stream("Actas $t $p", array("Attachment" => false));
+    }
+
+	public function titulos_pnfa($pnf,$titulo,$periodo)
+    {
+        ini_set('max_execution_time', 4800);
+
+	        // LA LINEA SIGUIENTE GENERA TODOS LOS TITULOS PERO ESTA CAMENTADO PARA QUE FUNCIONE DEBERA DE BORRAR LOS // Y COLOCARLOS EN LA LINEA DE MAS ABAJO
+			// return $titulo;
+	        // $graduandos = Graduando::where('pnf',$pnf)->where('titulo',$titulo)->where('periodo',$periodo)->get();
+
+
+
+			$graduandos = collect([
+				(object) [
+					"cedula" => "24377317",
+					"apellidos" => "MAITA BOLÍVAR",
+					"nombres" => "RAMÓN ANTONIO",
+					"nacionalidad" => "V",
+					"pnf" => 50,
+					"n_periodo" => 33,
+					"periodo" => "2018",
+					"titulo" => 4,
+					"egreso" => "2018-08-03",
+					"libro" => "XLVI",
+					"nro_titulo" => 8702,
+					"nro_acta" => 249,
+					"ira" => 17.64,
+					"ida" => 17.64,
+					"posicion" => "",
+					"f_nacimiento" => "1995-09-06",
+					"l_nacimiento" => "CIUDAD BOLÍVAR, ESTADO BOLIVAR",
+					"sexo" => "M",
+					"created_at" => NULL,
+					"updated_at" => NULL,
+				],
+				// array(
+				// 	"cedula" => "24377317",
+				// 	"apellidos" => "",
+				// 	"nombres" => "",
+				// 	"nacionalidad" => "V",
+				// 	"pnf" => 50,
+				// 	"n_periodo" => 29,
+				// 	"periodo" => "2015-2",
+				// 	"titulo" => 1,
+				// 	"egreso" => "2016-06-03",
+				// 	"libro" => "XXXVIII",
+				// 	"nro_titulo" => 6589,
+				// 	"nro_acta" => 136,
+				// 	"ira" => 17.96,
+				// 	"ida" => 17.96,
+				// 	"posicion" => "10 de 78",
+				// 	"f_nacimiento" => "0000-00-00",
+				// 	"l_nacimiento" => "",
+				// 	"sexo" => "",
+				// 	"created_at" => NULL,
+				// 	"updated_at" => NULL,
+				// ),
+				// array(
+				// 	"cedula" => "24377317",
+				// 	"apellidos" => "",
+				// 	"nombres" => "",
+				// 	"nacionalidad" => "V",
+				// 	"pnf" => 50,
+				// 	"n_periodo" => 29,
+				// 	"periodo" => "2015-2",
+				// 	"titulo" => 1,
+				// 	"egreso" => "2016-06-03",
+				// 	"libro" => "XXXVIII",
+				// 	"nro_titulo" => 6589,
+				// 	"nro_acta" => 136,
+				// 	"ira" => 17.96,
+				// 	"ida" => 17.96,
+				// 	"posicion" => "10 de 78",
+				// 	"f_nacimiento" => "0000-00-00",
+				// 	"l_nacimiento" => "",
+				// 	"sexo" => "",
+				// 	"created_at" => NULL,
+				// 	"updated_at" => NULL,
+				// ),
+			]);
+
+        $options = new Options();
+		$options->setIsRemoteEnabled(true);
+		$dompdf = new Dompdf($options);
+		 $p = ' ';
+		 $html = view('panel.admin.graduaciones.pdf.titulos-esp', ['graduandos' => $graduandos]);
+        // if ($pnf <= 35) {
+        // 	$html = view('panel.admin.graduaciones.pdf.titulos-ms', ['graduandos' => $graduandos]);
+		// 	$p = ($pnf >= 20 && $pnf <= 35) ?   'CARRERA '.Pnf::where('codigo',$pnf)->first()->acronimo :'MISION SUCRE '.$pnf ;
+
+        // }else{
+
+		// 	$html = view('panel.admin.graduaciones.pdf.titulos', ['graduandos' => $graduandos]);
+		// 	$p = Pnf::where('codigo',$pnf)->first()->acronimo;
+        // }
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('legal');
+        $dompdf->render();
+		$t = ($titulo == 2) ? 'ING' : 'TSU';
+        return $dompdf->stream("Titulos $t $p", array("Attachment" => false));
     }
 }

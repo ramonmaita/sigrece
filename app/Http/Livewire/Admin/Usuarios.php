@@ -27,6 +27,7 @@ class Usuarios extends Component
 
 	public $modo = 'crear';
     public $titulo,$docente_id,$cedula,$nombre,$apellido,$correo,$tipo,$user_id;
+	public $cedula_usuario, $nombres, $apellidos, $clave;
 	// public $apellido1 ='asda';
 
 	public $docentes = [];
@@ -86,7 +87,9 @@ class Usuarios extends Component
     }
 	public function store()
 	{
-		$password = Str::random(8);
+		$password = (empty($this->clave)) ? Str::random(8) : $this->clave;
+
+		// return dd($password);
 		// TODO: roles: 1 => ADMIN , 2 => USUARIO , 3 => DOCENTE , 4 => ESTUDIANTE
 		try {
 			DB::beginTransaction();
@@ -108,6 +111,18 @@ class Usuarios extends Component
 					Mail::to($usuario->email)->send(new RegistroUsuario($usuario,$password));
 					session()->flash('mensaje', 'Usuario Creado con exito.');
 				}
+			}elseif ($this->tipo == 'USUARIO') {
+				$usuario = User::create([
+					'cedula' => $this->cedula_usuario,
+					'nombre' => $this->nombres,
+					'apellido' => $this->apellidos,
+					'email' => $this->correo,
+					'password' => bcrypt($password)
+				]);
+
+				$usuario->roles()->sync([2]);
+				Mail::to($usuario->email)->send(new RegistroUsuario($usuario,$password));
+				session()->flash('mensaje', 'Usuario Creado con exito.');
 			}
 			$this->emit('cerrar_modal'); // Close model to using to jquery
 			$this->reset(['user_id','correo']);

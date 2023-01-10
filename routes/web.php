@@ -4,6 +4,8 @@ use App\Http\Controllers\Admin\UsuariosController;
 use App\Http\Controllers\Web\WebController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\PreguntasController;
+use App\Http\Controllers\VerificarDocumentosController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,6 +18,15 @@ use Illuminate\Support\Facades\Route;
 |
 */
 // Route::get('generar-usuarios', [UsuariosController::class,'generar_usuarios'])->name('generar');
+Route::get('/preguntas-frecuentes', [PreguntasController::class, 'index'])->name('preguntas-frecuentes');
+
+Route::middleware(['role_or_permission:faqs.create'])->group(function () {
+	Route::resource('faqs', PreguntasController::class)->except([
+		'index', 'show'
+	]);
+});
+
+
 Route::get('register', function () {
 	return redirect('/');
 });
@@ -35,6 +46,14 @@ Route::get('/', function () {
 
 Route::prefix('actualizar-datos')->name('actualizar-datos.')->group(function () {
 	Route::get('/', [WebController::class, 'index_estudiante_actualizar'])->name('index');
+	Route::post('/buscar', [WebController::class, 'search_estudiante_actualizar'])->name('buscar');
+	Route::get('/{id_encriptado}', [WebController::class, 'show_form_actualizar_estudiante'])->name('show-form');
+
+});
+
+Route::prefix('verificar-documentos')->name('verificar-documentos.')->group(function () {
+	Route::get('/comprobante/{periodo}/{estudiante}/{tipo}/{rand}', [VerificarDocumentosController::class, 'show_comprobante'])->name('show_comprobante');
+	Route::get('/constancia/{alumno}/{dia}/{tipo}/{rand}', [VerificarDocumentosController::class, 'show_constancia'])->name('show_constancia');
 	Route::post('/buscar', [WebController::class, 'search_estudiante_actualizar'])->name('buscar');
 	Route::get('/{id_encriptado}', [WebController::class, 'show_form_actualizar_estudiante'])->name('show-form');
 

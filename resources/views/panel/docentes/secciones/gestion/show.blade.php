@@ -104,15 +104,32 @@
                         @endforeach
                     </div>
                 </div>
-                <div class="relative text-gray-800 center">
+                <div class="text-gray-800 center">
                     <!-- tab start -->
                     @foreach ($unidades as $key => $unidad)
                         <div
-                            class="absolute top-0 w-full bg-white border border-t-0 tab rounded-b-md @if ($loop->first) active-tab @endif">
+                            class="top-0 w-full bg-white border border-t-0 tab rounded-b-md @if ($loop->first) active-tab @endif">
                             <p class="p-3 px-5 text-xl font-semibold">{{ $unidad->DesAsignatura->nombre }}
                                 {{ $unidad->DesAsignatura->Asignatura->Plan->cohorte }}:
                                 {{ $unidad->DesAsignatura->tri_semestre }}</p>
-                            <div class=" p-3 grid grid-cols-4 gap-2">
+                            <div class=" p-3 grid grid-cols-5 gap-2">
+
+								@php
+									if($unidad->DesAsignatura->Asignatura->Plan->cohorte == 'TRIMESTRE'){
+										if ($unidad->DesAsignatura->tri_semestre == 1 || $unidad->DesAsignatura->tri_semestre == 4 || $unidad->DesAsignatura->tri_semestre == 7 || $unidad->DesAsignatura->tri_semestre == 10) {
+											$cerrado = ($cerrado == false) ? false : true;
+										}else{
+											$cerrado =  true;
+										}
+									}
+									if($unidad->DesAsignatura->Asignatura->Plan->cohorte == 'SEMESTRE'){
+										if ($unidad->DesAsignatura->tri_semestre == 1 || $unidad->DesAsignatura->tri_semestre == 3|| $unidad->DesAsignatura->tri_semestre == 5 || $unidad->DesAsignatura->tri_semestre == 7) {
+											$cerrado = ($cerrado == false) ? false : true;
+										}else{
+											$cerrado =  true;
+										}
+									}
+								@endphp
 
 								@if($cerrado == false)
                                 <x-jet-button class="justify-center float-right w-full create-actividad"
@@ -125,6 +142,12 @@
                                     Editar Actividad
                                 </x-jet-button>
 								@endif
+								<a
+                                        href="{{ route('panel.docente.secciones.gestion.lista_estudiantes', [$seccion->id ,$unidad->DesAsignatura->id]) }}"
+                                        type='button'
+                                        class=" justify-center float-right w-full text-center items-center px-4 py-2 bg-blue-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-600  active:bg-blue-800 focus:outline-none focus:border-blue-800 focus:shadow-outline-$color disabled:opacity-25 transition ease-in-out duration-150">
+                                       Descargar Lista de Estudiantes
+                                    </a>
                                 @if ($unidad->Actividades->count() > 0)
                                     <a target="_blank"
                                         href="{{ route('panel.docente.secciones.gestion.avance', [$unidad->id]) }}"
@@ -156,7 +179,7 @@
                                 @livewire('docente.secciones.gestionar.actividades.edit', ['relacion_id' => $unidad->id, 'desasignatura_id' => $unidad->DesAsignatura->id, 'seccion_id' => $unidad->Seccion->id])
                             </div>
 
-                            <div class="p-3 px-5">
+                            <div class="p-3 px-5 max-w-full">
                                 {{-- <livewire:docente.secciones.gestionar.lista-estudiante params="1" searchable="name, id" model="App\Models\User"/> --}}
                                 {{-- @livewire('docente.secciones.gestionar.lista-estudiante',['params'=>  [ 'desasignatura_id' => $unidad->DesAsignatura->id , 'seccion_id' => $unidad->Seccion->id] ]) --}}
                                 @livewire('docente.secciones.gestionar.listado-estudiante', ['desasignatura_id' => $unidad->DesAsignatura->id, 'seccion_id' => $unidad->Seccion->id])

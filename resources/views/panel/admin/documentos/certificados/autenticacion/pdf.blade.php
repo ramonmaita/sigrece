@@ -241,8 +241,9 @@
             <b>N°
                 {{ $datos_graduando->Alumno ? $datos_graduando->Alumno->nacionalidad : $datos_graduando->nacionalidad }}-{{ number_format($datos_graduando->cedula, 0, ',', '.') }}</b>,
             emitido por esta universidad previo cumplimiento de los requisitos legales para su
-            conferimiento y asentado en el Libro <b>{{ $datos_graduando->libro }}</b>, Folio
-            <b>{{ $datos_graduando->nro_acta }}</b>, de fecha
+            conferimiento y asentado en el Libro <b>N° {{ $datos_graduando->libro }}</b>, Folio
+            <b>N° {{ $datos_graduando->nro_acta }}</b>, Acta
+            <b>N° {{ $datos_graduando->nro_titulo }}</b>,de fecha
             {{ Carbon::parse($datos_graduando->egreso)->format('d') }} de {{ $mes_egreso }} del año
             {{ Carbon::parse($datos_graduando->egreso)->format('Y') }}.
 
@@ -268,64 +269,8 @@
         </p>
 
 
+		@include('panel.admin.documentos.certificados.partials.footer')
 
-        <div style="position: absolute ; bottom: 5px;">
-            <table border="0" style="width: 100%;font-size:12pt;font-family:'Times New Roman', serif;" align="center"
-                cellspacing="0" cellpadding="12">
-                {{-- <tr align="center">
-				<td>
-					<h4 align="center" style="margin-bottom: 140px; margin-top: 70px;">
-
-						<img src="{{ public_path() . '/img/firma.jpg' }}" alt="">
-
-					</h4>
-				</td>
-			</tr> --}}
-
-                <tr align="center">
-                    <td>
-                        <h4 align="center" style="margin-bottom: 2px;">
-                            {{-- MsC. Yomely Josefina Pérez Fajardo --}}
-
-                            Dr.C. Willfor Rafael Goudeth Galindo
-                            <br>
-                            Rector
-                        </h4>
-                        <small>Designado en Resolución Nº 013, Gaceta Oficial Nº 41.825, de fecha 19/02/2020</small>
-                    </td>
-                    <td>
-                        <h4 align="center" style="margin-bottom: 2px;">
-                            {{-- MsC. Yomely Josefina Pérez Fajardo --}}
-
-                            MSc. Gabriela Betzabe Murillo Granados
-                            <br>
-                            Secretaría
-                        </h4>
-                        <small>Designada en Resolución Nº 045, Gaceta Oficial Nº 41.922, de fecha 15/07/2020</small>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <h4 align="center" class="Estilo3" style="color: red; margin-bottom:2px !important;">“El
-                            Sol de Venezuela Nace en el Esequibo” </h4>
-                        <p align="center" style="font-size: 10pt;">
-                            _________________________________________________________________________________________<br />
-                            Dirección: N° 28, Edificio UPTBolívar, Calle Igualdad entre Rosario y Progreso, Casco
-                            Histórico – <br>
-                            Ciudad Bolívar, Municipio Angostura del Orinoco, Estado Bolívar. <br>
-                            RIF: G-200020-70-9 <br>
-                            Sitio Web: https://www.uptbolivar.edu.ve <br>
-                            Correo Electrónico: rectorado.uptbolivar@gmail.com <br>
-                            Twitter: @uptbolivar, Instagram: upt.bolivar, Facebook: UPT Bolívar <br>
-                            Teléfonos: 0285-632-0664/ 0412-858-8681
-
-                        </p>
-                    </td>
-
-                </tr>
-
-            </table>
-        </div>
         {{-- <style>
 .page-break {
     page-break-after: always;

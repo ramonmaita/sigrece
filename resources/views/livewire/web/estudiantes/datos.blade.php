@@ -394,8 +394,8 @@
 					<x-jet-label for="nucleo" value="{{ __('Nucleo') }}"
 						class="block font-bold tracking-wide capitalize" />
 					<x-select class="block w-full mt-1" name="nucleo" id="nucleo"  wire:model="nucleo">
-						@foreach ($nucleos as $nucleo)
-							<option value="{{ $nucleo }}">{{ $nucleo }}</option>
+						@foreach ($nucleos as $key => $nucleo)
+							<option value="{{ $key }}">{{ $nucleo }}</option>
 						@endforeach
 					</x-select>
 					<x-jet-input-error for="nucleo" />

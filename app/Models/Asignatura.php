@@ -43,6 +43,7 @@ class Asignatura extends Model
 		return DesAsignaturaDocenteSeccion::whereIn('des_asignatura_id', $this->DesAsignaturas->pluck('id'))
 		->join('seccions','desasignatura_docente_seccion.seccion_id','=','seccions.id')
 		->where('seccions.periodo_id',$periodo->id)
+		->where('desasignatura_docente_seccion.estatus','ACTIVO')
 		->groupBy('seccion_id')
 		->get();
 	}

@@ -351,7 +351,8 @@ use Carbon\Carbon;
 
 					</td>
 					<td align="right" width="25%">
-						<img src="data:image/png;base64,{{DNS2D::getBarcodePNG('https:sigrece.uptbolivar.com/'.$graduando->nacionalidad.'/'.$graduando->cedula.'/verificar/'.$graduando->nro_titulo, 'QRCODE')}}" alt="barcode" height="120px" width="120px"  style="align: right " />
+						<img src="data:image/png;base64,{{DNS2D::getBarcodePNG({{ route('verificar_graduando',['nacionalidad' => $graduando->nacionalidad, 'cedula' => $graduando->cedula]) }}, 'QRCODE')}}" alt="barcode" height="120px" width="120px"  style="align: right " />
+						{{-- <img src="data:image/png;base64,{{DNS2D::getBarcodePNG('https:sigrece.uptbolivar.com/'.$graduando->nacionalidad.'/'.$graduando->cedula.'/verificar/'.$graduando->nro_titulo, 'QRCODE')}}" alt="barcode" height="120px" width="120px"  style="align: right " /> --}}
 					</td>
 				</tr>
 				<tr>

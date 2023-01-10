@@ -1,4 +1,26 @@
 <x-app-layout>
+	@php
+		$actual = \Carbon\Carbon::now()->toDateTimeString();
+		// $actual = date('Y-m-d H:i:s', strtotime(\Carbon\Carbon::now()));
+		// return dd($actual);
+		$cerrado = true;
+		$evento_solicitud_correccion = \App\Models\Evento::where('tipo','ASIGNAR DOCENTES')
+		->where('evento_padre',0)
+		->where('inicio','<=',$actual)
+		->where('fin','>=',$actual)
+		->orderBy('id','desc')
+		->first();
+		// return dd($evento_solicitud_correccion);
+		if($evento_solicitud_correccion){
+			$aplicable = json_decode($evento_solicitud_correccion->aplicable);
+			if ($evento_solicitud_correccion->aplicar == 'TODOS') {
+				$cerrado = false;
+			}elseif ($evento_solicitud_correccion->aplicar == 'ESPECIFICO' && array_search(Auth::user()->cedula,$aplicable[1]) !== false) {
+				$cerrado = false;
+			}
+		}
+
+	@endphp
     <x-slot name="header">
     	<div class="grid grid-cols-2 md:grid-cols-2">
 
@@ -43,9 +65,26 @@
 
 										<td>
 
-											<x-link href="{{ route('panel.coordinador.secciones.show',[$seccion->id]) }}" color="blue" intensidad="600">
-												<i class="fas fa-eye"></i>
-											</x-link>
+											@if ($seccion->DesAsignaturas->count() > 0)
+												<x-link href="{{ route('panel.coordinador.secciones.show',[$seccion->id]) }}" color="blue" intensidad="600">
+													<i class="fas fa-eye"></i>
+												</x-link>
+												@if ($cerrado == false)
+													@can('jefe-pnf.secciones.editar_configuracion')
+														<x-link href="{{ route('panel.coordinador.secciones.editar_config',[$seccion->id]) }}" color="yellow" intensidad="600">
+															<i class="fas fa-cogs"></i>
+														</x-link>
+													@endcan
+												@endif
+											@else
+												@if ($cerrado == false)
+													@can('jefe-pnf.secciones.configurar')
+														<x-link href="{{ route('panel.coordinador.secciones.configurar',[$seccion->id]) }}" color="blue" intensidad="800">
+															<i class="fas fa-cogs"></i>
+														</x-link>
+													@endcan
+												@endif
+											@endif
 
 										</td>
 									</tr>

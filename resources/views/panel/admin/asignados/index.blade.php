@@ -6,7 +6,7 @@
    <div class="mb-2 row">
       <div class="col-sm-6">
          <h1>
-            Eventos
+            Asignados
          </h1>
       </div>
       <div class="col-sm-6">
@@ -34,34 +34,13 @@
 				{{-- <a class="btn btn-primary" href="{{ route('panel.eventos.create') }}" role="button">
 					Nuevo Evento
 				</a> --}}
-				@livewire('admin.eventos.create')
+				{{-- @livewire('admin.eventos.create') --}}
 			</div>
 		</div>
 		<div class="card-body table-responsive">
-			<table class="table table-striped table-inverse datatables">
-				<thead class="thead-inverse">
-					<tr>
-						<th data-priority="3">Periodo</th>
-						<th data-priority="1">Cedula</th>
-						<th data-priority="2">Nombres y Apellidos</th>
-						<th data-priority="4">Acciones</th>
-					</tr>
-					</thead>
-					<tbody>
-						{{-- @foreach ($eventos as $evento)
-							<tr>
-								<td scope="row">{{ $evento->periodo }}</td>
-								<td>{{$evento->Solicitante->cedula }}</td>
-								<td>{{$evento->Solicitante->nombre }} {{$evento->Solicitante->apellido }}</td>
-								<td>
-									<a class="btn btn-primary" href="{{ route('panel.eventos.show', [$evento]) }}" role="button">
-										<i class="fas fa-eye"></i>
-									</a>
-								</td>
-							</tr>
-						@endforeach --}}
-					</tbody>
-			</table>
+			<livewire:admin.asignados.table model="App\Models\Asignado"
+			with="pnf,alumno"
+			sort="cedula|asc" exportable>
 		</div>
 	</div>
 @stop

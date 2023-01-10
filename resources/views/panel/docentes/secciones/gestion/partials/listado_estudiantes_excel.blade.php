@@ -31,23 +31,35 @@
 			<th>
 				Apellidos
 			</th>
+			<th>
+				Correo
+			</th>
+			<th>
+				Telefono
+			</th>
 		</tr>
 	</thead>
 	<tbody>
-		@foreach ($relacion->Inscritos as $key => $inscritos)
+		@foreach ($estudiantes as $key => $inscrito)
 
 			<tr>
 				<td>
 					{{ $key+1 }}
 				</td>
 				<td>
-					{{ $inscritos->Alumno->nacionalidad }}-{{ $inscritos->Alumno->cedula }}
+					{{ $inscrito->nacionalidad }}-{{ $inscrito->cedula }}
 				</td>
 				<td>
-					{{ $inscritos->Alumno->nombres}}
+					{{ $inscrito->nombres}}
 				</td>
 				<td>
-					{{ $inscritos->Alumno->apellidos }}
+					{{ $inscrito->apellidos }}
+				</td>
+				<td>
+					{{ ($inscrito->InfoContacto) ? $inscrito->InfoContacto->correo : ''}}
+				</td>
+				<td>
+					{{ ($inscrito->InfoContacto) ? $inscritos->InfoContacto->telefono : '' }}
 				</td>
 			</tr>
 			@endforeach

@@ -60,7 +60,7 @@
 
             $fecha = Carbon::parse($fecha)->format('d-m-Y');
             // $year = Carbon::now()->format('Y');
-            $year = 2021;
+            $year = 2022;
             switch (Carbon::now()->format('m')) {
                 case 1:
                     $mes = 'Enero';
@@ -103,23 +103,43 @@
                     $mes = '';
                     break;
             }
+
+			use Milon\Barcode\DNS2D;
+            $d = new DNS2D();
+            $d->setStorPath(__DIR__ . '/cache/');
+
+            $random = rand(01, 100);
+			$dia = \Carbon\Carbon::now()->dayOfYear;
+            $data = route('verificar-documentos.show_constancia', [$alumno->id,$dia, 1, $random]);
         @endphp
 
         <br><br><br>
+		<table width="100%" border="0">
+			<tr>
+				<td align="right">
 
-        <h2 align="center">CONSTANCIA DE ESTUDIO</h2>
+					<h2 align="center">CONSTANCIA DE ESTUDIO</h2>
+				</td>
+				<td align="center" width="15%" valign="bottom">
+					<span style="font-size: 8pt !important; margin-top: 0px;">
+					@php echo '<img src="data:image/png;base64,' .$d->getBarcodePNG("$data", 'QRCODE') . '" alt="barcode"   />'; @endphp
+                        {{ $year }}-{{ \Carbon\Carbon::now()->dayOfYear }}-{{ $alumno->id }}-{{ $random }}
+                    </span>
+				</td>
+			</tr>
+		</table>
 
         <br><br>
         <br>
 
         <p align="justify" style="font-size: 12pt; line-height: 30px">
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Quien suscribe, jefa de la Dirección De Registro Y Control De
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Quien suscribe, Director De Registro Y Control De
             Actividades Académicas de la Universidad Politécnica Territorial
             Del Estado Bolívar, hace constar por medio de la presente que el ciudadano
             <u
                 style="  text-transform: uppercase;"><b>{{ @$alumno->p_nombre . ' ' . $alumno->s_nombre . ' ' . $alumno->p_apellido . ' ' . $alumno->s_apellido }}</b></u>,
             portador de la cédula de identidad <u
-                style=" "><b>{{ number_format(@$alumno->cedula, 0, '', '.') }}</b></u>,
+                style=" "><b>{{ ($alumno->nacionalidad == 'V' || $alumno->nacionalidad == 'VENEZOLANO') ? 'V' : $alumno->nacionalidad }}-{{ number_format(@$alumno->cedula, 0, '', '.') }}</b></u>,
             cursa estudio en esta casa de Educación universitaria en el Programa Nacional de Formación
             <u
                 style=" "><b>{{ @$alumno->Pnf->nombre }}</b></u>,
@@ -127,9 +147,9 @@
                 style=" "><b>{{ @$trayecto }}</b></u>,
             durante el periodo académico <u
                 style=" "><b>{{ $year }}</b></u>,
-            desde <u style=" "><b>Junio
-                    del {{ $year }}
-			hasta Agosto {{ $year }}.</b></u>
+            desde <u style=" "><b>Septiembre
+                    del 2022 {{-- {{ $year }} --}}
+			hasta Julio {{-- {{ $year }} --}} 2023.</b></u>
 				{{-- <b>Mayo
                     del {{ $year }}
 			hasta Marzo {{ $year+1 }}.</b></u> --}}
@@ -174,17 +194,19 @@
                         <h4 align="center" style="margin-bottom: 140px;">
                             {{-- MsC. Yomely Josefina Pérez Fajardo --}}
 
-							Ing. Dulce María José Pérez Suárez
+							{{-- Ing. Dulce María José Pérez Suárez --}}
+
+							Ing. Ramón Antonio Maita Bolívar
                             <br>
-                            Jefa Encargada de la Dirección De Registro Y Control De Actividades Académicas
+                            Director De Registro Y Control De Actividades Académicas
                         </h4>
                     </td>
                 </tr>
                 <tr>
                     <td>
                         <p align="center" class="Estilo3">Revolucionando la educaciòn universitaria<br />
-                            _____________________________________________________________________________________________________<br />
-                            Calle Igualdad, entre Calle Progreso y Rosario, Nº 28, Edif IUTEB, Casco Historico de <br />
+                            __________________________________________________________________________________________<br />
+                            Calle Igualdad, entre Calle Progreso y Rosario, Nº 28, Edif UPTBolívar, Casco Historico de <br />
                             Ciudad Bolivar - Estado Bolivar - Venezuela - Telefono (0285) 6340339
                         </p>
                     </td>

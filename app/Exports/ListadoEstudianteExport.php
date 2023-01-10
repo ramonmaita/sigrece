@@ -2,6 +2,7 @@
 
 namespace App\Exports;
 
+use App\Models\Alumno;
 use App\Models\DesAsignaturaDocenteSeccion;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\FromView;
@@ -23,8 +24,10 @@ class ListadoEstudianteExport implements FromView
 
     public function view(): View
     {
+		$relacion = DesAsignaturaDocenteSeccion::with('inscritos')->where('des_asignatura_id', $this->desasignatura_id)->where('seccion_id',$this->seccion_id)->first();
         return view('panel.docentes.secciones.gestion.partials.listado_estudiantes_excel', [
-            'relacion' => DesAsignaturaDocenteSeccion::with('inscritos')->where('des_asignatura_id', $this->desasignatura_id)->where('seccion_id',$this->seccion_id)->first()
-        ]);
+			'relacion' => $relacion,
+			'estudiantes' => Alumno::whereIn('id',$relacion->Inscritos->pluck('alumno_id'))->orderBy('cedula')->get()
+		]);
     }
 }

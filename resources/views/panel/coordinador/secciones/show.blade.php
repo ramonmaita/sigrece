@@ -52,99 +52,102 @@
                             <tbody>
                                 @php $n = 1; @endphp
                                 @foreach ($seccion->Plan->Asignaturas->where('trayecto_id', $seccion->trayecto->id) as $asignatura)
-                                    <tr class="bg-blue-800 text-white">
-                                        <th colspan="6" style="text-align: center;" for="{{ $asignatura->codigo }}">
-                                            {{-- <label for="{{  $asignatura->codigo }}" style="width: 95%; cursor: pointer; height: 100%;;" class="check-asignatura"> --}}
-                                            {{ $asignatura->nombre }}
-                                            {{-- </label> --}}
-                                        </th>
-                                        @forelse($asignatura->DesAsignaturas as $desasignatura)
-                                    <tr class="py-6" style="padding-top: 10px;">
-                                        <td class="text-center">
+									@if ($seccion->checkAsignatura($asignatura->id))
 
-                                            {{ $n }}
-                                            {{-- <input type="hidden" name="{{ $desasignatura->id }}" value="{{ $n }}"> --}}
-                                        </td>
-                                        <td>
-                                            {{ $desasignatura->nombre }}
-                                            {{-- <input type="hidden" name="codigo" value="{{ $desasignatura->codigo }}"> --}}
-                                        </td>
-                                        <td class="text-right">
-                                            {{ $desasignatura->tri_semestre }}
-                                            {{-- <input type="hidden" name="codigo_anual" value="{{ $desasignatura->asignatura_id }}"> --}}
-                                        </td>
-                                        <td class="text-right">
-                                            {{ $seccion->Docente($desasignatura->id)->Docente->nombre_completo }}
+									<tr class="bg-blue-800 text-white">
+										<th colspan="6" style="text-align: center;" for="{{ $asignatura->codigo }}">
+											{{-- <label for="{{  $asignatura->codigo }}" style="width: 95%; cursor: pointer; height: 100%;;" class="check-asignatura"> --}}
+											{{ $asignatura->nombre }}
+											{{-- </label> --}}
+										</th>
+										@forelse($asignatura->DesAsignaturas as $desasignatura)
+									<tr class="py-6" style="padding-top: 10px;">
+										<td class="text-center">
 
-                                        </td>
-                                        <td class="text-center" align="center">
+											{{ $n }}
+											{{-- <input type="hidden" name="{{ $desasignatura->id }}" value="{{ $n }}"> --}}
+										</td>
+										<td>
+											{{ $desasignatura->nombre }}
+											{{-- <input type="hidden" name="codigo" value="{{ $desasignatura->codigo }}"> --}}
+										</td>
+										<td class="text-right">
+											{{ $desasignatura->tri_semestre }}
+											{{-- <input type="hidden" name="codigo_anual" value="{{ $desasignatura->asignatura_id }}"> --}}
+										</td>
+										<td class="text-right">
+											{{ $estaus_uc = ($seccion->Docente($desasignatura->id)) ? $seccion->Docente($desasignatura->id)->Docente->nombre_completo : 'UC INACTIVA'}}
+
+										</td>
+										<td class="text-center" align="center">
 											<center>
 
 												{{-- ACTIVIADES CARGADAS --}}
-												@if ($seccion->Docente($desasignatura->id)->Actividades->count() > 0)
+												@if ($seccion->Docente($desasignatura->id)->Actividades->count() > 0 && $estaus_uc !='UC INACTIVA')
 													<i class="mr-4 cursor-pointer fa fa-check-circle" aria-hidden="true" style="color: green" title="ACTIVIDADES CARGADAS"></i>
 												@else
 												<i class="mr-4 cursor-pointer fas fa-dot-circle " title="ACTIVIDADES CARGADAS"></i>
 												@endif
 
 												{{-- NOTAS DE ACTIVIADES CARGADAS --}}
-												@if ($seccion->Docente($desasignatura->id)->NotasActividades()->count() > 0)
+												@if ($seccion->Docente($desasignatura->id)->NotasActividades()->count() > 0 && $estaus_uc !='UC INACTIVA')
 													<i class="mr-4 cursor-pointer fa fa-check-circle" aria-hidden="true" style="color: green" title="NOTAS DE ACTIVIDADES CARGADAS"></i>
 												@else
 												<i class="mr-4 cursor-pointer fas fa-dot-circle " title="NOTAS DE ACTIVIDADES CARGADAS"></i>
 												@endif
 												{{-- CARGA CERRADA --}}
 
-												@if ($desasignatura->estatus_carga($seccion->nombre, $seccion->Periodo->nombre))
+												@if ($desasignatura->estatus_carga($seccion->nombre, $seccion->Periodo->nombre) && $estaus_uc !='UC INACTIVA')
 													<i class="mr-4 cursor-pointer fa fa-check-circle" aria-hidden="true" style="color: green" title="CARGA CERRADA"></i>
 												@else
 												<i class="mr-4 cursor-pointer fas fa-dot-circle " title="CARGA CERRADA"></i>
 												@endif
 											</center>
-                                        </td>
-                                        <td class="text-right py-2">
-                                            <x-link
-                                                href="{{ route('panel.coordinador.secciones.lista_esudiantes', [$seccion->id,$desasignatura->id]) }}"
-                                                color="blue" intensidad="600">
-                                                <i class="fas fa-eye"></i>
-                                            </x-link>
+										</td>
+										<td class="text-right py-2">
+											<x-link
+												href="{{ route('panel.coordinador.secciones.lista_esudiantes', [$seccion->id,$desasignatura->id]) }}"
+												color="blue" intensidad="600">
+												<i class="fas fa-eye"></i>
+											</x-link>
 											{{-- AVANCE DE NOTAS --}}
-											@if ($seccion->Docente($desasignatura->id)->NotasActividades()->count() > 0)
+											@if ($seccion->Docente($desasignatura->id)->NotasActividades()->count() > 0 && $estaus_uc !='UC INACTIVA')
 												<x-link target="_blank"
 													href="{{ route('panel.docente.secciones.gestion.avance', [$seccion->Docente($desasignatura->id)->id]) }}"
 													color="yellow" intensidad="600">
 													<i class="fas fa-file-pdf"></i>
 												</x-link>
-                                            @else
+											@else
 												<x-link
 													href="javascript:void(0)"
 													color="yellow" intensidad="400">
 													<i class="fas fa-file-pdf"></i>
 												</x-link>
-                                            @endif
+											@endif
 
 											{{-- ACTA DE CALIFICACIONES --}}
-											@if ($desasignatura->estatus_carga($seccion->nombre, $seccion->Periodo->nombre))
+											@if ($desasignatura->estatus_carga($seccion->nombre, $seccion->Periodo->nombre) && $estaus_uc !='UC INACTIVA')
 												<x-link target="_blank"
 													href="{{ route('panel.coordinador.secciones.acta', [$seccion->Docente($desasignatura->id)->id]) }}"
 													color="red" intensidad="600">
 													<i class="fas fa-file-pdf"></i>
 												</x-link>
-                                            @else
+											@else
 												<x-link
 													href="javascript:void(0)"
 													color="red" intensidad="400">
 													<i class="fas fa-file-pdf"></i>
 												</x-link>
-                                            @endif
+											@endif
 
-                                        </td>
-                                    </tr>
-                                    @php $n++; @endphp
+										</td>
+									</tr>
+									@php $n++; @endphp
 
-                                @empty
-                                @endforelse
-                                </tr>
+								@empty
+								@endforelse
+								</tr>
+									@endif
                                 @endforeach
                             </tbody>
                         </table>

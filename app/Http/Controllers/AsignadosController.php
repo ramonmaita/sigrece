@@ -13,7 +13,7 @@ class AsignadosController extends Controller
      */
     public function index()
     {
-        //
+        return view('panel.admin.asignados.index');
     }
 
     /**

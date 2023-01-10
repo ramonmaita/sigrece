@@ -62,7 +62,7 @@ class Edit extends Component
 		);
 
 		try {
-			if($this->tipo == 'SOLICITUD DE CORRECCION' && $this->aplicar == 'ESPECIFICO' || $this->tipo == 'CARGA DE CALIFICACIONES' && $this->aplicar == 'ESPECIFICO'){
+			if($this->tipo == 'SOLICITUD DE CORRECCION' && $this->aplicar == 'ESPECIFICO' || $this->tipo == 'CARGA DE CALIFICACIONES' && $this->aplicar == 'ESPECIFICO' || $this->tipo == 'ASIGNAR DOCENTES' && $this->aplicar == 'ESPECIFICO'){
 				$aplicable = json_encode(['USUARIO',$this->aplicable]);
 			}else{
 				$aplicable = null;

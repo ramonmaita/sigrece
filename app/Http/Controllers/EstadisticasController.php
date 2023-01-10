@@ -77,7 +77,20 @@ class EstadisticasController extends Controller
 	// TODO: INSCRIPCIONES
 	public function index_actualizacion_datos()
 	{
-		return view('panel.admin.estadisticas.actualizacion_datos.index',[]);
+		$actual = \Carbon\Carbon::now()->toDateTimeString();
+		$evento_inscripcion_activo = false;
+		$evento_inscripcion = Evento::where('tipo','INSCRIPCION')
+		->where('evento_padre',0)
+		->where('inicio','<=',$actual)
+		->whereDate('fin','>=',$actual)
+		->orderBy('id','desc')
+		->first();
+
+		$evento_actualizacion = Evento::where('tipo','ACTUALIZACION DE DATOS')
+			->where('evento_padre',0)
+			->orderBy('id','desc')
+			->first();
+		return view('panel.admin.estadisticas.actualizacion_datos.index',['evento_inscripcion' => $evento_inscripcion,'evento_actualizacion' => $evento_actualizacion]);
 	}
 
 	public function data()
@@ -143,6 +156,12 @@ class EstadisticasController extends Controller
 
 		if ($evento_inscripcion) {
 			$dia = Carbon::parse($evento_inscripcion->inicio);
+			// $inicio = Carbon::create(2022,5,28); //TODO: BORRAR DESPUES
+			// $fin = Carbon::create(2022,6,22);
+			$inicio = Carbon::parse($evento_inscripcion->inicio);
+			$fin =  Carbon::parse($evento_inscripcion->fin);
+
+			// $dia = Carbon::parse('2022-05-28'); //TODO: BORRAR DESPUES
 		}else{
 			// $dia = Carbon::parse('2021-04-08');
 			$inicio = Carbon::parse($evento_inscripcion->inicio);
@@ -153,13 +172,17 @@ class EstadisticasController extends Controller
 		$datos_inscritos = [];
 		$label_inscritos = [];
 		$cantidad = 0;
+		$dias = $inicio->diffInDays($fin);
 		for ($i=0; $i <= $dias; $i++) {
 			$dia_buscar = $dia;
 			$dia_buscar = $dia_buscar->format('Y-m-d');
-			$cantidad = Inscrito::whereDate('created_at','LIKE',"%$dia_buscar%")->count();
+			$cantidad = count(Inscrito::whereDate('created_at','LIKE',"%$dia_buscar%")->groupBy('alumno_id')->get());
+			if($cantidad > 0){
+
+			}
 			array_push($label_inscritos,Carbon::parse($dia)->format('d-m-Y'));
-			$dia->addDay();
 			array_push($datos_inscritos, $cantidad);
+			$dia->addDay();
 		}
 
 		// TODO: PARA GRAFICA DE INSCRITOS POR PNF
@@ -176,6 +199,10 @@ class EstadisticasController extends Controller
 			$inicio = $evento_inscripcion->inicio;
 			$fin =  $evento_inscripcion->fin;
 			$dia = $evento_inscripcion->inicio; //TODO: CAMBIAR POR LA FECHA 2021-04-08
+			// $inicio = Carbon::create(2022,5,28); //TODO: BORRAR DESPUES
+			// $fin = Carbon::create(2022,6,22);
+
+			// $dia = Carbon::parse('2022-05-28'); //TODO: BORRAR DESPUES
 		}else{
 			// $inicio = Carbon::create(2021,4,8); //TODO: CAMBIAR POR LA FECHA 2021-04-08
 			// $fin = Carbon::create(2021,4,23);
@@ -183,9 +210,11 @@ class EstadisticasController extends Controller
 			// $dia = Carbon::parse('2021-04-08'); //TODO: CAMBIAR POR LA FECHA 2021-04-08
 		}
 		// return $fin;
-		$inscritos = Inscrito::with('alumno')->where('created_at','>=',$inicio)->where('created_at','<=',$fin)->get();
+		$inscritos = Inscrito::with('alumno')->where('created_at','>=',$inicio)->where('created_at','<=',$fin)->groupBy('alumno_id')->get();
+		$total_inscritos = 0;
 		foreach ($inscritos as $key => $inscrito_pnf) {
 			$data[$inscrito_pnf->Alumno->Pnf->codigo]['cantidad'] = $data[$inscrito_pnf->Alumno->Pnf->codigo]['cantidad'] + 1;
+			$total_inscritos ++;
 		}
 
 		return response()->json([
@@ -194,7 +223,8 @@ class EstadisticasController extends Controller
 			'datos_inscritos' => $datos_inscritos,
 			'label_inscritos' => $label_inscritos,
 			'data_inscritos_pnf' => $data,
-			'dias' => $dias
+			'dias' => $dias,
+			'total_inscritos' => $total_inscritos
 		]);
 	}
 

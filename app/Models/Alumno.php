@@ -100,12 +100,17 @@ class Alumno extends Model
 	// TODO: QUITAR SI NO VOY A USAR
 	public function Periodos()
     {
-        return $this->hasMany(HistoricoNota::class,'cedula_estudiante','cedula')->where('especialidad',$this->Pnf->codigo)->groupBy('periodo')->OrderByRaw('nro_periodo ASC, cod_desasignatura ASC');
+        // return $this->hasMany(HistoricoNota::class,'cedula_estudiante','cedula')->where('especialidad',$this->Pnf->codigo)->groupBy('periodo')->OrderByRaw('nro_periodo ASC, cod_desasignatura ASC');
+        return $this->hasMany(HistoricoNota::class,'cedula_estudiante','cedula')->groupBy('periodo')->OrderByRaw('nro_periodo ASC, cod_desasignatura ASC');
     }
 
 	public function Historico()
     {
         return $this->hasMany(HistoricoNota::class,'cedula_estudiante','cedula')->where('especialidad',$this->Pnf->codigo)->OrderByRaw('nro_periodo ASC, cod_desasignatura ASC');
+    }
+	public function TimeLine()
+    {
+        return $this->hasMany(HistoricoNota::class,'cedula_estudiante','cedula')->OrderByRaw('nro_periodo ASC, cod_desasignatura ASC');
     }
 
 	public function ultimo_periodo($cod_asignatura)
@@ -116,6 +121,22 @@ class Alumno extends Model
 	public function Notas($cod_asignatura , $nro_periodo)
 	{
 		return HistoricoNota::where('nro_periodo',$nro_periodo)->where('especialidad',$this->Pnf->codigo)->where('cedula_estudiante',$this->cedula)->where('cod_asignatura',$cod_asignatura)->OrderByRaw(' cod_desasignatura ASC, nro_periodo ASC')->where('estatus',0)->groupBy('cod_desasignatura')->get();
+	}
+
+	public function NotasPIU($cod_asignatura , $nro_periodo)
+	{
+		return HistoricoNota::where('nro_periodo',$nro_periodo)->where('cedula_estudiante',$this->cedula)->where('cod_asignatura',$cod_asignatura)->OrderByRaw(' cod_desasignatura ASC, nro_periodo ASC')->where('estatus',0)->groupBy('cod_desasignatura')->get();
+	}
+
+	public function ultimo_periodoPIU($cod_asignatura)
+    {
+        return collect(HistoricoNota::where('cedula_estudiante',$this->cedula)->where('cod_asignatura',$cod_asignatura)->OrderByRaw(' cod_desasignatura ASC, nro_periodo ASC')->where('estatus',0)->get())->last();
+    }
+
+	public function CheckPeriodo($periodo)
+	{
+		$periodo = Periodo::find($periodo);
+		return $this->hasMany(Inscrito::class)->where('periodo_id',$periodo->id)->first();
 	}
 
 	public function NotasTrayecto($cod_asignaturas)
@@ -133,6 +154,12 @@ class Alumno extends Model
 	{
 		return ActividadNota::whereIn('actividad_id',$actividades)->where('alumno_id',$this->id)->sum('nota');
 	}
+
+	public function PIU()
+    {
+		$cod_asignaturas = ['PB000','BA000','VPP000','ID000','RP000'];
+        return $this->hasMany(HistoricoNota::class,'cedula_estudiante','cedula')->whereIn('cod_asignatura',$cod_asignaturas)->groupBy('cod_asignatura')->OrderByRaw('nro_periodo ASC, cod_desasignatura ASC');
+    }
 
 	public function Escala($nota)
 	{

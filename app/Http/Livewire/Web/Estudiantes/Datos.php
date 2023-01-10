@@ -15,6 +15,7 @@ use App\Models\Municipio;
 use App\Models\Parroquia;
 use App\Models\Periodo;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
@@ -386,8 +387,14 @@ class Datos extends Component
 			DB::commit();
 			Mail::to($usuario->email)->send(new RegistroUsuario($usuario,$alumno->cedula));
 
-			session()->flash('jet_mensaje','Información actualizada con exito. revise su correo electronico para consultar su informacion de acceso');
-			return redirect()->to('/');
+			if(Auth::user()->hasRole('Auxiliar')){
+				$id_encriptado = encrypt($alumno->id);
+				session()->flash('jet_mensaje','Registro realizado con exito.');
+				return redirect()->route('panel.auxiliar.inscripciones.nuevo-ingreso.uc_a_inscribir',['id_encriptado' => $id_encriptado]);
+			}else{
+				session()->flash('jet_mensaje','Información actualizada con exito. revise su correo electronico para consultar su informacion de acceso');
+				return redirect()->to('/');
+			}
 		} catch (\Throwable $th) {
 			DB::rollback();
 			return back()->with('jet_error',$th->getMessage());

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AlumnosController;
+use App\Http\Controllers\Admin\BecasController;
 use App\Http\Controllers\Admin\CambiosController;
 use App\Http\Controllers\Admin\CertificacionesController;
 use App\Http\Controllers\Admin\CorreccionesController as AdminCorreccionesController;
@@ -23,6 +24,8 @@ use App\Http\Controllers\Admin\RetirosController;
 use App\Http\Controllers\AsignadosController;
 use App\Http\Controllers\ComprobanteController;
 use App\Http\Controllers\ConstanciaController;
+use App\Http\Controllers\CulminacionController;
+use App\Http\Controllers\ReportesController;
 use App\Models\Asignatura;
 use App\Models\DesAsignaturaDocenteSeccion;
 use App\Models\Docente;
@@ -53,6 +56,9 @@ Route::prefix('panel')->name('panel.')->group(function () {
             }elseif(Auth::user()->hasRole('Coordinador')){
 				session(['rol' => 'Coordinador']);
 				return redirect()->route('panel.coordinador.index');
+            }elseif(Auth::user()->hasRole('Auxiliar')){
+				session(['rol' => 'Auxiliar']);
+				return redirect()->route('panel.auxiliar.index');
             }
         }
     })->name('index');
@@ -85,6 +91,7 @@ Route::prefix('panel')->name('panel.')->group(function () {
 	Route::prefix('estudiantes')->name('estudiantes.')->group(function () {
 		Route::get('ver/{alumno}',[AlumnosController::class,'show'])->name('show')->middleware(['role_or_permission:estudiantes.show']);
 		Route::get('/periodos/corregir/{alumno}',[AlumnosController::class,'periodos'])->name('periodo.corregir')->middleware(['role_or_permission:periodo.corregir']);
+		Route::resource('becas', BecasController::class)->except(['show']);
 	});
 
 	Route::prefix('documentos')->name('documentos.')->group(function () {
@@ -96,6 +103,9 @@ Route::prefix('panel')->name('panel.')->group(function () {
 		});
 		Route::prefix('constancia')->name('constancia.')->group(function () {
 			Route::get('pdf/{alumno}',[ConstanciaController::class,'pdf'])->name('pdf')->middleware(['role_or_permission:estudiantes.show']);
+		});
+		Route::prefix('culminacion')->name('culminacion.')->group(function () {
+			Route::get('pdf/{alumno}/{titulo}',[CulminacionController::class,'pdf'])->name('pdf')->middleware(['role_or_permission:estudiantes.show']);
 		});
 		Route::prefix('expediente')->name('expediente.')->group(function () {
 			Route::get('pdf/{alumno}',[ExpedienteController::class,'pdf'])->name('pdf')->middleware(['role_or_permission:estudiantes.show']);
@@ -115,6 +125,8 @@ Route::prefix('panel')->name('panel.')->group(function () {
 
 			Route::get('/titulos/{pnf}/{titulo}/{periodo}',[GraduacionesController::class,'titulos'])->name('titulos')->middleware(['role_or_permission:graduacion.index']);
 			Route::get('/actas/{pnf}/{titulo}/{periodo}',[GraduacionesController::class,'actas'])->name('actas')->middleware(['role_or_permission:graduacion.index']);
+
+			Route::get('/titulos-pnfa/{pnf}/{titulo}/{periodo}',[GraduacionesController::class,'titulos_pnfa'])->name('titulos_pnfa')->middleware(['role_or_permission:graduacion.index']);
 		});
 
 	});
@@ -138,6 +150,7 @@ Route::prefix('panel')->name('panel.')->group(function () {
 
 	Route::prefix('secciones')->name('secciones.')->group(function () {
 		Route::get('planificacion/{id}',[SeccionesController::class,'planificacion'])->name('planificacion')->middleware(['role_or_permission:secciones.index']);
+		Route::get('listado-pnf/{pnf}',[SeccionesController::class,'estudiantes_pnf'])->name('estudiantes_pnf')->middleware(['role_or_permission:secciones.index']);
 		Route::get('cerrar-cargar/{id}',[SeccionesController::class, 'cerrar_carga'])->name('cerrar_carga')->middleware(['role_or_permission:secciones.cerrar_carga|Admin']);
 		Route::view('/','panel.admin.secciones.index')->name('index')->middleware(['role_or_permission:secciones.index']);
 		Route::get('{seccion}/ver',[SeccionesController::class,'ver_seccion'])->name('show')->middleware(['role_or_permission:secciones.index']);
@@ -160,12 +173,31 @@ Route::prefix('panel')->name('panel.')->group(function () {
 
         Route::get('abrir/{relacion}', [SeccionesController::class,'abrir'])->name('abrir');
         Route::get('cerrar/{relacion}', [SeccionesController::class,'cerrar'])->name('cerrar');
+
+        Route::get('descargar-listado/{seccion}', [SeccionesController::class,'estudiantes_seccion'])->name('descargar-listado');
+
     });
 
 	Route::prefix('estadisticas')->name('estadisticas.')->group(function () {
 		Route::prefix('carga-de-notas')->name('carga-de-notas.')->group(function () {
 			Route::get('/', [EstadisticasController::class, 'index_carga_notas'])->middleware(['role_or_permission:estadisticas.index'])->name('index');
 			Route::get('ver-seccion/{seccion}/{periodo}', [EstadisticasController::class, 'show_secciones'])->name('show')->middleware(['role_or_permission:estadisticas.index']);
+		});
+		Route::prefix('actualizacion-e-inscripcion')->name('actualizacion-de-datos.')->group(function () {
+			Route::get('/', [EstadisticasController::class, 'index_actualizacion_datos'])->middleware(['role_or_permission:estadisticas.index'])->name('index');
+			Route::get('ver-seccion/{seccion}/{periodo}', [EstadisticasController::class, 'show_secciones'])->name('show')->middleware(['role_or_permission:estadisticas.index']);
+			Route::get('/data', [EstadisticasController::class, 'data'])->middleware(['role_or_permission:estadisticas.index'])->name('data');
+		});
+		Route::prefix('aprobados-y-reprobados')->name('aprobados-reprobados.')->group(function () {
+			Route::get('/', [EstadisticasController::class, 'index_aprobados_reprobados'])->middleware(['role_or_permission:estadisticas.index'])->name('index');
+			// Route::get('ver-seccion/{seccion}/{periodo}', [EstadisticasController::class, 'show_secciones'])->name('show')->middleware(['role_or_permission:estadisticas.index']);
+		});
+    });
+
+	Route::prefix('reportes')->name('reportes.')->group(function () {
+		Route::prefix('inscritos')->name('inscritos.')->group(function () {
+			Route::get('/', [ReportesController::class, 'index'])->middleware(['role_or_permission:estadisticas.index'])->name('index');
+			// Route::get('ver-seccion/{seccion}/{periodo}', [ReportesController::class, 'show_secciones'])->name('show')->middleware(['role_or_permission:estadisticas.index']);
 		});
 		Route::prefix('actualizacion-e-inscripcion')->name('actualizacion-de-datos.')->group(function () {
 			Route::get('/', [EstadisticasController::class, 'index_actualizacion_datos'])->middleware(['role_or_permission:estadisticas.index'])->name('index');
@@ -203,11 +235,11 @@ Route::prefix('panel')->name('panel.')->group(function () {
 		});
 
 		Route::prefix('regulares')->name('regulares.')->group(function () {
-			Route::get('/', [InscripcionesController::class, 'index_regulares'])->middleware(['role_or_permission:Admin'])->name('index');
-			Route::post('/uc', [InscripcionesController::class, 'uc_incribir_regulares'])->middleware(['role_or_permission:Admin'])->name('uc');
-			Route::post('/guardar', [InscripcionesController::class, 'store'])->middleware(['role_or_permission:Admin'])->name('store');
+			Route::get('/', [InscripcionesController::class, 'index_regulares'])->middleware(['role_or_permission:inscripciones.regulares.index'])->name('index');
+			Route::post('/uc', [InscripcionesController::class, 'uc_incribir_regulares'])->middleware(['role_or_permission:inscripciones.regulares.index'])->name('uc');
+			Route::post('/guardar', [InscripcionesController::class, 'store'])->middleware(['role_or_permission:inscripciones.regulares.index'])->name('store');
 
-			Route::get('/data', [InscripcionesController::class, 'data'])->middleware(['role_or_permission:Admin'])->name('data');
+			Route::get('/data', [InscripcionesController::class, 'data'])->name('data');
 		});
     });
 
@@ -242,11 +274,11 @@ Route::prefix('panel')->name('panel.')->group(function () {
 		Route::prefix('certificados')->name('certificados.')->group(function(){
 			Route::view('/','panel.admin.documentos.certificados.index')->name('index')->middleware(['role_or_permission:SuperAdmin|documentos.certificados.index']);
 			Route::post('buscar',[CertificacionesController::class,'buscar'])->name('buscar');
-			Route::get('graduando/{graduando}',[CertificacionesController::class,'show'])->name('show')->middleware(['role_or_permission:graduacion.index']);
+			Route::get('graduando/{graduando}',[CertificacionesController::class,'show'])->name('show')->middleware(['role_or_permission:documentos.certificados.index']);
 
-			Route::get('autenticacion/{graduando}',[CertificacionesController::class,'autenticacion'])->name('autenticacion')->middleware(['role_or_permission:graduacion.index']);
-			Route::get('emision/{graduando}',[CertificacionesController::class,'emision'])->name('emision')->middleware(['role_or_permission:graduacion.index']);
-			Route::get('certificacion/{especialidad}',[CertificacionesController::class,'certificacion'])->name('certificacion')->middleware(['role_or_permission:graduacion.index']);
+			Route::get('autenticacion/{graduando}',[CertificacionesController::class,'autenticacion'])->name('autenticacion')->middleware(['role_or_permission:documentos.certificados.index']);
+			Route::get('emision/{graduando}',[CertificacionesController::class,'emision'])->name('emision')->middleware(['role_or_permission:documentos.certificados.index']);
+			Route::get('certificacion/{especialidad}',[CertificacionesController::class,'certificacion'])->name('certificacion')->middleware(['role_or_permission:documentos.certificados.index']);
 		});
 	});
 

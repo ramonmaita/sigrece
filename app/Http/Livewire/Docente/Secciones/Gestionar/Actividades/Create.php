@@ -8,7 +8,7 @@ use Livewire\Component;
 
 class Create extends Component
 {
-	public $actividad, $descripcion, $porcentaje, $id_seccion, $id_relacion, $id_desasignatura;
+	public $actividad, $descripcion, $porcentaje, $id_seccion, $id_relacion, $id_desasignatura,$fecha;
 
 	public function mount($relacion_id, $desasignatura_id, $seccion_id)
 	{
@@ -34,6 +34,7 @@ class Create extends Component
 
 		$this->validate([
 			'actividad' => 'required|min:3',
+			'fecha' => 'required|date',
 			'porcentaje' => 'required|numeric|min:1|max:'.$max_porcentaje
 		]);
 
@@ -47,6 +48,7 @@ class Create extends Component
 				'actividad' => $this->actividad,
 				'descripcion' => $this->descripcion,
 				'porcentaje' => $this->porcentaje,
+				'fecha' => $this->fecha,
 			]);
 			// Actividad::updateOrCreate(
 			// 	[
@@ -67,7 +69,7 @@ class Create extends Component
 			$this->emit('mensajes','success','Actividad agregada con exito.	');
 			$this->emit('recargar_tabla');
 			$this->emit('recargar_actividades');
-			$this->reset(['actividad','descripcion','porcentaje']);
+			$this->reset(['actividad','descripcion','porcentaje','fecha']);
 			$this->emit('datatables');
 			// return redirect()->back();
 		} catch (\Throwable $th) {

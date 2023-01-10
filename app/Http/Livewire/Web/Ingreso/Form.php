@@ -18,7 +18,9 @@ use App\Models\Periodo;
 use App\Models\Plan;
 use App\Models\Pnf;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
@@ -80,6 +82,16 @@ class Form extends Component
 
 			// $this->telefono =
 		}
+// 		else{
+// 		    	$this->pnf_id = Pnf::find($this->pnf)->id;
+//     			$this->pnf = Pnf::find($this->pnf)->nombre;
+//     			foreach (Pnf::find($this->pnf)->Pnf->Nucleos as $key => $nucleo) {
+//     				if($nucleo->Secciones->where('periodo_id',$this->periodo_id)->where('cupos','>',0)->count() > 0){
+//     					$n[] = $nucleo->id;
+//     				}
+//     			}
+//     			$this->nucleos = $nuevo->Pnf->Nucleos->whereIn('id',$n);
+// 		}
 
 	}
     public function render()
@@ -97,7 +109,35 @@ class Form extends Component
 			$parroquias = [];
 		}
 		// $pnfs = Pnf::where('codigo','>=',40)->get();
-		$pnfs = Pnf::whereIn('id',[1,2,3,5,6,7,13,16])->get();
+		$pnf_search = 0;
+		switch(Carbon::now()->format('d-m-Y')){
+			case '17-10-2022':
+				$pnf_search = [3];
+				break;
+			case '18-10-2022':
+				$pnf_search = [1,13];
+				break;
+			case '19-10-2022':
+				$pnf_search = [2,16];
+				break;
+			case '20-10-2022':
+				$pnf_search = [5,6];
+				break;
+			case '21-10-2022':
+				$pnf_search = [7,12,14,15];
+				break;
+
+			default:
+				$pnf_search = [0];
+			break;
+
+		}
+
+		if(Auth::user()->hasRole('Admin')){
+			$pnf_search = [1,2,3,5,6,7,12,13,16,14,15];
+		}
+
+		$pnfs = Pnf::whereIn('id',$pnf_search)->get();
 		if (!empty($this->pnf)) {
 			$pnf = Pnf::find($this->pnf);
 			if ($this->pnf_actual != $this->pnf) {
@@ -106,11 +146,11 @@ class Form extends Component
 			if($this->asignado == false){
 				// $this->nucleos = $pnf->Nucleos;
 				foreach ($pnf->Nucleos as $key => $nucleo) {
-					if($nucleo->Secciones->where('periodo_id',$this->periodo_id)->where('cupos','>',0)->count() > 0){
-						if($nucleo->id == 8 || $nucleo->id == 7){
+				// 	if($nucleo->Secciones->where('periodo_id',$this->periodo_id)->where('cupos','>',0)->count() > 0){
+				// 		if($nucleo->id == 8 || $nucleo->id == 7){
 							$n[] = $nucleo->id;
-						}
-					}
+				// 		}
+				// 	}
 				}
 				$this->nucleos = $pnf->Nucleos->whereIn('id',$n);
 			}
@@ -208,8 +248,8 @@ class Form extends Component
 			DB::beginTransaction();
 
 			$pnfid = ($this->asignado == true) ? $this->pnf_id : $this->pnf;
-
-			$plan = Plan::where('pnf_id',$pnfid)->orderBy('id','desc')->first();
+			$ti_hologoado = array([27,28,29,30,31,32,33,34,35,36]);
+			$plan = Plan::where('pnf_id',$pnfid)->whereNotIn('id',$ti_hologoado)->orderBy('id','desc')->first();
 
 			$alumno = Alumno::create([
 				'cedula' => $this->cedula,
@@ -318,8 +358,14 @@ class Form extends Component
 			DB::commit();
 			Mail::to($usuario->email)->send(new RegistroUsuario($usuario,$alumno->cedula));
 
-			session()->flash('jet_mensaje','Información actualizada con exito. revise su correo electronico para consultar su informacion de acceso');
-			return redirect()->to('/');
+			if(Auth::user()->hasRole('Auxiliar')){
+				$id_encriptado = encrypt($alumno->id);
+				session()->flash('jet_mensaje','Registro realizado con exito.');
+				return redirect()->route('panel.auxiliar.inscripciones.nuevo-ingreso.uc_a_inscribir',['id_encriptado' => $id_encriptado]);
+			}else{
+				session()->flash('jet_mensaje','Información actualizada con exito. revise su correo electronico para consultar su informacion de acceso');
+				return redirect()->to('/');
+			}
 		} catch (\Throwable $th) {
 			// dd($th);
 			DB::rollback();

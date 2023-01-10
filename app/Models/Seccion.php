@@ -112,4 +112,12 @@ class Seccion extends Model implements Auditable
         return DesAsignaturaDocenteSeccion::where('seccion_id',$this->id)->where('des_asignatura_id',$des_asignatura_id)->first();
 
     }
+
+	public function Estudiantes()
+	{
+		$ucs = DesAsignaturaDocenteSeccion::where('seccion_id',$this->id)->pluck('id');
+		$total = Inscripcion::whereIn('desasignatura_docente_seccion_id',$ucs)->groupBy('alumno_id')->get();
+
+		return $total;
+	}
 }

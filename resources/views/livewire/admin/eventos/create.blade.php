@@ -113,6 +113,7 @@
                                     <option value="CARGA DE CALIFICACIONES">CARGA DE CALIFICACIONES</option>
                                     <option value="SOLICITUD DE CORRECCION">SOLICITUD DE CORRECCION</option>
                                     <option value="ACTUALIZACION DE DATOS">ACTUALIZACION DE DATOS</option>
+                                    <option value="ASIGNAR DOCENTES">ASIGNAR DOCENTES</option>
                                 </select>
                                 @error('tipo')
                                     <small class="text-danger">{{ $message }}</small>
@@ -145,16 +146,11 @@
                                             <option value="CIU">CIU</option>
                                             <option value="PER">PER</option>
 											<option value="ESPECIFICO">ESPECIFICO</option>
-                                        </optgroup>
-                                    @endif
-                                    @if ($tipo == 'SOLICITUD DE CORRECCION')
-                                        <optgroup label="SOLICITUD DE CORRECCION">
                                             <option value="TODOS">TODOS</option>
-                                            <option value="ESPECIFICO">ESPECIFICO</option>
                                         </optgroup>
                                     @endif
-                                    @if ($tipo == 'ACTUALIZACION DE DATOS')
-                                        <optgroup label="ACTUALIZACION DE DATOS">
+                                    @if ($tipo == 'SOLICITUD DE CORRECCION' || $tipo == 'ACTUALIZACION DE DATOS' || $tipo == 'ASIGNAR DOCENTES')
+                                        <optgroup label="{{ $tipo }}">
                                             <option value="TODOS">TODOS</option>
                                             <option value="ESPECIFICO">ESPECIFICO</option>
                                         </optgroup>
@@ -165,7 +161,7 @@
                                 @enderror
                             </div>
                         </div>
-						<div class="col-md-6" @if($tipo == 'SOLICITUD DE CORRECCION' && $aplicar == 'ESPECIFICO' || $tipo == 'CARGA DE CALIFICACIONES' && $aplicar == 'ESPECIFICO') style="display: block;" @else style="display: none;" @endif>
+						<div class="col-md-6" @if($tipo == 'SOLICITUD DE CORRECCION' && $aplicar == 'ESPECIFICO' || $tipo == 'CARGA DE CALIFICACIONES' && $aplicar == 'ESPECIFICO' || $tipo == 'ASIGNAR DOCENTES' && $aplicar == 'ESPECIFICO') style="display: block;" @else style="display: none;" @endif>
 							<div class="form-group"  wire:ignore  >
 								<label for="aplicable">Aplicable</label>
 								<br>

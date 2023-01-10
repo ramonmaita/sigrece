@@ -6,6 +6,7 @@ use App\Models\Nucleo;
 use App\Models\Periodo;
 use App\Models\Pnf;
 use App\Models\Seccion;
+use App\Models\Trayecto;
 use Mediconesystems\LivewireDatatables\Column;
 use Mediconesystems\LivewireDatatables\Http\Livewire\LivewireDatatable;
 use Mediconesystems\LivewireDatatables\NumberColumn;
@@ -35,6 +36,18 @@ class Table extends LivewireDatatable
 
 			NumberColumn::name('cupos')
 			->label('Cupos')
+			->searchable(),
+
+			Column::callback(['id'], function ($id) {
+				$seccion = Seccion::find($id);
+				return count($seccion->Estudiantes());
+			},'cantidad_estudiantes')->unsortable()
+			->label('Estudiantes')
+			->searchable(),
+
+			Column::name('trayecto.nombre')
+			->label('Trayecto')
+			->filterable($this->trayectos->pluck('nombre'))
 			->searchable(),
 
 			Column::name('pnf.nombre')
@@ -67,5 +80,9 @@ class Table extends LivewireDatatable
 	public function getPnfsProperty()
     {
         return Pnf::where('codigo','>=',40)->get();
+    }
+	public function getTrayectosProperty()
+    {
+        return Trayecto::all();
     }
 }

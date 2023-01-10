@@ -14,4 +14,15 @@ class Asignado extends Model
 	{
 		return $this->belongsTo(Pnf::class);
 	}
+
+	public function Alumno()
+	{
+		return $this->hasOne(Alumno::class,'cedula','cedula');
+	}
+
+	public function Inscrito()
+	{
+		$alumno = Alumno::find($this->id);
+		return $alumno->InscritoActual;
+	}
 }

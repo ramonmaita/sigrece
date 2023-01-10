@@ -26,7 +26,7 @@
 				<td>Seccion</td>
 				<td></td>
 			</tr>
-			@foreach ($nucleo->Secciones->where('pnf_id',$pnf->id)->where('estatus','ACTIVA') as $seccion)
+			@foreach ($nucleo->Secciones->where('pnf_id',$pnf->id)->where('periodo_id',$periodo->id)->where('estatus','ACTIVA') as $seccion)
 				<tr>
 					<td>
 						{{ $seccion->Trayecto->nombre }}

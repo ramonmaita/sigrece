@@ -201,7 +201,7 @@
 				</tr>
 				<tr class="encabezados">
 					<th>facebook</th>
-					<th>intagram</th>
+					<th>instagram</th>
 					<th>twitter</th>
 				</tr>
 				<tr>
@@ -265,7 +265,7 @@
 		<table class="" border="1" width="100%" cellspacing="0" cellpadding="3" style="margin-top: 10px;">
 			<thead>
 				<tr class="encabezados">
-					<th colspan="3">DATOS CCOMPLEMENTARIOS</th>
+					<th colspan="3">DATOS COMPLEMENTARIOS</th>
 				</tr>
 			</thead>
 			<tbody  style="font-size: 10pt;">
@@ -292,8 +292,8 @@
 				<tr>
 					<td scope="row">{{ $alumno->InfoComplementaria->madre }}</td>
 					<td>{{ $alumno->InfoComplementaria->tlf_madre }}</td>
-					<td scope="row">{{ $alumno->InfoComplementaria->madre }}</td>
-					<td>{{ $alumno->InfoComplementaria->tlf_madre }}</td>
+					<td scope="row">{{ $alumno->InfoComplementaria->padre }}</td>
+					<td>{{ $alumno->InfoComplementaria->tlf_padre }}</td>
 				</tr>
 			</tbody>
 		</table>
@@ -314,7 +314,7 @@
 		<table class="" border="1" width="100%" cellspacing="0" cellpadding="3" style="margin-top: 10px;">
 			<tbody  style="font-size: 10pt;">
 				<tr class="encabezados">
-					<th>usaurio SIGRECE</th>
+					<th>usuario SIGRECE</th>
 				</tr>
 				<tr>
 					<td scope="row">{{ $alumno->Usuario->email }}</td>

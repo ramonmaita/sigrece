@@ -19,6 +19,13 @@ Route::prefix('panel/jefe-de-pnf')->name('panel.coordinador.')->group(function (
 		Route::get('/{relacion}/avance-de-notas', [SeccionesController::class,'avance'])->name('avance')->middleware(['role:Coordinador']);
 		Route::get('/{relacion}/acta', [SeccionesController::class,'acta'])->name('acta')->middleware(['role:Coordinador']);
 		Route::get('/{seccion}/{desasignatura}/listado-estudiantes', [SeccionesController::class,'lista_esudiantes'])->name('lista_esudiantes')->middleware(['role:Coordinador']);
+
+		Route::get('configurar/{id}', [SeccionesController::class,'configurar'])->name('configurar')->middleware(['role_or_permission:Coordinador']);
+		Route::post('configurar', [SeccionesController::class,'guardar_config'])->name('guardar_config')->middleware(['role_or_permission:Coordinador']);
+		Route::post('actualizar-configuracion', [SeccionesController::class,'actualizar_config'])->name('actualizar_config')->middleware(['role_or_permission:Coordinador']);
+		Route::get('editar-configuracion/{id}', [SeccionesController::class,'editar_config'])->name('editar_config')->middleware(['role_or_permission:Coordinador']);
+
+
 	});
 
 	Route::prefix('solicitudes')->name('solicitudes.')->group(function () {

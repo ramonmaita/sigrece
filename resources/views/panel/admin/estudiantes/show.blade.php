@@ -78,7 +78,9 @@
                             </h3>
 
                             <p class="text-center text-muted">
-                                {{ $alumno->nacionalidad }}-{{ number_format($alumno->cedula, 0, ',', '.') }}</p>
+                                {{ $alumno->nacionalidad }}-{{ number_format($alumno->cedula, 0, ',', '.') }}<button onclick="copiar()" class="btn btn-default btn-sm"><i class="fas fa-copy    "></i></button></p>
+								<input type="text" value="{{ $alumno->cedula }}" id="copy" style="display: none;">
+
                             {{-- <br> --}}
                             <center id="estatus">
                                 @if ($alumno->InscritoActual())
@@ -154,6 +156,9 @@
 
                             <strong><i class="mr-1 fas fa-graduation-cap"></i> Título</strong>
 
+							@php
+								$titulos_pnf = [];
+							@endphp
                             <ul class="my-3 list-group list-group-unbordered">
                                 @forelse ($titulos as $titulo)
                                     <li class="list-group-item">
@@ -163,6 +168,10 @@
                                             @else
                                                 ING
                                             @endif
+											@php
+												$t = ($titulo->titulo == 1 || $titulo->titulo == 3) ? 'TSU' : 'ING';
+												$titulos_pnf[] = $t."-".$titulo->codigo;
+											@endphp
                                             {{ $titulo->acronimo }}
                                         </b>
                                         <a
@@ -177,25 +186,86 @@
 								<b>Friends</b> <a class="float-right">13,287</a>
 							</li> --}}
                             </ul>
+							{{-- @dump($titulos_pnf) --}}
 
-							@if ((empty($titulos) &&
-									$trayectos[8] && $trayectos[8]['porcentaje'] == 100 &&
-									$trayectos[1] && $trayectos[1]['porcentaje'] == 100 &&
-									$trayectos[2] && $trayectos[2]['porcentaje'] == 100
-								))
-								<a href="#" target="documento" class="show-documento btn btn-primary btn-sm btn-block"><b>Agregar Aspirante a Grado TSU</b></a>
+							@php
+								// implode($titulos_pnf['TSU']);
+								$pnf_activo = $alumno->Pnf->codigo;
+								$a = array_search('TSU-'.$pnf_activo,$titulos_pnf,true);
+							@endphp
+							@if(count($trayectos) > 2)
+                        @if ($alumno->Pnf->codigo == 40 && $alumno->plan_id == 5 || $alumno->Pnf->codigo == 60 && $alumno->plan_id == 21)
+
+                            @if ((array_search('TSU-'.$pnf_activo,$titulos_pnf,true) === false) &&
+                                    $trayectos[8]['porcentaje'] == 100 &&
+                                    $trayectos[1]['porcentaje'] == 100 &&
+                                    $trayectos[2]['porcentaje'] == 100 &&
+                                    $trayectos[3]['porcentaje'] == 100
+
+                                    || (empty($titulos)) &&
+                                    $trayectos[8]['porcentaje'] == 100 &&
+                                    $trayectos[1]['porcentaje'] == 100 &&
+                                    $trayectos[2]['porcentaje'] == 100 &&
+                                    $trayectos[3]['porcentaje'] == 100
+                                )
+								@can('aspirantes-grado.postular')
+									<a href="#" target="documento" class="show-documento btn btn-primary btn-sm btn-block"><b>Agregar Aspirante a Grado TSU</b></a>
+								@endcan
+								@can('documentos.culminacion.pdf')
+                                	<a href="{{ route('panel.documentos.culminacion.pdf',['alumno' => $alumno, 'titulo' => 'TSU']) }}" target="documento" class="show-documento btn btn-info btn-sm btn-block"><b>Constancia de Culminiación TSU</b></a>
+								@endcan
+                            @endif
+
+                            @if (( (array_search('ING-'.$pnf_activo,$titulos_pnf,true) === false) && (array_search('TSU-'.$pnf_activo,$titulos_pnf,true) >= 0) &&
+                                    $trayectos[8]['porcentaje'] == 100 &&
+                                    $trayectos[1]['porcentaje'] == 100 &&
+                                    $trayectos[2]['porcentaje'] == 100 &&
+                                    $trayectos[3]['porcentaje'] == 100 &&
+                                    $trayectos[4]['porcentaje'] == 100 &&
+                                    $trayectos[5]['porcentaje'] == 100
+                                ))
+								@can('aspirantes-grado.postular')
+                                	<a href="#" target="documento" class="show-documento btn btn-primary btn-sm btn-block"><b>Agregar Aspirante a Grado Ing</b></a>
+                                @endcan
+								@can('documentos.culminacion.pdf')
+									<a href="{{ route('panel.documentos.culminacion.pdf',['alumno' => $alumno, 'titulo' => 'ING']) }}" target="documento" class="show-documento btn btn-info btn-sm btn-block"><b>Constancia de Culminiación Ing</b></a>
+								@endcan
 							@endif
+                        @else
+                            @if ((array_search('TSU-'.$pnf_activo,$titulos_pnf,true) === false) &&
+                                    $trayectos[8]['porcentaje'] == 100 &&
+                                    $trayectos[1]['porcentaje'] == 100 &&
+                                    $trayectos[2]['porcentaje'] == 100
 
-							@if ((empty($titulos) &&
-									$trayectos[8] && $trayectos[8]['porcentaje'] == 100 &&
-									$trayectos[1] && $trayectos[1]['porcentaje'] == 100 &&
-									$trayectos[2] && $trayectos[2]['porcentaje'] == 100 &&
-									$trayectos[3] && $trayectos[3]['porcentaje'] == 100 &&
-									$trayectos[4] && $trayectos[4]['porcentaje'] == 100
-								))
-								<a href="#" target="documento" class="show-documento btn btn-primary btn-sm btn-block"><b>Agregar Aspirante a Grado Ing</b></a>
-							@endif
+                                    || (empty($titulos)) && $trayectos[8]['porcentaje'] == 100 &&
+                                    $trayectos[1]['porcentaje'] == 100 &&
+                                    $trayectos[2]['porcentaje'] == 100
+                                )
+                                @can('aspirantes-grado.postular')
+									<a href="#" target="documento" class="show-documento btn btn-primary btn-sm btn-block"><b>Agregar Aspirante a Grado TSU</b></a>
+								@endcan
+								@can('documentos.culminacion.pdf')
+									<a href="{{ route('panel.documentos.culminacion.pdf',['alumno' => $alumno, 'titulo' => 'TSU']) }}" target="documento" class="show-documento btn btn-info btn-sm btn-block"><b>Constancia de Culminiación TSU</b></a>
+								@endcan
+                            @endif
 
+                            @if (( (array_search('ING-'.$pnf_activo,$titulos_pnf,true) === false) && (array_search('TSU-'.$pnf_activo,$titulos_pnf,true) >= 0) &&
+                                    $trayectos[8]['porcentaje'] == 100 &&
+                                    $trayectos[1]['porcentaje'] == 100 &&
+                                    $trayectos[2]['porcentaje'] == 100 &&
+                                    $trayectos[3]['porcentaje'] == 100 &&
+                                    $trayectos[4]['porcentaje'] == 100
+                                ))
+                                @can('aspirantes-grado.postular')
+									<a href="#" target="documento" class="show-documento btn btn-primary btn-sm btn-block"><b>Agregar Aspirante a Grado Ing</b></a>
+								@endcan
+								@can('documentos.culminacion.pdf')
+									<a href="{{ route('panel.documentos.culminacion.pdf',['alumno' => $alumno, 'titulo' => 'ING']) }}" target="documento" class="show-documento btn btn-info btn-sm btn-block"><b>Constancia de Culminiación Ing</b></a>
+								@endcan
+                            @endif
+
+                        @endif
+                    @endif
                         </div>
                         <!-- /.card-body -->
                     </div>
@@ -345,7 +415,7 @@
                                                     {{ $periodo->periodo }}
                                                 </span>
                                             </div>
-                                            @forelse($alumno->Historico->where('nro_periodo',$periodo->nro_periodo)->groupBy('cod_asignatura')
+                                            @forelse($alumno->TimeLine->where('nro_periodo',$periodo->nro_periodo)->groupBy('cod_asignatura')
                                                 as $asig)
                                                 <!-- timeline item -->
                                                 <div>
@@ -449,6 +519,20 @@
 
 @push('js')
     <script type="text/javascript">
+			function copiar() {
+			/* Get the text field */
+			var copyText = document.getElementById("copy");
+
+			/* Select the text field */
+			copyText.select();
+			copyText.setSelectionRange(0, 99999); /* For mobile devices */
+
+			/* Copy the text inside the text field */
+			navigator.clipboard.writeText(copyText.value);
+
+			/* Alert the copied text */
+			alert("Cédula: " + copyText.value+" copiada.");
+			}
         $(function() {
 			// $('#loadingMessage').css('display', 'none');
 			$('.show-documento').click(function (e) {

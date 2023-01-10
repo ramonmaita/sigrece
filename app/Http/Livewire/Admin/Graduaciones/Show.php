@@ -13,7 +13,7 @@ class Show extends Component
 	{
 		$this->titulos = Graduando::where('cedula',$graduando->cedula)->get();
 		$this->datos_graduando = $this->titulos->first();
-		$this->emit('setGraduandoId',$this->titulos->first()->id);
+		// $this->emit('setGraduandoId',$this->titulos->first()->id);
 	}
 
 	public function updated($atributo)

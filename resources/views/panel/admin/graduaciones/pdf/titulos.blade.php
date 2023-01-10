@@ -327,6 +327,9 @@ use Carbon\Carbon;
 			case 65:
 				$pnf = 'Sistemas de Calidad y Ambiente' ;
 				break;
+			case 80:
+				$pnf = 'Higiene y Seguridad Laboral' ;
+				break;
 
 			default:
 				# code...
@@ -351,7 +354,9 @@ use Carbon\Carbon;
 
 					</td>
 					<td align="right" width="25%">
-						<img src="data:image/png;base64,{{DNS2D::getBarcodePNG('https:sigrece.uptbolivar.com/'.$graduando->Alumno->nacionalidad.'/'.$graduando->Alumno->cedula.'/verificar/'.$graduando->Alumno->nro_titulo, 'QRCODE')}}" alt="barcode" height="120px" width="120px"  style="align: right " />
+						<img src="data:image/png;base64,{{DNS2D::getBarcodePNG({{ route('verificar_graduando',['nacionalidad' => $graduando->Alumno->nacionalidad, 'cedula' => $graduando->Alumno->cedula]) }}, 'QRCODE')}}" alt="barcode" height="120px" width="120px"  style="align: right " />
+
+						{{-- <img src="data:image/png;base64,{{DNS2D::getBarcodePNG('https:sigrece.uptbolivar.com/'.$graduando->Alumno->nacionalidad.'/'.$graduando->Alumno->cedula.'/verificar/'.$graduando->Alumno->nro_titulo, 'QRCODE')}}" alt="barcode" height="120px" width="120px"  style="align: right " /> --}}
 					</td>
 				</tr>
 				<tr>

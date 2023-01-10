@@ -22,22 +22,43 @@
 @section('content')
     <div class="row">
         <div class="col-md-3">
-            <div class="card card-primary card-outline">
-                <div class="card-header">
-                    <h3 class="card-title">Inicio</h3>
-                    <div class="card-tools">
-                        <!-- Buttons, labels, and many other things can be placed here! -->
-                        <!-- Here is a label for example -->
-                    </div>
-                    <!-- /.card-tools -->
-                </div>
-                <!-- /.card-header -->
-                @include('alertas')
-                <div class="card-body">
-                    Bienvenido {{ Auth::user()->nombre_completo }}
-                </div>
-                <!-- /.card-body -->
-            </div>
+			<div class="row">
+				<div class="col-md-12">
+					<div class="card card-primary card-outline">
+						<div class="card-header">
+							<h3 class="card-title">Inicio</h3>
+							<div class="card-tools">
+								<!-- Buttons, labels, and many other things can be placed here! -->
+								<!-- Here is a label for example -->
+							</div>
+							<!-- /.card-tools -->
+						</div>
+						<!-- /.card-header -->
+						@include('alertas')
+						<div class="card-body">
+							Bienvenido {{ Auth::user()->nombre_completo }}
+						</div>
+						<!-- /.card-body -->
+					</div>
+				</div>
+				<div class="col-md-12">
+					<div class="card card-primary card-outline">
+						<div class="card-header">
+							<h3 class="card-title">Periodo Activo</h3>
+							<div class="card-tools">
+								<!-- Buttons, labels, and many other things can be placed here! -->
+								<!-- Here is a label for example -->
+							</div>
+							<!-- /.card-tools -->
+						</div>
+						<!-- /.card-header -->
+						<div class="card-body">
+							Periodo: {{ \App\Models\Periodo::where('estatus',0)->first()->nombre }}
+						</div>
+						<!-- /.card-body -->
+					</div>
+				</div>
+			</div>
         </div>
 		<div id="content" class="col-md-9">
 			<div class="card card-primary card-outline">

@@ -12,6 +12,7 @@ use App\Models\HistoricoNota;
 use App\Models\DesAsignatura;
 use App\Models\DesAsignaturaDocenteSeccion;
 use App\Models\Docente;
+use App\Models\Periodo;
 use App\Models\Seccion;
 use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
@@ -26,6 +27,7 @@ class SeccionesController extends Controller
 {
     public function index()
     {
+		$periodo = Periodo::where('estatus',0)->first();
 		$docente = Docente::where('cedula',Auth::user()->cedula)->first();
 		$secciones = DB::table('desasignatura_docente_seccion')
 		->join('des_asignaturas','desasignatura_docente_seccion.des_asignatura_id','=','des_asignaturas.id')
@@ -35,6 +37,7 @@ class SeccionesController extends Controller
 		->join('trayectos','asignaturas.trayecto_id','=','trayectos.id')
 		->select('desasignatura_docente_seccion.*','des_asignaturas.asignatura_id','seccions.nombre as seccion','nucleos.nucleo','asignaturas.*','trayectos.nombre as trayecto')
 		->where('docente_id',$docente->id)
+		->where('seccions.periodo_id',$periodo->id)
 		->where('seccions.estatus','ACTIVA')
 		->groupBy('seccion_id')
 		->groupBy('des_asignaturas.asignatura_id')
@@ -173,7 +176,8 @@ class SeccionesController extends Controller
 	{
 		$relacion = DesAsignaturaDocenteSeccion::with('inscritos')->where('des_asignatura_id', $desasignatura->id)->where('seccion_id',$seccion->id)->first();
 
-		return Excel::download(new ListadoEstudianteExport($relacion->seccion_id, $relacion->des_asignatura_id), 'listado.xlsx');
+		$nombre_archivo = "T-".$desasignatura->Asignatura->Trayecto->nombre." - ".$desasignatura->Asignatura->nombre." (".$desasignatura->nombre.") ".$desasignatura->Asignatura->Plan->cohorte." - ".$desasignatura->tri_semestre;
+		return Excel::download(new ListadoEstudianteExport($relacion->seccion_id, $relacion->des_asignatura_id), "$nombre_archivo.xlsx");
 
 		Excel::create("$seccion->nombre", function($excel) {
 

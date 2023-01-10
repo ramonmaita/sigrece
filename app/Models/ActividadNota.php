@@ -10,4 +10,9 @@ class ActividadNota extends Model
     use HasFactory;
 
 	protected $fillable = ['actividad_id','alumno_id','nota','estatus'];
+
+	public function Actividad()
+	{
+		return $this->belongsTo(Actividad::class);
+	}
 }

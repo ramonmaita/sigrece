@@ -23,19 +23,19 @@
 			{{-- <x-jet-welcome /> --}}
 			<div class="grid grid-cols-2 gap-2 bg-opacity-25 md:grid-cols-4">
 			    @php
-			        $cerrado = true;
+			        $cerrado = false;
 			    @endphp
 				@if (Auth::user()->Alumno)
 					@if (Auth::user()->Alumno->InscritoActual() && $cerrado == false)
 						<x-link href="{{ route('panel.estudiante.documentos.comprobante.pdf') }}" target="documento" color="blue" intensidad="700" class="py-5 show-documento">
 							COMPROBANTE DE INSCRIPCION
 						</x-link>
-						{{-- <x-link color="blue" intensidad="500" class="py-5 show-documento"> --}}
-						<x-link href="{{ route('panel.estudiante.documentos.constancia.pdf') }}" target="documento" color="blue" intensidad="700" class="py-5 show-documento">
+						<x-link color="blue" intensidad="500" class="py-5 show-documento">
+						{{-- <x-link href="{{ route('panel.estudiante.documentos.constancia.pdf') }}" target="documento" color="blue" intensidad="700" class="py-5 show-documento"> --}}
 							CONSTANCIA DE ESTUDIO
 						</x-link>
-						{{-- <x-link color="blue" intensidad="500" class="py-5 show-documento"> --}}
-						<x-link href="{{ route('panel.estudiante.documentos.notas.pdf') }}" target="documento" color="blue" intensidad="700" class="py-5 show-documento">
+						<x-link color="blue" intensidad="500" class="py-5 show-documento">
+						{{-- <x-link href="{{ route('panel.estudiante.documentos.notas.pdf') }}" target="documento" color="blue" intensidad="700" class="py-5 show-documento"> --}}
 							CONSTANCIA DE CALIFICACIONES
 						</x-link>
 						{{-- <x-link href="{{ route('panel.estudiante.documentos.notas.pdf') }}" target="documento" color="blue" intensidad="700" class="py-5 show-documento">

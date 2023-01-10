@@ -4,19 +4,33 @@
 	$evento_inscripcion_activo = false;
 	$evento_inscripcion = \App\Models\Evento::where('tipo','INSCRIPCION')
 	->where('evento_padre',0)
-	// ->where('inicio','<=',$actual)
-	// ->whereDate('fin','>=',$actual)
+	->where('inicio','<=',$actual)
+	->where('fin','>=',$actual)
 	->orderBy('id','desc')
 	->first();
 	// dd($actual);
 	// dd($evento_inscripcion);
+
+
+			$inicio_h = \Carbon\Carbon::createFromFormat('H:i a', '08:00 AM');
+			$fin_h = \Carbon\Carbon::createFromFormat('H:i a', '09:00 PM');
+			$check_hora = \Carbon\Carbon::now()->between($inicio_h, $fin_h, true);
+			$cerrado = true;
+			if($check_hora || Auth::user()->hasRole('SupervisorNotas') || Auth::user()->hasRole('Admin')){
+				$cerrado = false;
+			}else{
+				$cerrado = true;
+			}
+
 	if($evento_inscripcion){
 		$evento_inscripcion_activo = true;
-		if(Auth::user()->Alumno->IngresoActual()){
-			$inscripcion_ruta = ($evento_inscripcion->aplicar == 'NUEVO INGRESO' ) ? 'panel.estudiante.inscripciones.regulares.index' :'panel.estudiante.inscripciones.nuevo-ingreso.index'  ;
-		}else{
-			$inscripcion_ruta = ($evento_inscripcion->aplicar == 'NUEVO INGRESO' && Auth::user()->Alumno->IngresoActual()->tipo != 'REINGRESO') ? 'panel.estudiante.inscripciones.nuevo-ingreso.index' : 'panel.estudiante.inscripciones.regulares.index' ;
-		}
+		$inscripcion_ruta = ($evento_inscripcion->aplicar == 'REGULARES' ) ? 'panel.estudiante.inscripciones.regulares.index' :'panel.estudiante.inscripciones.nuevo-ingreso.index'  ;
+
+		// if(Auth::user()->Alumno->IngresoActual()){
+		// 	$inscripcion_ruta = ($evento_inscripcion->aplicar == 'REGULARES' ) ? 'panel.estudiante.inscripciones.regulares.index' :'panel.estudiante.inscripciones.nuevo-ingreso.index'  ;
+		// }else{
+		// 	$inscripcion_ruta = ($evento_inscripcion->aplicar == 'REGULARES' && Auth::user()->Alumno->IngresoActual()->tipo != 'REINGRESO') ? 'panel.estudiante.inscripciones.nuevo-ingreso.index' : 'panel.estudiante.inscripciones.regulares.index' ;
+		// }
 	}else{
 		$fin = \Carbon\Carbon::create(2021, 10, 15, 23, 59, 00);
 		$actual = \Carbon\Carbon::now();
@@ -27,11 +41,13 @@
 			->orderBy('id','desc')
 			->first();
 			$evento_inscripcion_activo = true;
-			if(Auth::user()->Alumno->IngresoActual()){
-				$inscripcion_ruta = ($evento_inscripcion->aplicar == 'NUEVO INGRESO' && Auth::user()->Alumno->IngresoActual()->tipo != 'REINGRESO') ? 'panel.estudiante.inscripciones.nuevo-ingreso.index' : 'panel.estudiante.inscripciones.regulares.index' ;
-			}else{
-				$inscripcion_ruta = ($evento_inscripcion->aplicar == 'NUEVO INGRESO' ) ? 'panel.estudiante.inscripciones.regulares.index' :'panel.estudiante.inscripciones.nuevo-ingreso.index'  ;
-			}
+			$inscripcion_ruta = ($evento_inscripcion->aplicar == 'REGULARES' ) ? 'panel.estudiante.inscripciones.regulares.index' :'panel.estudiante.inscripciones.nuevo-ingreso.index'  ;
+
+			// if(Auth::user()->Alumno->IngresoActual()){
+			// 	$inscripcion_ruta = ($evento_inscripcion->aplicar == 'REGULARES' && Auth::user()->Alumno->IngresoActual()->tipo != 'REINGRESO') ? 'panel.estudiante.inscripciones.nuevo-ingreso.index' : 'panel.estudiante.inscripciones.regulares.index' ;
+			// }else{
+			// 	$inscripcion_ruta = ($evento_inscripcion->aplicar == 'REGULARES' ) ? 'panel.estudiante.inscripciones.regulares.index' :'panel.estudiante.inscripciones.nuevo-ingreso.index'  ;
+			// }
 		}
 	}
 	// $inicio = \Carbon\ Carbon::create(2021, 4, 8, 8, 30, 00);
@@ -112,6 +128,42 @@
                 'active' => request()->routeIs('panel.coordinador.solicitudes.index'),
             ],
         ];
+    }elseif (Auth::user()->hasRole('Auxiliar') && session('rol') == 'Auxiliar') {
+        $menu = [
+            [
+                'nombre' => 'Inicio',
+                'route' => route('panel.auxiliar.index'),
+                'active' => request()->routeIs('panel.auxuliar.index'),
+            ],
+
+        ];
+
+		if (Auth::user()->hasRole('SuperAdmin') || Auth::user()->hasRole('SupervisorNotas')) {
+			array_push($menu,
+			[
+                'nombre' => 'Registro de Asignado',
+				'route' => route('panel.auxiliar.inscripciones.nuevo-ingreso.asignados.index_asignado'),
+                'active' => request()->routeIs('panel.auxiliar.inscripciones.nuevo-ingreso.asignados.index_asignado'),
+            ],[
+                'nombre' => 'Inscribir',
+                'route' => route('panel.auxiliar.inscripciones.nuevo-ingreso.index_alumno'),
+                'active' => request()->routeIs('panel.auxiliar.inscripciones.nuevo-ingreso.index_alumno'),
+            ],[
+				'nombre' => 'Registro de No Asignado',
+				'route' => route('panel.auxiliar.inscripciones.nuevo-ingreso.flotante.index_flotante'),
+                'active' => request()->routeIs('panel.auxiliar.inscripciones.nuevo-ingreso.flotante.index_flotante'),
+			]);
+		}elseif (Auth::user()->hasPermissionTo('RegistrarAlumno') && $cerrado != true) {
+			array_push($menu, [
+				'nombre' => 'Registro de No Asignado',
+				'route' => route('panel.auxiliar.inscripciones.nuevo-ingreso.flotante.index_flotante'),
+                'active' => request()->routeIs('panel.auxiliar.inscripciones.nuevo-ingreso.flotante.index_flotante'),
+			],[
+                'nombre' => 'Inscribir',
+                'route' => route('panel.auxiliar.inscripciones.nuevo-ingreso.index_alumno'),
+                'active' => request()->routeIs('panel.auxiliar.inscripciones.nuevo-ingreso.index_alumno'),
+            ],);
+		}
     }
 @endphp
 
@@ -390,7 +442,11 @@
 
 					@foreach (Auth::user()->getRoleNames()  as $item)
 						<x-jet-responsive-nav-link href="{{ route('cambiar-rol',['rol' => $item]) }}">
-							{{ $item }}
+							@if ($item == 'Coordinador')
+								Jefe de PNF
+							@else
+								{{ $item }}
+							@endif
 						</x-jet-responsive-nav-link>
 					@endforeach
                 @endif

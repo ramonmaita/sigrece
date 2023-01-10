@@ -29,6 +29,9 @@ class WebController extends Controller
 			case 'Coordinador':
 				return redirect()->route('panel.'.$panel.'.index');
 				break;
+			case 'Auxiliar':
+				return redirect()->route('panel.'.$panel.'.index');
+				break;
 			default:
 				return redirect()->route('panel.index');
 				break;

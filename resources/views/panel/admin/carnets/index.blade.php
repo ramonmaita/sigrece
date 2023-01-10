@@ -27,10 +27,10 @@
 
 @section('content')
 
-	@include('alertas')
-	@livewire('admin.alertas')
+    @include('alertas')
+    @livewire('admin.alertas')
 
-			@livewire('admin.carnet.camara')
+    @livewire('admin.carnet.camara')
 
 
 @stop
@@ -44,7 +44,8 @@
         window.livewire.on('cerrar_modal', () => {
             $('#exampleModal').modal('hide');
         });
-
     </script>
+
+
 
 @stop

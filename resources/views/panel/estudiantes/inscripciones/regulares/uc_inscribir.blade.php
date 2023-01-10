@@ -23,7 +23,7 @@
 				{{-- <x-jet-welcome /> --}}
                 <div class="grid grid-cols-1 bg-gray-200 bg-opacity-25 md:grid-cols-1">
 					<x-jet-validation-errors class="py-2 mx-5 my-5 text-center text-white bg-red-200 rounded-xl" />
-					<div class="">
+					<div class="overflow-x-auto">
 						<form action="{{ route('panel.estudiante.inscripciones.regulares.store') }}" method="post">
 							@csrf
 							@method('post')
@@ -65,7 +65,7 @@
 													{{-- <div class="form-group"> --}}
 														<x-select class="block w-full mt-1" name="seccion[{{$asignatura->trayecto_id}}]" id=""  >
 															@forelse ($asignatura->RelacionSeccionDocente() as $relacion)
-															@if (@$relacion->Seccion->cupos > 0)
+															@if (@$relacion->Seccion->cupos > 0 && @$relacion->Seccion->nucleo_id == $alumno->nucleo_id)
 															<option value="{{ @$relacion->Seccion->id }}">{{ @$relacion->Seccion->nombre }}</option>
 															@endif
 																{{-- @foreach ($relacion->Seccion as $seccion)

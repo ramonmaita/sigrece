@@ -54,7 +54,7 @@
                 </thead>
                 <tbody>
 
-					@foreach ($pnf->Secciones->where('estatus','ACTIVA') as $seccion)
+					@foreach ($secciones as $seccion)
 
 						@foreach ($seccion->DesAsignaturas->sortBy('tri_semestre') as $uc)
 							@if(!$uc->estatus_carga($seccion->nombre,$seccion->Periodo->nombre))

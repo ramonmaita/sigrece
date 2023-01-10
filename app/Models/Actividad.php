@@ -10,7 +10,7 @@ class Actividad extends Model
     use HasFactory;
 
 
-	protected $fillable = ['desasignatura_docente_seccion_id', 'actividad','descripcion','porcentaje','seccion_id','desasignatura_id'];
+	protected $fillable = ['desasignatura_docente_seccion_id', 'actividad','descripcion','porcentaje','fecha','seccion_id','desasignatura_id'];
 
 	public function Notas()
 	{

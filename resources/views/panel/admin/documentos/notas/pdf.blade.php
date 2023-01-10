@@ -172,7 +172,7 @@
 
 					<tr align="center">
 					<td style="font-size: 12pt">__________________________________________<br>
-				Ing. Dulce María José Pérez Suárez {{-- MsC.Yomely Josefina Pérez Fajardo --}}  <br /> Directora Encargada{{-- de la Dirección --}} De Registro Y Control De Actividades Académicas </p></td></tr>
+				Ing. Ramón Antonio Maita Bolívar{{-- Dulce María José Pérez Suárez  MsC.Yomely Josefina Pérez Fajardo --}}  <br /> Director{{-- de la Dirección --}} De Registro Y Control De Actividades Académicas </p></td></tr>
 			<tr>
 				<td><p align="center" class="Estilo3">Revolucionado La educaciòn Universitaria<br style="margin-top: 0px;" />
 				 _____________________________________________________________________________________________________<br />
@@ -191,7 +191,7 @@
 		<br>
 		<h3 align="center"><u>Constancia de Calificaciones</u></h3>
 		<p align="justify" class="parrafo">
-			Quien suscribe, Directora (E) {{-- de la Dirección --}} De Registro Y Control De Actividades Académicas
+			Quien suscribe, Director {{-- de la Dirección --}} De Registro Y Control De Actividades Académicas
 			de la Universidad Politécnica Territorial Del Estado Bolívar, hace constar por medio de la presente que
 			en esta casa de Estudios Universitarios reposa el Expediente de Estudios
 			del Ciudadano: <span style="text-transform: uppercase;">{{ $alumno->nombres.' '.$alumno->apellidos }}</span>,
@@ -249,6 +249,84 @@
 						</td>
 					</tr>
 
+					@endforeach
+
+				@endif
+
+				@if($alumno->PIU->count() > 0)
+					@foreach ($alumno->PIU as $key => $asignatura)
+						@if ($asignatura->especialidad == $alumno->Pnf->codigo)
+							@break
+						@endif
+						@php
+							$nota = '';
+							$nota_final = 0;
+							$cohortes = 2;
+						@endphp
+						@if (count($alumno->NotasPIU($asignatura->cod_asignatura,@$alumno->ultimo_periodoPIU($asignatura->cod_asignatura)->nro_periodo)) <= 0 )
+							@php
+								$nota = 0;
+							@endphp
+						@else{
+							@foreach ($alumno->NotasPIU($asignatura->cod_asignatura,@$alumno->ultimo_periodoPIU($asignatura->cod_asignatura)->nro_periodo) as $key => $nota_trimestre)
+								@php
+									$nota .= $nota_trimestre->nota.' ';
+									$nota_final += $nota_trimestre->nota;
+								@endphp
+							@endforeach
+							@endif
+
+						<tr>
+							<td>{{@$alumno->ultimo_periodoPIU($asignatura->cod_asignatura)->periodo}}</td>
+							<td align="center">{{@$asignatura->Asignatura->Trayecto->nombre}}</td>
+							<td>{{@$asignatura->Asignatura->nombre}}</td>
+							<td
+								@php
+									@$trim = $asignatura->asignatura(@$asig->cod_asignatura)->tri_semestre;
+									$nota_final = $nota_final/$cohortes;
+								@endphp
+								@if(($trim == 01) || ($trim == 04) || ($trim == 07) || ($trim == 10))
+
+									align="left"
+								@elseif(($trim == 02) || ($trim == 05) || ($trim == '08') || ($trim == 11))
+									align="center"
+								@elseif(($trim == 03) || ($trim == 06) || ($trim == '09') || ($trim == 12))
+
+									align="right"
+								@elseif(($trim == 00))
+
+									align="left"
+								@else
+									align="right"
+
+								@endif
+
+							>
+
+								@php
+								if($nota == 30){
+									echo "Aprobado";
+								}else{
+									echo $nota;
+								}
+								@endphp
+							</td>
+							<td>
+								@php
+								if($nota_final == 30){
+									echo "APROBADO";
+								}else{
+
+									echo round($nota_final) .' '. $asignatura->letras(round($nota_final));
+								}
+								@endphp
+							</td>
+							<td>
+								@php
+									echo @$asignatura->Asignatura->credito;
+								@endphp
+							</td>
+						</tr>
 					@endforeach
 
 				@endif

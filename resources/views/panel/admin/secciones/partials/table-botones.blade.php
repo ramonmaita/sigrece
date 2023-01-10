@@ -18,5 +18,8 @@
     <a href="{{ route('panel.secciones.show', ['seccion' => $id]) }}" class="btn btn-info btn-sm"><i
             class="fa fa-eye">
         </i> </a>
+    <a href="{{ route('panel.secciones.descargar-listado', ['seccion' => $id]) }}" class="btn btn-warning btn-sm"><i
+            class="fa fa-download">
+        </i> </a>
 
 </div>

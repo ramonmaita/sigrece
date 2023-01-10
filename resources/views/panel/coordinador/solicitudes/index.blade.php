@@ -37,9 +37,10 @@
 									<th data-priority="1">Fecha</th>
 									<th data-priority="2">Periodo</th>
 									<th data-priority="3">Unidad Curricular</th>
-									<th data-priority="4">Estatus Jefe de Pnf</th>
-									<th data-priority="5">Estatus DRCAA</th>
-									<th data-priority="6">Acciones</th>
+									<th data-priority="3">Docente</th>
+									<th data-priority="5">Estatus Jefe de Pnf</th>
+									<th data-priority="6">Estatus DRCAA</th>
+									<th data-priority="7">Acciones</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -48,6 +49,7 @@
 										<td>{{ \Carbon\Carbon::parse($solicitud->fecha)->format('d/m/Y h:i:s A') }}</td>
 										<td>{{ $solicitud->periodo }}</td>
 										<td>{{ $solicitud->DesAsignatura->nombre }}</td>
+										<td>{{ $solicitud->Solicitante->nombre_completo }}</td>
 										<td>{{ $solicitud->estatus_jefe }}</td>
 										<td>{{ $solicitud->estatus_admin }}</td>
 										<td>

@@ -12,7 +12,7 @@ class Edit extends Component
 
 	protected $listeners = ['recargar_actividades' => '$refresh'];
 
-	public $actividad, $descripcion, $porcentaje, $id_seccion, $id_relacion, $id_desasignatura, $actividad_id;
+	public $actividad, $descripcion, $porcentaje, $id_seccion, $id_relacion, $id_desasignatura, $actividad_id,$fecha;
 
 	public function mount($relacion_id, $desasignatura_id, $seccion_id)
 	{
@@ -34,6 +34,7 @@ class Edit extends Component
 			$this->actividad = $actividads->actividad;
 			$this->descripcion = $actividads->descripcion;
 			$this->porcentaje = $actividads->porcentaje;
+			$this->fecha = $actividads->fecha;
 		}
 	}
 
@@ -51,6 +52,7 @@ class Edit extends Component
 
 		$this->validate([
 			'actividad' => 'required|min:3',
+			'fecha' => 'required|date',
 			'porcentaje' => 'required|numeric|min:1|max:' . $max_porcentaje
 		]);
 
@@ -70,7 +72,8 @@ class Edit extends Component
 			$actividad->update([
 				'actividad' => $this->actividad,
 				'descripcion' => $this->descripcion,
-				'porcentaje' => $this->porcentaje
+				'porcentaje' => $this->porcentaje,
+				'fecha' => $this->fecha,
 			]);
 			DB::commit();
 			$this->emitTo('recargar_tabla','recargar_tabla');

@@ -410,7 +410,10 @@
 					<x-select class="block w-full mt-1" name="nucleo" id="nucleo"  wire:model="nucleo">
 						<option value="">SELECCIONE</option>
 						@foreach ($nucleos as $nucleo_id)
-							<option value="{{ $nucleo_id->id }}">{{ $nucleo_id->nucleo }}</option>
+						   
+							@if(Auth::user()->hasPermissionTo($nucleo_id->nucleo) ||Auth::guest() || Auth::user()->hasRole('Admin') ||Auth::user()->hasRole('SuperAdmin'))
+								<option value="{{ $nucleo_id->id }}">{{ $nucleo_id->nucleo }}</option>
+							@endif
 						@endforeach
 					</x-select>
 					{{-- {{ $nucleo }} --}}

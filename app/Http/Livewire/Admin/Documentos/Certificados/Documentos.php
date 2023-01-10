@@ -16,7 +16,7 @@ class Documentos extends Component
 	{
 		$this->titulos = Graduando::where('cedula',$graduando->cedula)->get();
 		$this->graduando_id = $this->titulos->first()->id;
-		$this->emit('setGraduandoId',$this->titulos->first()->id);
+		// $this->emit('setGraduandoId',$this->titulos->first()->id);
 	}
 
     public function render()

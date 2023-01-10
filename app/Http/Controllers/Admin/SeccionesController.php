@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\SeccionEstudiantesExport;
 use App\Http\Controllers\Controller;
+use App\Models\Alumno;
 use Illuminate\Http\Request;
 use App\Models\Seccion;
 use App\Models\Docente;
@@ -12,6 +14,7 @@ use App\Models\DesAsignatura;
 use App\Models\DesAsignaturaDocenteSeccion;
 use App\Models\HistoricoNota;
 use App\Models\Inscripcion;
+use App\Models\Periodo;
 use App\Models\Pnf;
 use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
@@ -20,6 +23,7 @@ use Dompdf\Options;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB as DB;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SeccionesController extends Controller
 {
@@ -27,6 +31,8 @@ class SeccionesController extends Controller
 	{
 		$ucs = DesAsignaturaDocenteSeccion::where('seccion_id',$seccion->id)->pluck('id');
 		$total = Inscripcion::whereIn('desasignatura_docente_seccion_id',$ucs)->groupBy('alumno_id')->get();
+		$id_estudiantes = Inscripcion::whereIn('desasignatura_docente_seccion_id',$ucs)->groupBy('alumno_id')->pluck('alumno_id');
+		$alumnos = Alumno::whereIn('id',$id_estudiantes)->get();
 		// $total = DesAsignaturaDocenteSeccion::with(['inscritos' => function ($query)
 		// {
 		// 	$query->groupBy('alumno_id');
@@ -34,6 +40,17 @@ class SeccionesController extends Controller
 		$estudiantes = count($total);
 		// dd($total);
 		return view('panel.admin.secciones.show', ['seccion' => $seccion, 'estudiantes' => $estudiantes]);
+	}
+	public function estudiantes_seccion(Seccion $seccion)
+	{
+		$ucs = DesAsignaturaDocenteSeccion::where('seccion_id',$seccion->id)->pluck('id');
+		$id_estudiantes = Inscripcion::whereIn('desasignatura_docente_seccion_id',$ucs)->groupBy('alumno_id')->pluck('alumno_id');
+		$alumnos = $id_estudiantes;
+		// $alumnos = Alumno::whereIn('id',$id_estudiantes)->get();
+
+		$nombre_archivo = $seccion->nombre;
+		return Excel::download(new SeccionEstudiantesExport($alumnos), "$nombre_archivo.xlsx");
+		return dd($alumnos);
 	}
 	public function lista_esudiantes(Seccion $seccion, DesAsignatura $desasignatura)
 	{
@@ -280,8 +297,8 @@ class SeccionesController extends Controller
 	public function planificacion($id)
 	{
 		$pnf = Pnf::find($id);
-
-		$html = view('panel.admin.secciones.planificacion',['pnf' => $pnf]);
+		$periodo = Periodo::where('estatus',0)->first();
+		$html = view('panel.admin.secciones.planificacion',['pnf' => $pnf, 'periodo' => $periodo]);
 
 		$options = new Options();
 		$options->setIsRemoteEnabled(true);
@@ -347,8 +364,10 @@ class SeccionesController extends Controller
 
 	public function cerrar_carga($id)
 	{
+		$periodo = Periodo::where('estatus',0)->first();
 		$pnf = Pnf::find($id);
-		return view('panel.admin.secciones.cerrar_carga',['pnf' => $pnf]);
+		$secciones = $pnf->Secciones->where('estatus','ACTIVA')->where('periodo_id',$periodo->id);
+		return view('panel.admin.secciones.cerrar_carga',['pnf' => $pnf,'secciones' => $secciones]);
 	}
 
 	public function cerrar($id_relacion)

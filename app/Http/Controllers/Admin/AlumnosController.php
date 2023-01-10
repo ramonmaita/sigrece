@@ -131,43 +131,83 @@ class AlumnosController extends Controller
 		foreach ($trayectos as $key => $trayecto) {
 			$aprobadas = 0;
 			$reprobadas = 0;
+			// return dd($alumno->PIU->count());
 			if(count($trayecto->Asignaturas->where('plan_id',$alumno->plan_id)) > 0){
 				// echo '<tr><th colspan="5">'.$trayecto->nombre.'</th></tr>';
-				foreach ($trayecto->Asignaturas->where('plan_id',$alumno->plan_id) as $key => $asignatura) {
-					$nota = '';
-					$nota_final = 0;
-					// echo '<tr>';
-					// echo '<td>'.@$alumno->ultimo_periodo($asignatura->codigo)->periodo.'</td>';
-					// echo '<td>'.$asignatura->codigo.'</td>';
-					// echo '<td>'.$asignatura->nombre.'</td>';
-					if (count($alumno->Notas($asignatura->codigo,@$alumno->ultimo_periodo($asignatura->codigo)->nro_periodo)) <= 0 ){
-						$nota = 0;
-					}else{
-						foreach ($alumno->Notas($asignatura->codigo,@$alumno->ultimo_periodo($asignatura->codigo)->nro_periodo) as $key => $nota_trimestre) {
-							$nota .= $nota_trimestre->nota.' ';
-							$nota_final += $nota_trimestre->nota;
+				if($trayecto->nombre == 'INICIAL' && $alumno->PIU->count() > 0){
+					foreach ($alumno->PIU as $key => $asignatura) {
+						$nota = '';
+						$nota_final = 0;
+						// echo '<tr>';
+						// echo '<td>'.@$asignatura->periodo.'</td>';
+						// echo '<td>'.$asignatura->Asignatura->codigo.'</td>';
+						// echo '<td>'.$asignatura->Asignatura->nombre.'</td>';
+						if (count($alumno->NotasPIU($asignatura->cod_asignatura,@$alumno->ultimo_periodoPIU($asignatura->cod_asignatura)->nro_periodo)) <= 0 ){
+							$nota = 0;
+						}else{
+							foreach ($alumno->NotasPIU($asignatura->cod_asignatura,@$alumno->ultimo_periodoPIU($asignatura->cod_asignatura)->nro_periodo) as $key => $nota_trimestre) {
+								$nota .= $nota_trimestre->nota.' ';
+								$nota_final += $nota_trimestre->nota;
+							}
+						}
+						// echo '<td>'.$nota.'</td>';
+						// echo '<td style="background:'.((round($nota_final/2) >= 12) ?'green' : 'red').'">'.round($nota_final/2).'</td>';
+						// echo "</tr>";
+
+						$cohortes = 2;
+						if(round($nota_final/$cohortes) >= 12){
+							$aprobadas++;
+						}else{
+							$reprobadas++;
 						}
 					}
-					// TODO: ELEGIBLE DE IMI
-					$cohortes = ($asignatura->codigo == '75ELE4918')? 1 : count($asignatura->DesAsignaturas);
-					if(round($nota_final/$cohortes) >= $aprueba_normal && $asignatura->aprueba == 0 || round($nota_final/$cohortes) >= $aprueba_proyecto && $asignatura->aprueba == 1){
-						$aprobadas++;
-					}else{
-						$reprobadas++;
+					$uc_t = 5;
+					$trayectos_a[$trayecto->id] = [
+						'id' => $trayecto->id,
+						'nombre' => $trayecto->observacion,
+						'uc_totales' => $uc_t,
+						'uc_aprobadas' => $aprobadas,
+						'uc_pendientes' => $reprobadas,
+						'porcentaje' => round(($aprobadas/$uc_t)*100,2)
+					];
+				}else{
+
+					foreach ($trayecto->Asignaturas->where('plan_id',$alumno->plan_id) as $key => $asignatura) {
+						$nota = '';
+						$nota_final = 0;
+						// echo '<tr>';
+						// echo '<td>'.@$alumno->ultimo_periodo($asignatura->codigo)->periodo.'</td>';
+						// echo '<td>'.$asignatura->codigo.'</td>';
+						// echo '<td>'.$asignatura->nombre.'</td>';
+						if (count($alumno->Notas($asignatura->codigo,@$alumno->ultimo_periodo($asignatura->codigo)->nro_periodo)) <= 0 ){
+							$nota = 0;
+						}else{
+							foreach ($alumno->Notas($asignatura->codigo,@$alumno->ultimo_periodo($asignatura->codigo)->nro_periodo) as $key => $nota_trimestre) {
+								$nota .= $nota_trimestre->nota.' ';
+								$nota_final += $nota_trimestre->nota;
+							}
+						}
+						// TODO: ELEGIBLE DE IMI
+						$cohortes = ($asignatura->codigo == '75ELE4918')? 1 : count($asignatura->DesAsignaturas);
+						if(round($nota_final/$cohortes) >= $aprueba_normal && $asignatura->aprueba == 0 || round($nota_final/$cohortes) >= $aprueba_proyecto && $asignatura->aprueba == 1){
+							$aprobadas++;
+						}else{
+							$reprobadas++;
+						}
+						// echo '<td>'.$nota.'</td>';
+						// echo '<td style="background:'.((round($nota_final/count($asignatura->DesAsignaturas)) >= 12 && $asignatura->aprueba == 0 || round($nota_final/count($asignatura->DesAsignaturas)) >= 16 && $asignatura->aprueba == 1) ?'green' : 'red').'">'.round($nota_final/count($asignatura->DesAsignaturas)).'</td>';
+						// echo "</tr>";
 					}
-					// echo '<td>'.$nota.'</td>';
-					// echo '<td style="background:'.((round($nota_final/count($asignatura->DesAsignaturas)) >= 12 && $asignatura->aprueba == 0 || round($nota_final/count($asignatura->DesAsignaturas)) >= 16 && $asignatura->aprueba == 1) ?'green' : 'red').'">'.round($nota_final/count($asignatura->DesAsignaturas)).'</td>';
-					// echo "</tr>";
+					$uc_t = count($trayecto->Asignaturas->where('plan_id',$alumno->plan_id));
+					$trayectos_a[$trayecto->id] = [
+						'id' => $trayecto->id,
+						'nombre' => $trayecto->observacion,
+						'uc_totales' => $uc_t,
+						'uc_aprobadas' => $aprobadas,
+						'uc_pendientes' => $reprobadas,
+						'porcentaje' => round(($aprobadas/$uc_t)*100,2)
+					];
 				}
-				$uc_t = count($trayecto->Asignaturas->where('plan_id',$alumno->plan_id));
-				$trayectos_a[$trayecto->id] = [
-					'id' => $trayecto->id,
-					'nombre' => $trayecto->observacion,
-					'uc_totales' => $uc_t,
-					'uc_aprobadas' => $aprobadas,
-					'uc_pendientes' => $reprobadas,
-					'porcentaje' => round(($aprobadas/$uc_t)*100,2)
-				];
 			}
 		}
 		// echo '</table>';

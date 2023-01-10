@@ -234,6 +234,9 @@
 			case 65:
 				$pnf = 'Sistemas de Calidad y Ambiente' ;
 				break;
+			case 80:
+				$pnf = 'Higiene y Seguridad Laboral' ;
+				break;
 
 			default:
 				# code...
@@ -242,8 +245,6 @@
 
 
 	@endphp
-
-	{{-- @include('numeros_a_letras') --}}
 
 	<div class="cont" style="background-color:rgba(255, 255, 255, 0.9); background-image: url({{ asset('/img/fondo-titulo.png') }});">
 
@@ -262,7 +263,7 @@
 
 					</td>
 					<td align="right" width="25%">
-						<img src="data:image/png;base64,{{DNS2D::getBarcodePNG('https:sigrece.uptbolivar.com/'.$graduando->nacionalidad.'/'.$graduando->cedula.'/verificar/'.$graduando->nro_titulo, 'QRCODE')}}" alt="barcode" height="120px" width="120px"  style="align: right " />
+						<img src="data:image/png;base64,{{DNS2D::getBarcodePNG({{ route('verificar_graduando',['nacionalidad' => $graduando->nacionalidad, 'cedula' => $graduando->cedula]) }}, 'QRCODE')}}" alt="barcode" height="120px" width="120px"  style="align: right " />
 					</td>
 				</tr>
 				<tr>
@@ -394,7 +395,7 @@
 
 				// && Carbon::parse($graduando->egreso)->format('d-m-Y') < '4-07-2019' || $p >= 19.50 && $p <= 20 && Carbon::parse($graduando->egreso)->format('d-m-Y') > '4-07-2019'  && $graduando->titulo == 2
 			@endphp
-			@if ($p >= 18.00 && $p <= 19.49 )
+			@if ($p >= 18.00 && $p <= 19.49)
 				<span style="font-family: 'gregorian'; font-size: 16pt; text-align: center; margin-top: 0px; padding-bottom:150px;">
 					<center>
 						Menciòn Honorifica "Cum Laude"
