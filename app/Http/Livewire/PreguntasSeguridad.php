@@ -28,42 +28,37 @@ class PreguntasSeguridad extends Component
 	public function buscarUsuario()
 	{
 
-		$user = Docente::where('cedula', $this->cedula)->first()?->User ??
-		Alumno::where('cedula', $this->cedula)->first()?->User;
-		$fecha_nacimiento = '';
+		$user = User::where('cedula', $this->cedula)
+			->first();
 
-		if($user->Alumno) {
-			$fecha_nacimiento = $user->Alumno->fechan;
-
-		} elseif ($user->Docente) {
-			$fecha_nacimiento = $user->Docente->fechan;
-
-		}
-
-		if(!is_null($user) &&
-			$this->correo == $user->email &&
-			$this->fecha_nacimiento == $fecha_nacimiento
-		) {
-			$this->error = '';
-			$this->user = $user;
-			if(count($this->user->preguntasSeguridad) == 4) {
-				$this->step = 3;
-				$this->preguntas = [];
-				$preguntas = $this->user->preguntasSeguridad()
-					->inRandomOrder()->take(2)->get();
-
-				foreach ($preguntas as $pregunta) {
-					$this->preguntas[] = [
-						"pregunta" => $pregunta->pregunta,
-						"respuesta" => ""
-					];
-				}
-			} else {
-				$this->step = 2;
-			}
-		} else {
+		if (!$user) {
 			$this->error = "Usuario no encontrado";
+			return;
 		}
+
+		$fecha_nacimiento = optional($user->Alumno)->fechan ?? optional($user->Docente)->fechan;
+
+		if (!$fecha_nacimiento ||
+			$this->correo !== $user->email ||
+			$this->fecha_nacimiento !== $fecha_nacimiento
+		) {
+			return;
+		}
+
+		$this->error = '';
+		$this->user = $user;
+
+		if($this->user->preguntasSeguridad->count() == 4) {
+			$this->step = 3;
+			$preguntas = $this->user->preguntasSeguridad->random(2);
+			$this->preguntas = $preguntas->map(fn($pregunta) => [
+				"pregunta" => $pregunta->pregunta,
+				"respuesta" => ""
+			])->toArray();
+		} else {
+			$this->step = 2;
+		}
+
 	}
 
 	public function verificar()

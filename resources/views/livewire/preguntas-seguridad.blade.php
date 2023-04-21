@@ -5,16 +5,16 @@
 			<form class="p-2" wire:submit.prevent="buscarUsuario">
 				<label class="block mt-3" for="nombre">
 					Cédula
-					<input wire:model="cedula" type="text" name="nombre" id="nombre" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-400" />
+					<input autocomplete="off" wire:model="cedula" type="text" name="nombre" id="nombre" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-400" />
 				</label>
 				<label class="block mt-3" for="nombre">
 					Correo
-					<input wire:model="correo" type="email" name="nombre" id="nombre" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-400" />
+					<input autocomplete="off" wire:model="correo" type="email" name="nombre" id="nombre" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-400" />
 				</label>
 
 				<label class="block mt-3" for="nombre">
 					Fecha de nacimiento
-					<input wire:model="fecha_nacimiento" type="date" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-400" />
+					<input autocomplete="off" wire:model="fecha_nacimiento" type="date" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-400" />
 				</label>
 
 				<div class="mt-4 w-full flex justify-center sm:-mx-2">
@@ -39,14 +39,14 @@
 					<div class="mb-4">
 						<label class="block mt-3" for="nombre">
 							Pregunta {{ $loop->index + 1}}
-							<input wire:model="preguntas.{{ $loop->index }}.pregunta" type="text" name="nombre" id="nombre" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-400" />
+							<input autocomplete="off" wire:model="preguntas.{{ $loop->index }}.pregunta" type="text" name="nombre" id="nombre" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-400" />
 						</label>
 						@error('preguntas.'.$loop->index.'.pregunta')
 						<span class="text-red-500 text-sm">Esta pregunta es requerida</span>
 						@enderror
 						<label class="block mt-3" for="nombre">
 							Respuesta
-							<input wire:model="preguntas.{{ $loop->index }}.respuesta" type="text" name="nombre" id="nombre" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-400" />
+							<input autocomplete="off" wire:model="preguntas.{{ $loop->index }}.respuesta" type="text" name="nombre" id="nombre" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-400" />
 						</label>
 						@error('preguntas.'.$loop->index.'.respuesta')
 						<span class="text-red-500 text-sm">Esta respuesta es requerida</span>
@@ -70,7 +70,7 @@
 					<div class="mb-4">
 						<label class="block mt-3" for="nombre">
 							{{ $pregunta["pregunta"] }}
-							<input wire:model="preguntas.{{ $loop->index }}.respuesta" type="text" name="nombre" id="nombre" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-400" />
+							<input autocomplete="off" wire:model="preguntas.{{ $loop->index }}.respuesta" type="text" name="nombre" id="nombre" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-400" />
 						</label>
 						@error('preguntas.'.$loop->index.'.respuesta')
 						<span class="text-red-500 text-sm">Esta respuesta es requerida</span>
@@ -92,13 +92,13 @@
 			<h2 class="font-bold text-xl text-gray-800">Cambiar contraseña</h2>
 			<form class="flex flex-col gap-4 mt-4" wire:submit.prevent="cambiarContrasena">
 				<label for="password">Contraseña nueva
-					<input wire:model="password" type="password" id="password" name="password" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-400">
+					<input autocomplete="off" wire:model="password" type="password" id="password" name="password" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-400">
 				</label>
 				@error('password')
 				<span class="text-red-500 text-sm">La contraseña no es válida</span>
 				@enderror
 				<label for="password_confirmation">Repita la contraseña
-					<input wire:model="password1" type="password" id="password_confirmation" name="password_confirmation" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-400">
+					<input autocomplete="off" wire:model="password1" type="password" id="password_confirmation" name="password_confirmation" class="block w-full px-4 py-3 text-sm text-gray-700 bg-white border border-gray-200 rounded-md focus:border-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-400">
 				</label>
 				@error('password1')
 				<span class="text-red-500 text-sm">Las contraseñas no coinciden</span>
