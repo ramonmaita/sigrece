@@ -20,7 +20,12 @@ use App\Models\Pregunta;
 |
 */
 // Route::get('generar-usuarios', [UsuariosController::class,'generar_usuarios'])->name('generar');
+Route::get('/preguntas-seguridad', function() {
+	return view('auth.preguntas-seguridad');
+})->name('preguntas-seguridad');
+
 Route::get('/preguntas-frecuentes', [PreguntasController::class, 'index'])->name('preguntas-frecuentes');
+
 
 Route::middleware(['role_or_permission:faqs.create'])->group(function () {
 	Route::resource('faqs', PreguntasController::class)->except([

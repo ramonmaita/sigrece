@@ -105,4 +105,8 @@ class User extends Authenticatable implements Auditable
 	{
 	    return $this->nombre . ' ' . $this->apellido;
 	}
+	public function preguntasSeguridad()
+	{
+		return $this->hasMany(PreguntaSeguridad::class);
+	}
 }
