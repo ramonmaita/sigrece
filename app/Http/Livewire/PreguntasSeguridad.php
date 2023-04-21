@@ -88,6 +88,7 @@ class PreguntasSeguridad extends Component
 			'preguntas.*.pregunta' => 'required|not_empty',
 			'preguntas.*.respuesta' => 'required|not_empty',
 		]);
+
 		foreach ($this->preguntas as $pregunta) {
 			$this->user->preguntasSeguridad()->save(new PreguntaSeguridad($pregunta));
 		}
